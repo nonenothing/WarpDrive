@@ -3,7 +3,6 @@ package cr0s.warpdrive.block.detection;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.client.SirenSound;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 
 import net.minecraft.block.state.IBlockState;
@@ -30,8 +29,8 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	@SideOnly(Side.CLIENT)
 	private SirenSound sound;
 	
-	public TileEntitySiren(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntitySiren() {
+		super();
 	}
 	
 	@Override

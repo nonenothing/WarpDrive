@@ -50,14 +50,15 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	protected EnumTier enumTier;
 	
-	public TileEntityAbstractBase(final EnumTier enumTier) {
+	public TileEntityAbstractBase() {
 		super();
-		
-		this.enumTier = enumTier;
 	}
 	
-	protected void onFirstUpdateTick() {
-		// No operation
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		
+		// immediately retrieve tier, we need it to connect energy conduits and save the world before the first tick
 		final Block block = getBlockType();
 		if (block instanceof IBlockBase) {
 			enumTier = ((IBlockBase) block).getTier(ItemStack.EMPTY);
@@ -66,6 +67,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			                                     this, Commons.format(world, pos), block));
 			enumTier = EnumTier.BASIC;
 		}
+	}
+	
+	protected void onFirstUpdateTick() {
+		// No operation
+		assert enumTier != null;
 	}
 	
 	@Override
@@ -397,6 +403,24 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 		
 		return message;
+	}
+	
+	public final WarpDriveText getStatus(final ItemStack itemStack, final IBlockState blockState) {
+		// (this is a temporary object to compute status)
+		// get tier from ItemStack
+		final Block block = blockState.getBlock();
+		if (block instanceof IBlockBase) {
+			enumTier = ((IBlockBase) block).getTier(itemStack);
+		}
+		
+		// get persistent properties
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound != null) {
+			readFromNBT(tagCompound);
+		}
+		
+		// compute status
+		return getStatus();
 	}
 	
 	public String getStatusHeaderInPureText() {

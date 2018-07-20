@@ -64,8 +64,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	// ComputerCraft specific properties
 	protected final HashMap<Integer, IComputerAccess> connectedComputers = new HashMap<>();
 	
-	public TileEntityAbstractInterfaced(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAbstractInterfaced() {
+		super();
 		
 		addMethods(new String[] {
 				"interfaced",

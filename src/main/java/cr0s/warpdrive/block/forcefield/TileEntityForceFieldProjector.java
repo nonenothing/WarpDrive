@@ -11,7 +11,6 @@ import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumForceFieldShape;
 import cr0s.warpdrive.data.EnumForceFieldState;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
@@ -118,8 +117,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	// schedule removal/destruction in main thread
 	final CopyOnWriteArraySet<VectorI> vForceFields_forRemoval = new CopyOnWriteArraySet<>();
 	
-	public TileEntityForceFieldProjector(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityForceFieldProjector() {
+		super();
 		
 		IC2_sinkTier = 4;
 		IC2_sourceTier = 4;

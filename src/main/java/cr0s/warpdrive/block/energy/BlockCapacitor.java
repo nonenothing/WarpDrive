@@ -4,7 +4,6 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumDisabledInputOutput;
 import cr0s.warpdrive.data.EnumTier;
@@ -68,7 +67,6 @@ public class BlockCapacitor extends BlockAbstractContainer implements IExplosion
 		setDefaultState(getDefaultState()
 				                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)
 		               );
-		registerTileEntity(TileEntityCapacitor.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -121,7 +119,7 @@ public class BlockCapacitor extends BlockAbstractContainer implements IExplosion
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityCapacitor(enumTier);
+		return new TileEntityCapacitor();
 	}
 	
 	@Nullable

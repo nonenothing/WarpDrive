@@ -5,7 +5,6 @@ import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.EnumValidPowered;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
@@ -37,8 +36,8 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	public EnumFacing facing = null;
 	private boolean isValid = false;
 	
-	public TileEntityIC2reactorLaserMonitor(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityIC2reactorLaserMonitor() {
+		super();
 		
 		laserMedium_maxCount = 1;
 		peripheralName = "warpdriveIC2reactorLaserCooler";

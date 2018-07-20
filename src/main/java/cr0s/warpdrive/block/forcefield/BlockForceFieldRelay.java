@@ -1,7 +1,6 @@
 package cr0s.warpdrive.block.forcefield;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
@@ -20,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
@@ -36,7 +34,6 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		setUnlocalizedName("warpdrive.force_field.relay." + enumTier.getName());
 		
 		setDefaultState(getDefaultState().withProperty(UPGRADE, EnumForceFieldUpgrade.NONE));
-		registerTileEntity(TileEntityForceFieldRelay.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -83,7 +80,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceFieldRelay(enumTier);
+		return new TileEntityForceFieldRelay();
 	}
 	
 	@Override

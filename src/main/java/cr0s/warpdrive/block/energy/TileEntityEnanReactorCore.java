@@ -73,8 +73,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	private long releasedThisCycle = 0; // amount of energy released during current cycle
 	private long releasedLastCycle = 0;
 	
-	public TileEntityEnanReactorCore(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityEnanReactorCore() {
+		super();
 		
 		peripheralName = "warpdriveEnanReactorCore";
 		addMethods(new String[] {

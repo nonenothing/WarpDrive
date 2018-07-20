@@ -1,8 +1,6 @@
 package cr0s.warpdrive.block.forcefield;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumForceFieldShape;
 import cr0s.warpdrive.data.EnumForceFieldState;
@@ -22,14 +20,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -69,7 +65,6 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
 				.withProperty(IS_DOUBLE_SIDED, false)
 				);
-		registerTileEntity(TileEntityForceFieldProjector.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -173,7 +168,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceFieldProjector(enumTier);
+		return new TileEntityForceFieldProjector();
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -1,7 +1,6 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -21,7 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,7 +29,6 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setUnlocalizedName("warpdrive.breathing.air_generator." + enumTier.getName());
-		registerTileEntity(TileEntityAirGeneratorTiered.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
@@ -61,7 +58,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityAirGeneratorTiered(enumTier);
+		return new TileEntityAirGeneratorTiered();
 	}
 	
 	@Override

@@ -49,8 +49,8 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	private int registryUpdateTicks = 0;
 	
 	
-	public TileEntityJumpGateCore(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityJumpGateCore() {
+		super();
 		
 		peripheralName = "warpdriveJumpGate";
 		// addMethods(new String[] {});

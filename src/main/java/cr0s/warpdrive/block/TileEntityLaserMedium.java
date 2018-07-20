@@ -1,7 +1,6 @@
 package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -18,8 +17,8 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	// computed properties
 	private int ticks = BLOCKSTATE_REFRESH_PERIOD_TICKS;
 	
-	public TileEntityLaserMedium(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityLaserMedium() {
+		super();
 		
 		peripheralName = "warpdriveLaserMedium";
 		OC_enable = false;

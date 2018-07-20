@@ -7,7 +7,6 @@ import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -41,8 +40,8 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	// computer properties
 	private boolean isActive = false;
 	
-	public TileEntityTransporterBeacon(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityTransporterBeacon() {
+		super();
 		
 		IC2_sinkTier = 2;
 		isEnergyLostWhenBroken = false;

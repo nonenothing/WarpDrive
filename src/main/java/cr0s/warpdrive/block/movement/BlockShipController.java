@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.movement;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumShipCommand;
 import cr0s.warpdrive.data.EnumTier;
@@ -12,7 +11,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class BlockShipController extends BlockAbstractContainer {
@@ -27,7 +25,6 @@ public class BlockShipController extends BlockAbstractContainer {
 		setDefaultState(getDefaultState()
 				                .withProperty(COMMAND, EnumShipCommand.OFFLINE)
 		               );
-		registerTileEntity(TileEntityShipController.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -52,6 +49,6 @@ public class BlockShipController extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipController(enumTier);
+		return new TileEntityShipController();
 	}
 }

@@ -6,7 +6,6 @@ import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -30,8 +29,8 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	private static final int UPDATE_INTERVAL_TICKS = 20;
 	private int updateTicks;
 	
-	public TileEntityAcceleratorControlPoint(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAcceleratorControlPoint() {
+		super();
 		
 		peripheralName = "warpdriveAcceleratorControlPoint";
 		addMethods(new String[] {

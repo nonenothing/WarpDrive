@@ -9,11 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumTier;
 
@@ -25,7 +23,6 @@ public class BlockShipScanner extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setUnlocalizedName("warpdrive.building.ship_scanner");
-		registerTileEntity(TileEntityShipScanner.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 /* @TODO camouflage	
@@ -58,7 +55,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipScanner(enumTier);
+		return new TileEntityShipScanner();
 	}
 	
 	@Override

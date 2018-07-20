@@ -6,7 +6,6 @@ import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
 
@@ -32,8 +31,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	// number of projectors check ignored before self-destruction
 	private int gracePeriod_calls = 3;
 	
-	TileEntityForceField(final EnumTier enumTier) {
-		super(enumTier);
+	TileEntityForceField() {
+		super();
 	}
 	
 	@Override

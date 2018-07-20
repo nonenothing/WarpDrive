@@ -2,9 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.Commons;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
@@ -16,13 +14,11 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -51,7 +47,6 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 				                .withProperty(BlockProperties.ACTIVE, false)
 				                .withProperty(DEPLOYED, false)
 		               );
-		registerTileEntity(TileEntityTransporterBeacon.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nullable
@@ -119,7 +114,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityTransporterBeacon(enumTier);
+		return new TileEntityTransporterBeacon();
 	}
 	
 	@Override

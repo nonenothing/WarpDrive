@@ -21,7 +21,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Optional;
@@ -37,20 +36,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech"),
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, defense.api.IEMPBlock {
 	
-	private static HashSet<Class> tileEntityRegistered = new HashSet<>(64);
 	private static boolean isInvalidEMPreported = false;
 	
 	protected EnumTier enumTier;
@@ -68,14 +64,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		WarpDrive.register(this);
 		
 		setDefaultState(blockState.getBaseState());
-	}
-	
-	public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, ResourceLocation key) {
-		if (tileEntityRegistered.contains(tileEntityClass)) {
-			return;
-		}
-		GameRegistry.registerTileEntity(tileEntityClass, key);
-		tileEntityRegistered.add(tileEntityClass);
 	}
 	
 	@Nullable

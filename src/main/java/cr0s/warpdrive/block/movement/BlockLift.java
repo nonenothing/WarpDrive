@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.movement;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumLiftMode;
 import cr0s.warpdrive.data.EnumTier;
@@ -12,7 +11,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class BlockLift extends BlockAbstractContainer {
@@ -23,7 +21,6 @@ public class BlockLift extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setUnlocalizedName("warpdrive.movement.lift");
-		registerTileEntity(TileEntityLift.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState().withProperty(MODE, EnumLiftMode.INACTIVE));
 	}
@@ -50,6 +47,6 @@ public class BlockLift extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityLift(enumTier);
+		return new TileEntityLift();
 	}
 }

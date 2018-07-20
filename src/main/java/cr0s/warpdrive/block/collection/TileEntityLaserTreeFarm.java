@@ -6,7 +6,6 @@ import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumLaserTreeFarmMode;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -89,8 +88,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private ArrayList<BlockPos> valuables;
 	private int valuableIndex = 0;
 	
-	public TileEntityLaserTreeFarm(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityLaserTreeFarm() {
+		super();
 		
 		laserOutputSide = EnumFacing.UP;
 		peripheralName = "warpdriveLaserTreeFarm";

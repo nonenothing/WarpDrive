@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.energy;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumReactorFace;
 import cr0s.warpdrive.data.EnumTier;
@@ -10,7 +9,6 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,7 +30,6 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 				                .withProperty(ENERGY, 0)
 				                .withProperty(INSTABILITY, 0)
 		               );
-		registerTileEntity(TileEntityEnanReactorCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -58,7 +55,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityEnanReactorCore(enumTier);
+		return new TileEntityEnanReactorCore();
 	}
 	
 	@SideOnly(Side.CLIENT)

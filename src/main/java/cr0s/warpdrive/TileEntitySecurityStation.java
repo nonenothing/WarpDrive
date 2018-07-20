@@ -3,7 +3,6 @@ package cr0s.warpdrive;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ISecurityStation;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
-import cr0s.warpdrive.data.EnumTier;
 
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -28,8 +27,8 @@ public class TileEntitySecurityStation extends TileEntityAbstractInterfaced impl
 	// persistent properties
 	public final ArrayList<String> players = new ArrayList<>();
 	
-	public TileEntitySecurityStation(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntitySecurityStation() {
+		super();
 		
 		// (abstract) peripheralName = "warpdriveSecurityStation";
 		addMethods(new String[] {

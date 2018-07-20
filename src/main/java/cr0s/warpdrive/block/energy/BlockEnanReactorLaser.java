@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.energy;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
@@ -13,7 +12,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -26,7 +24,6 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		
 		setResistance(60.0F * 5 / 3);
 		setUnlocalizedName("warpdrive.energy.enan_reactor_laser");
-		registerTileEntity(TileEntityEnanReactorLaser.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
@@ -58,7 +55,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityEnanReactorLaser(enumTier);
+		return new TileEntityEnanReactorLaser();
 	}
 	
 	@Override

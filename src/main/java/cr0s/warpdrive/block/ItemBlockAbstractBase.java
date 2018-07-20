@@ -71,15 +71,22 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		return enumRarityStack.ordinal() > enumRarityDefault.ordinal() ? enumRarityStack : enumRarityDefault;
 	}
 	
-	public ITextComponent getStatus(final World world, final NBTTagCompound tagCompound, final IBlockState blockState) {
+	public ITextComponent getStatus(final World world, @Nonnull final ItemStack itemStack) {
+		final IBlockState blockState;
+		if (world != null) {
+			assert Minecraft.getMinecraft().player != null;
+			blockState = block.getStateForPlacement(world, new BlockPos(0, -1, 0),
+			                                        EnumFacing.DOWN, 0.0F, 0.0F, 0.0F,
+			                                        itemStack.getMetadata(), Minecraft.getMinecraft().player, EnumHand.MAIN_HAND);
+		} else {
+			blockState = block.getStateFromMeta(itemStack.getMetadata());
+		}
+		
 		final TileEntity tileEntity = block.createTileEntity(world, blockState);
 		if (tileEntity instanceof TileEntityAbstractBase) {
-			if (tagCompound != null) {
-				tileEntity.readFromNBT(tagCompound);
-			}
-			return ((TileEntityAbstractBase) tileEntity).getStatus();
+			return ((TileEntityAbstractBase) tileEntity).getStatus(itemStack, blockState);
 			
-		} else {
+		} else {// (not a tile entity provider)
 			return new TextComponentString("");
 		}
 	}
@@ -126,17 +133,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipNameWithoutTier).getFormattedText());
 		}
 		
-		final IBlockState blockState;
-		if (world != null) {
-			assert Minecraft.getMinecraft().player != null;
-			blockState = block.getStateForPlacement(world, new BlockPos(0, -1, 0),
-			                                        EnumFacing.DOWN, 0.0F, 0.0F, 0.0F,
-			                                        itemStack.getMetadata(), Minecraft.getMinecraft().player, EnumHand.MAIN_HAND);
-		} else {
-			blockState = block.getStateFromMeta(itemStack.getMetadata());
-		}
-		
-		Commons.addTooltip(list, getStatus(world, itemStack.getTagCompound(), blockState).getFormattedText());
+		Commons.addTooltip(list, getStatus(world, itemStack).getFormattedText());
 	}
 	
 	@Override

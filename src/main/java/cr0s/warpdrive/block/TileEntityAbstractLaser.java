@@ -2,7 +2,6 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.api.computer.IAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -36,8 +35,8 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	private int updateTicks = updateInterval_ticks;
 	private int bootTicks = 20;
 	
-	public TileEntityAbstractLaser(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAbstractLaser() {
+		super();
 		
 		addMethods(new String[] {
 				"energy",

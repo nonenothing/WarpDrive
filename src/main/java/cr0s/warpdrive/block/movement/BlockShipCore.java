@@ -2,7 +2,6 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumComponentType;
@@ -23,7 +22,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -36,7 +34,6 @@ public class BlockShipCore extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setUnlocalizedName("warpdrive.movement.ship_core." + enumTier.getName());
-		registerTileEntity(TileEntityShipCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
@@ -68,7 +65,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipCore(enumTier);
+		return new TileEntityShipCore();
 	}
 	
 	@Override

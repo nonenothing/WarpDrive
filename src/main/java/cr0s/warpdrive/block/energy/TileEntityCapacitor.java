@@ -29,8 +29,8 @@ public class TileEntityCapacitor extends TileEntityAbstractEnergy {
 	// persistent properties
 	private EnumDisabledInputOutput[] modeSide = MODE_DEFAULT_SIDES.clone();
 	
-	public TileEntityCapacitor(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityCapacitor() {
+		super();
 		
 		peripheralName = "warpdriveCapacitor";
 		

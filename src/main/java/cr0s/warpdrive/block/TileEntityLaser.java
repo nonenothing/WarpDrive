@@ -75,8 +75,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	private int scanResult_blockMetadata = 0;
 	private float scanResult_blockResistance = -2;
 	
-	public TileEntityLaser(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityLaser() {
+		super();
 		
 		peripheralName = "warpdriveLaser";
 		addMethods(new String[] {

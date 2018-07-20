@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
@@ -10,7 +9,6 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class BlockLaserMedium extends BlockAbstractContainer {
@@ -21,7 +19,6 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setUnlocalizedName("warpdrive.machines.laser_medium." + enumTier.getName());
-		registerTileEntity(TileEntityLaserMedium.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState().withProperty(LEVEL, 0));
 	}
@@ -48,6 +45,6 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityLaserMedium(enumTier);
+		return new TileEntityLaserMedium();
 	}
 }

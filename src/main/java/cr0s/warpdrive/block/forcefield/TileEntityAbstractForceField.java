@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldRegistry;
 import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -32,8 +31,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	// computed properties
 	protected Vector3 vRGB;
 	
-	public TileEntityAbstractForceField(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAbstractForceField() {
+		super();
 		
 		addMethods(new String[] {
 			"enable",

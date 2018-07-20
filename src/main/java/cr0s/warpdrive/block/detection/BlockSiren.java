@@ -1,7 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
@@ -19,7 +18,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -35,7 +33,6 @@ public class BlockSiren extends BlockAbstractContainer {
 		
 		this.isIndustrial = isIndustrial;
 		setUnlocalizedName("warpdrive.detection.siren_" + (isIndustrial ? "industrial" : "military") + "." + enumTier.getName());
-		registerTileEntity(TileEntitySiren.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
@@ -66,7 +63,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntitySiren(enumTier);
+		return new TileEntitySiren();
 	}
 	
 	public boolean getIsIndustrial() {

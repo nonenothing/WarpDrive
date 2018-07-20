@@ -4,7 +4,6 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
-import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
@@ -35,7 +34,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -80,7 +78,6 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		setDefaultState(getDefaultState()
 		                .withProperty(FREQUENCY, 0)
 		);
-		registerTileEntity(TileEntityForceField.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -161,7 +158,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceField(enumTier);
+		return new TileEntityForceField();
 	}
 	
 	@SideOnly(Side.CLIENT)

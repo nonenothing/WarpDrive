@@ -10,7 +10,6 @@ import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumShipScannerState;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.data.SoundEvents;
@@ -81,8 +80,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	private JumpShip jumpShip;
 	private int blocksToDeployCount;
 	
-	public TileEntityShipScanner(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityShipScanner() {
+		super();
 		
 		peripheralName = "warpdriveShipScanner";
 		addMethods(new String[] {

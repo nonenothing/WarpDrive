@@ -7,7 +7,6 @@ import cr0s.warpdrive.api.computer.IShipController;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumShipCommand;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.VectorI;
 
 import dan200.computercraft.api.lua.ILuaContext;
@@ -38,8 +37,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	protected boolean isEnabled = false;
 	protected String nameTarget = "";
 	
-	public TileEntityAbstractShipController(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAbstractShipController() {
+		super();
 		
 		// (abstract) peripheralName = "xxx";
 		addMethods(new String[] {

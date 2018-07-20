@@ -6,7 +6,6 @@ import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumCameraType;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -32,8 +31,8 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	private int packetSendTicks = 10;
 	private int registryUpdateTicks = 20;
 	
-	public TileEntityLaserCamera(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityLaserCamera() {
+		super();
 		
 		peripheralName = "warpdriveLaserCamera";
 		addMethods(new String[] {

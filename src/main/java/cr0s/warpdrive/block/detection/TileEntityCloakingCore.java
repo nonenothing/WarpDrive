@@ -7,7 +7,6 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CloakedArea;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -67,8 +66,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	private boolean soundPlayed = false;
 	private int soundTicks = 0;
 	
-	public TileEntityCloakingCore(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityCloakingCore() {
+		super();
 		
 		peripheralName = "warpdriveCloakingCore";
 		addMethods(new String[] {

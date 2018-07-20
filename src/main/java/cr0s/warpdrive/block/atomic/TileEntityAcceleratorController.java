@@ -3,7 +3,6 @@ package cr0s.warpdrive.block.atomic;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.VectorI;
 
 import java.util.UUID;
@@ -13,8 +12,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 public class TileEntityAcceleratorController extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
-	public TileEntityAcceleratorController(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAcceleratorController() {
+		super();
 	}
 	
 	@Override

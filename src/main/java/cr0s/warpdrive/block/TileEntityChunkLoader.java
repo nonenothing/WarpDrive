@@ -3,7 +3,6 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
-import cr0s.warpdrive.data.EnumTier;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -33,8 +32,8 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	// computed properties
 	// (none)
 	
-	public TileEntityChunkLoader(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityChunkLoader() {
+		super();
 		
 		IC2_sinkTier = 2;
 		IC2_sourceTier = 2;

@@ -35,8 +35,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	private int maxEnergyStored = 0;
 	private int cooldownTicks = 0;
 	
-	public TileEntityAirGeneratorTiered(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityAirGeneratorTiered() {
+		super();
 		
 		peripheralName = "warpdriveAirGenerator";
 		addMethods(new String[] {

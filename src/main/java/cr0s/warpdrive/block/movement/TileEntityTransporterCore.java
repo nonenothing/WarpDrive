@@ -17,7 +17,6 @@ import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumComponentType;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.EnumTransporterState;
 import cr0s.warpdrive.data.ForceFieldRegistry;
 import cr0s.warpdrive.data.ForceFieldSetup;
@@ -114,8 +113,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	private HashMap<Integer, MovingEntity> movingEntitiesRemote = new HashMap<>(8);
 	private int tickEnergizing = 0;
 	
-	public TileEntityTransporterCore(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityTransporterCore() {
+		super();
 		
 		IC2_sinkTier = 2;
 		IC2_sourceTier = 2;

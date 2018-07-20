@@ -15,7 +15,6 @@ import cr0s.warpdrive.data.EnumShipCommand;
 import cr0s.warpdrive.data.EnumShipCoreState;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.Vector3;
@@ -103,8 +102,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	private int isolationUpdateTicks = 0;
 	
 	
-	public TileEntityShipCore(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityShipCore() {
+		super();
 		
 		peripheralName = "warpdriveShipCore";
 		// addMethods(new String[] {});

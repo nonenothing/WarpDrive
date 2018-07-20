@@ -7,7 +7,6 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumMiningLaserMode;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -58,8 +57,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private final ArrayList<BlockPos> valuablesInLayer = new ArrayList<>();
 	private int valuableIndex = 0;
 	
-	public TileEntityMiningLaser(final EnumTier enumTier) {
-		super(enumTier);
+	public TileEntityMiningLaser() {
+		super();
 		
 		laserOutputSide = EnumFacing.DOWN;
 		peripheralName = "warpdriveMiningLaser";
