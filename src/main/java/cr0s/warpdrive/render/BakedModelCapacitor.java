@@ -78,6 +78,11 @@ public class BakedModelCapacitor implements IBakedModel, IMyBakedModel {
 		}
 		if (extendedBlockState != null) {
 			final EnumDisabledInputOutput enumDisabledInputOutput = getEnumDisabledInputOutput(extendedBlockState, facing);
+			if (enumDisabledInputOutput == null) {
+				WarpDrive.logger.error(String.format("%s Invalid extended property for %s",
+				                                     this, extendedBlockState));
+				return getDefaultQuads(facing, rand);
+			}
 			final IBlockState blockStateToRender = extendedBlockState.getClean().withProperty(BlockCapacitor.CONFIG, enumDisabledInputOutput);
 			
 			// remap to the json model representing the proper state

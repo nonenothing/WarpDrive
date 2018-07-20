@@ -41,6 +41,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -354,6 +355,15 @@ public class Commons {
 			return worldName;
 		}
 		return saveFolder;
+	}
+	
+	public static String format(final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
+		if (blockAccess instanceof World) {
+			return format((World) blockAccess, blockPos);
+		}
+		return String.format("@ %s (%d %d %d)",
+		                     blockAccess,
+		                     blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 	
 	public static String format(final World world, @Nonnull final BlockPos blockPos) {

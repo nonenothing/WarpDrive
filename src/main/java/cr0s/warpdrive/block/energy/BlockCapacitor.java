@@ -93,10 +93,14 @@ public class BlockCapacitor extends BlockAbstractContainer implements IExplosion
 	@Override
 	public IBlockState getExtendedState(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		if (!(blockState instanceof IExtendedBlockState)) {
+			WarpDrive.logger.error(String.format("%s Invalid call to getExtendedState() with invalid state %s %s",
+			                                     this, blockState, Commons.format(blockAccess, blockPos)));
 			return blockState;
 		}
 		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityCapacitor)) {
+			WarpDrive.logger.error(String.format("%s Invalid TileEntityCapacitor instance for %s %s: %s",
+			                                     this, blockState, Commons.format(blockAccess, blockPos), tileEntity));
 			return blockState;
 		}
 		final TileEntityCapacitor tileEntityCapacitor = (TileEntityCapacitor) tileEntity;
