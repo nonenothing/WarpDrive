@@ -747,7 +747,7 @@ public class Recipes {
 		                                                                  "ic2:te", 43,                    // IC2 Compressor
 		                                                                  "thermalexpansion:machine", 8,   // ThermalExpansion Fluid transposer
 		                                                                  "enderio:block_reservoir", 0,    // EnderIO Reservoir
-		                                                                  "warpdrive:item_component", 11); // WarpDrive Glass tank => ItemComponent.getItemStack(EnumComponentType.GLASS_TANK););
+		                                                                  "warpdrive:component", EnumComponentType.GLASS_TANK.ordinal()); // WarpDrive Glass tank
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
 		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[1]), false, "aca", "ata", "gmp",
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
@@ -1398,7 +1398,7 @@ public class Recipes {
 				snowOrIce = Blocks.ICE;
 			}
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockChillers[0]), "wgw", "sms", "bMb",
+			                                       new ItemStack(WarpDrive.blockChillers[1]), "wgw", "sms", "bMb",
 			                                       'w', snowOrIce,
 			                                       'g', Items.GHAST_TEAR,
 			                                       's', ingotIronOrSteel,
@@ -1411,7 +1411,7 @@ public class Recipes {
 				nitrogen = Blocks.PACKED_ICE;
 			}
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockChillers[1]), "ngn", "dmd", "bMb",
+			                                       new ItemStack(WarpDrive.blockChillers[2]), "ngn", "dmd", "bMb",
 			                                       'n', nitrogen,
 			                                       'g', Items.GHAST_TEAR,
 			                                       'd', Items.DIAMOND,
@@ -1424,7 +1424,7 @@ public class Recipes {
 				helium = "dustCryotheum";
 			}
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockChillers[2]), "hgh", "eme", "bMb",
+			                                       new ItemStack(WarpDrive.blockChillers[3]), "hgh", "eme", "bMb",
 			                                       'h', helium,
 			                                       'g', Items.GHAST_TEAR,
 			                                       'e', Items.EMERALD,
@@ -1443,43 +1443,43 @@ public class Recipes {
 			
 			// Normal electromagnets
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockElectromagnetPlain[0], 4), "   ", "ccc", "Cmt",
+			                                       new ItemStack(WarpDrive.blockElectromagnetPlain[1], 4), "   ", "ccc", "Cmt",
 			                                       'c', ironIngotOrCopperIngotOrCoil,
 			                                       't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			                                       'm', itemStackMotorLV,
 			                                       'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockElectromagnetGlass[0], 4), "mgm", "g g", "mgm",
+			                                       new ItemStack(WarpDrive.blockElectromagnetGlass[1], 4), "mgm", "g g", "mgm",
 			                                       'g', Blocks.GLASS,
-			                                       'm', WarpDrive.blockElectromagnetPlain[0]));
+			                                       'm', WarpDrive.blockElectromagnetPlain[1]));
 			
 			// Advanced electromagnets
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[1], 6), "mpm", "pip", "mpm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mpm", "pip", "mpm",
 			                                               'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
 			                                               'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-			                                               'm', WarpDrive.blockElectromagnetPlain[0]));
+			                                               'm', WarpDrive.blockElectromagnetPlain[1]));
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[1], 6), "mpm", "pip", "mpm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mpm", "pip", "mpm",
 			                                               'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
 			                                               'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-			                                               'm', WarpDrive.blockElectromagnetGlass[0]));
+			                                               'm', WarpDrive.blockElectromagnetGlass[1]));
 			
 			// Superior electromagnets
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mtm", "sps", "mMm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[3], 6), "mtm", "sps", "mMm",
 			                                               't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			                                               's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
 			                                               'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
 			                                               'M', itemStackMotorHV,
-			                                               'm', WarpDrive.blockElectromagnetPlain[1]));
+			                                               'm', WarpDrive.blockElectromagnetPlain[2]));
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mtm", "sps", "mMm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[3], 6), "mtm", "sps", "mMm",
 			                                               't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			                                               's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
 			                                               'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
 			                                               'M', itemStackMotorHV,
-			                                               'm', WarpDrive.blockElectromagnetGlass[1]));
+			                                               'm', WarpDrive.blockElectromagnetGlass[2]));
 			
 			// ICBM classic
 			if (WarpDriveConfig.isICBMClassicLoaded) {
