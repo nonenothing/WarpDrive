@@ -135,7 +135,7 @@
 	<fillerSet group="end_ores" name="endstone">
 		<filler block="arsmagica2:vinteumOre" metadata="3" ratio=".001" mods="arsmagica2" /><!-- Moonstone -->
 		<filler block="ae2:quartz" ratio=".0013" mods="appliedenergistics2" />
-		<filler block="warpdrive:block_iridium" ratio=".0001" mods="!netherores" />
+		<filler block="warpdrive:iridium_block" ratio=".0001" mods="!netherores" />
 	</fillerSet>
 	
 	
@@ -209,7 +209,7 @@
 	<!-- WarpDrive gases -->
 	<for variable="gasMetadata" in="0,1,2,3,4,5,6,7,8,9,10,11">
 		<fillerSet group="gas" name="wd_%gasMetadata%" weight="1">
-			<filler block="warpdrive:block_gas" metadata="%gasMetadata%" weight="100" />
+			<filler block="warpdrive:gas" metadata="%gasMetadata%" weight="100" />
 		</fillerSet>
 	</for>
 	
@@ -223,16 +223,16 @@
 			<filler block="minecraft:stained_glass" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_plain" name="basic_%colorMetadata%" weight="40">
-			<filler block="warpdrive:block_hull1_plain" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:hull.basic.plain" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_glass" name="basic_%colorMetadata%" weight="40">
-			<filler block="warpdrive:block_hull1_glass" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:hull.basic.glass" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_plain" name="advanced_%colorMetadata%" weight="10">
-			<filler block="warpdrive:block_hull2_plain" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:hull.advanced.plain" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_glass" name="advanced_%colorMetadata%" weight="10">
-			<filler block="warpdrive:block_hull2_glass" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:hull.advanced.glass" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 	</for>
 	<fillerSet group="hull_plain" name="ic2" weight="1" mods="ic2">
@@ -338,7 +338,7 @@
 	</fillerSet>
 	<fillerSet group="moon.core" name="iriquartz" weight="1">
 		<filler block="minecraft:quartz_block" metadata="0" weight="100" />
-		<filler block="warpdrive:block_iridium" ratio="0.001" />
+		<filler block="warpdrive:iridium_block" ratio="0.001" />
 	</fillerSet>
 	<fillerSet group="moon.core" name="iroquartz" weight="1">
 		<filler block="minecraft:quartz_block" metadata="2" weight="33" />

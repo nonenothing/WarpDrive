@@ -1,6 +1,0 @@
-{
-	"parent": "warpdrive:item/item_force_field_upgrade-none",
-	"textures": {
-		"layer0": "warpdrive:items/forcefield/upgrade-inversion"
-	}
-}

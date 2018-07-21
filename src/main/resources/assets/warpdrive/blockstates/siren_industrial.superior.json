@@ -1,0 +1,20 @@
+{
+	"forge_marker": 1,
+	"variants": {
+		"inventory": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		
+		"active=false,facing=down" : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=false,facing=up"   : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=false,facing=north": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=false,facing=south": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=false,facing=east" : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=false,facing=west" : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		
+		"active=true,facing=down"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=true,facing=up"    : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=true,facing=north" : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=true,facing=south" : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=true,facing=east"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } },
+		"active=true,facing=west"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial.superior"    } }
+	}
+}

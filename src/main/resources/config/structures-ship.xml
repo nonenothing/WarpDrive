@@ -37,7 +37,7 @@
 		<replacement block="minecraft:stone" metadata="0">
 			<import group="hull_plain" name="%hull1%" />
 			<filler block="minecraft:air" ratio="0.1" />
-			<filler block="warpdrive:block_ship_corruption" ratio="0.0025" />
+			<filler block="warpdrive:ship_corruption" ratio="0.0025" />
 		</replacement>
 		<replacement block="minecraft:glass" metadata="0">
 			<import group="hull_glass" name="%hull1%" />
@@ -46,7 +46,7 @@
 		<replacement block="minecraft:sandstone" metadata="0">
 			<import group="hull_plain" name="%hull2%" />
 			<filler block="minecraft:air" ratio="0.1" />
-			<filler block="warpdrive:block_ship_corruption" ratio="0.0025" />
+			<filler block="warpdrive:ship_corruption" ratio="0.0025" />
 		</replacement>
 		<replacement block="minecraft:stained_glass" metadata="0">
 			<import group="hull_glass" name="%hull2%" />
@@ -70,16 +70,16 @@
 				<filler block="minecraft:wool" metadata="%colorMetadata%" weight="1" />
 			</for>
 		</replacement>
-		<replacement block="warpdrive:block_ship_core">
-			<filler block="warpdrive:block_ship_core" weight="1" />
+		<replacement block="warpdrive:ship_core.basic">
+			<filler block="warpdrive:ship_core.basic" weight="1" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
-		<replacement block="warpdrive:block_air_generator">
-			<filler block="warpdrive:block_air_generator" weight="1" />
+		<replacement block="warpdrive:air_generator.basic">
+			<filler block="warpdrive:air_generator.basic" weight="1" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
-		<replacement block="warpdrive:block_ship_controller">
-			<filler block="warpdrive:block_ship_controller" weight="1" />
+		<replacement block="warpdrive:ship_controller.basic">
+			<filler block="warpdrive:ship_controller.basic" weight="1" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
 		<replacement block="computercraft:CC-Computer">

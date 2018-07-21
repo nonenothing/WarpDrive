@@ -1,9 +1,0 @@
-{
-	"forge_marker": 1,
-	"variants": {
-		"inventory": [{}],
-		"config=disabled": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/capacitor_basic-disabled"    } },
-		"config=input"   : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/capacitor_basic-input"       } },
-		"config=output"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/capacitor_basic-output"      } }
-	}
-}

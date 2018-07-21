@@ -6,6 +6,7 @@ import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -56,7 +57,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		updateTicks--;
 		if (updateTicks <= 0) {
 			updateTicks = UPDATE_INTERVAL_TICKS;
-			updateMetadata((controlChannel == -1) || !isEnabled ? 0 : 1); // @TODO MC1.10
+			updateBlockState(null, BlockProperties.ACTIVE, (controlChannel != -1) && isEnabled);
 		}
 	}
 	

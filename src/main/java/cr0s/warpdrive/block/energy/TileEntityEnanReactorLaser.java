@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.computer.IEnanReactorLaser;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumReactorFace;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -18,6 +19,7 @@ import javax.annotation.Nonnull;
 
 import java.lang.ref.WeakReference;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -90,8 +92,17 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		this.reactorFace = reactorFace;
 		this.weakReactorCore = reactorCore != null && reactorFace != EnumReactorFace.UNKNOWN ? new WeakReference<>(reactorCore) : null;
 		
-		updateMetadata();
+		// refresh blockstate
+		IBlockState blockState_old = world.getBlockState(pos);
+		IBlockState blockState_new;
+		if (reactorFace.propertyLaser != null) {
+			blockState_new = blockState_old.withProperty(BlockProperties.ACTIVE, true).withProperty(BlockProperties.FACING, reactorFace.propertyLaser);
+		} else {
+			blockState_new = blockState_old.withProperty(BlockProperties.ACTIVE, false).withProperty(BlockProperties.FACING, EnumFacing.DOWN);
+		}
+		updateBlockState(blockState_old, blockState_new);
 		
+		// cache reactor coordinates
 		if (reactorCore != null) {
 			vReactorCore = new Vector3(reactorCore).translate(0.5);
 		}
@@ -111,17 +122,6 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 			}
 		}
 		return reactorCore;
-	}
-	
-	private void updateMetadata() {
-		int metadata = 0;
-		if ( reactorFace != null
-		  && reactorFace.propertyLaser != null ) {
-			metadata = 8 + reactorFace.propertyLaser.ordinal();
-		}
-		if (getBlockMetadata() != metadata) {
-			updateMetadata(metadata);
-		}
 	}
 	
 	@Override

@@ -123,22 +123,22 @@ public class Dictionary {
 				// @TODO MC1.12 config.get("block_tags", "ic2:blockPersonal"                               , "Anchor SkipMining").getString(); // IC2 personal chest, need property filtering
 				// @TODO MC1.12 config.get("block_tags", "malisisdoors:null"                               , "Anchor").getString(); // improper registration of block causing NPE
 				config.get("block_tags", "malisisdoors:rustyhatch"                         , "Anchor").getString();
-				config.get("block_tags", "warpdrive:block_bedrock_glass"                   , "Anchor StopMining NoBlink").getString();
+				config.get("block_tags", "warpdrive:bedrock_glass"                         , "Anchor StopMining NoBlink").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
-				config.get("block_tags", "warpdrive:block_hull1_plain"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_hull2_plain"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_hull3_plain"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_hull1_glass"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_hull2_glass"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_hull3_glass"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_lamp_bubble"                     , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_lamp_flat"                       , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_lamp_long"                       , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:block_force_field1"                    , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "warpdrive:block_force_field2"                    , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "warpdrive:block_force_field3"                    , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:hull.basic.plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:hull.advanced.plain"                   , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:hull.superior.plain"                   , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:hull.basic.glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:hull.advanced.glass"                   , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:hull.superior.glass"                   , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:lamp_bubble"                           , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:lamp_flat"                             , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:lamp_long"                             , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:force_field.basic"                     , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:force_field.advanced"                  , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:force_field.superior"                  , "PlaceLatest StopMining NoMass").getString();
 				config.get("block_tags", "ic2:foam"                                        , "PlaceEarliest StopMining").getString();
 				// @TODO MC1.12 config.get("block_tags", "ic2:blockAlloy"                                  , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "ic2:glass"                                       , "PlaceEarliest StopMining").getString();
@@ -175,11 +175,10 @@ public class Dictionary {
 				// expendables, a.k.a. "don't blow my ship with this..."
 				config.get("block_tags", "chisel:cloud"                                    , "LeftBehind Expandable").getString();
 				config.get("block_tags", "railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
-				config.get("block_tags", "warpdrive:block_gas"                             , "LeftBehind Expandable").getString();
+				config.get("block_tags", "warpdrive:gas"                                   , "LeftBehind Expandable").getString();
 				// config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
-				config.get("block_tags", "warpdrive:block_air"                             , "NoMass Expandable PlaceLatest").getString();
-				config.get("block_tags", "warpdrive:block_air_flow"                        , "NoMass Expandable PlaceLatest").getString();
-				config.get("block_tags", "warpdrive:block_air_source"                      , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:air_flow"                              , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:air_source"                            , "NoMass Expandable PlaceLatest").getString();
 				
 				// mining a mineshaft...
 				config.get("block_tags", "minecraft:web"                                   , "Mining").getString();
@@ -189,20 +188,20 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:redstone_block"                        , "Mining").getString();
 				
 				// mining an 'end' moon
-				config.get("block_tags", "warpdrive:block_iridium"                         , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
+				config.get("block_tags", "warpdrive:iridium_block"                         , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
 				
 				// force field camouflage blacklisting
-				config.get("block_tags", "deepresonance:energy_collector"                   , "NoCamouflage").getString();
-				config.get("block_tags", "deepresonance:resonating_crystal"                 , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:blood_infuser"                          , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:dark_ore"                               , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:sanguinary_environmental_accumulator"   , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:spirit_reanimator"                      , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:turret_base"                   , "NoCamouflage").getString(); // Turret tiers are stored in meta data
-				config.get("block_tags", "thaumcraft:blockCustomPlant"                      , "NoCamouflage").getString(); // To be tested
-				config.get("block_tags", "thermalexpansion:cache"                           , "NoCamouflage").getString();
-				config.get("block_tags", "thermalexpansion:device"                          , "NoCamouflage").getString();
-				config.get("block_tags", "thermalexpansion:machine"                         , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:energy_collector"                  , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:resonating_crystal"                , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:blood_infuser"                         , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:dark_ore"                              , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:sanguinary_environmental_accumulator"  , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:spirit_reanimator"                     , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:turret_base"                  , "NoCamouflage").getString(); // Turret tiers are stored in meta data
+				config.get("block_tags", "thaumcraft:blockCustomPlant"                     , "NoCamouflage").getString(); // To be tested
+				config.get("block_tags", "thermalexpansion:cache"                          , "NoCamouflage").getString();
+				config.get("block_tags", "thermalexpansion:device"                         , "NoCamouflage").getString();
+				config.get("block_tags", "thermalexpansion:machine"                        , "NoCamouflage").getString();
 				// config.get("block_tags", "thermalexpansion:Sponge"                          , "NoCamouflage").getString(); // not found
 				// config.get("block_tags", "witchery:leechchest"                              , "NoCamouflage").getString();
 				
@@ -310,8 +309,8 @@ public class Dictionary {
 				
 				config.get("item_tags", "ic2:rubber_boots"                             , "NoFallDamage").getString();
 				config.get("item_tags", "ic2:quantum_boots"                            , "NoFallDamage").getString();
-				config.get("item_tags", "warpdrive:item_warp_armor_leggings"           , "NoFallDamage").getString();
-				config.get("item_tags", "warpdrive:item_warp_armor_boots"              , "NoFallDamage").getString();
+				config.get("item_tags", "warpdrive:warp_armor_leggings"           , "NoFallDamage").getString();
+				config.get("item_tags", "warpdrive:warp_armor_boots"              , "NoFallDamage").getString();
 				taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedItems = new HashMap<>(taggedItemsName.length);

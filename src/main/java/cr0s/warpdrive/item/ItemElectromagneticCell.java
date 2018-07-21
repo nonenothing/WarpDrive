@@ -12,15 +12,18 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentTranslation;
 
@@ -38,40 +41,33 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.atomic.electromagnetic_cell");
 		setHasSubtypes(true);
+		
+		addPropertyOverride(new ResourceLocation(WarpDrive.MODID, "fill"), new IItemPropertyGetter() {
+			@SideOnly(Side.CLIENT)
+			@Override
+			public float apply(@Nonnull ItemStack itemStack, @Nullable World world, @Nullable EntityLivingBase entity) {
+				final ParticleStack particleStack = getParticleStack(itemStack);
+				if (particleStack != null) {
+					return (float) particleStack.getAmount() / getCapacity(itemStack);
+				}
+				return 0.0F;
+			}
+		});
 	}
 	
-	// @TODO MC1.10 rendering
-	//	icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
-	//	icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");
-	//	icons[ 2] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-40");
-	//	icons[ 3] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-60");
-	//	icons[ 4] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-80");
-	//	icons[ 5] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-100");
-	//	icons[ 6] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-full");
-	//	icons[ 7] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-20");
-	//	icons[ 8] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-40");
-	//	icons[ 9] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-60");
-	//	icons[10] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-80");
-	//	icons[11] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-100");
-	//	icons[12] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-full");
-	//	icons[13] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-20");
-	//	icons[14] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-40");
-	//	icons[15] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-60");
-	//	icons[16] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-80");
-	//	icons[17] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-100");
-	//	icons[18] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-full");
-	//	icons[19] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-20");
-	//	icons[20] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-40");
-	//	icons[21] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-60");
-	//	icons[22] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-80");
-	//	icons[23] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-100");
-	//	icons[24] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-full");
-	//	icons[25] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-20");
-	//	icons[26] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-40");
-	//	icons[27] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-60");
-	//	icons[28] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-80");
-	//	icons[29] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-100");
-	//	icons[30] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-full");
+	@Nonnull
+	@Override
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		String variant = "empty";
+		final ParticleStack particleStack = getParticleStack(itemStack);
+		if (particleStack != null) {
+			variant = particleStack.getUnlocalizedName().replace("warpdrive.particle.", "");
+		}
+		ResourceLocation resourceLocation = getRegistryName();
+		assert resourceLocation != null;
+		resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + variant);
+		return new ModelResourceLocation(resourceLocation, "inventory");
+	}
 	
 	public static ItemStack getItemStackNoCache(final Particle particle, final int amount) {
 		final ItemStack itemStack = new ItemStack(WarpDrive.itemElectromagneticCell, 1, 0);
@@ -125,25 +121,30 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public void setAmountToConsume(final ItemStack itemStack, final int amountToConsume) {
+	public void setAmountToConsume(@Nonnull final ItemStack itemStack, final int amountToConsume) {
 		final ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			return;
 		}
-		final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+		NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
+			tagCompound = new NBTTagCompound();
+		}
 		tagCompound.setInteger(AMOUNT_TO_CONSUME_TAG, amountToConsume);
 	}
 	
-	private int getAmountToConsume(final ItemStack itemStack) {
-		if (itemStack.hasTagCompound()) {
-			return itemStack.getTagCompound().getInteger(AMOUNT_TO_CONSUME_TAG);
+	private int getAmountToConsume(@Nonnull final ItemStack itemStack) {
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound != null) {
+			return tagCompound.getInteger(AMOUNT_TO_CONSUME_TAG);
 		}
 		return 0;
 	}
 	
-	private static int getDamageLevel(final ItemStack itemStack, final ParticleStack particleStack) {
+	private static int getDamageLevel(@Nonnull final ItemStack itemStack, final ParticleStack particleStack) {
 		if (!(itemStack.getItem() instanceof ItemElectromagneticCell)) {
-			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s", itemStack));
+			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s",
+			                                     itemStack));
 			return itemStack.getItemDamage();
 		}
 		if (particleStack == null || particleStack.getParticle() == null) {
@@ -156,12 +157,12 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		return (1 + type * 6 + offset);
 	}
 	
-	private static void updateDamageLevel(final ItemStack itemStack, final ParticleStack particleStack) {
+	private static void updateDamageLevel(@Nonnull final ItemStack itemStack, final ParticleStack particleStack) {
 		itemStack.setItemDamage(getDamageLevel(itemStack, particleStack));
 	}
 	
 	@Override
-	public ParticleStack getParticleStack(final ItemStack itemStack) {
+	public ParticleStack getParticleStack(@Nonnull final ItemStack itemStack) {
 		if (itemStack.getItem() != this) {
 			return null;
 		}
@@ -199,6 +200,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			particleStack.fill(transfer);
 			
 			final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			assert tagCompound != null;
 			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
 			if (!itemStack.hasTagCompound()) {
 				itemStack.setTagCompound(tagCompound);
@@ -222,6 +224,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			particleStack.fill(-transfer);
 			
 			final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			assert tagCompound != null;
 			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
 			if (!itemStack.hasTagCompound()) {
 				itemStack.setTagCompound(tagCompound);
@@ -264,7 +267,8 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
-			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s", itemStack));
+			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s",
+			                                     itemStack));
 			return;
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();

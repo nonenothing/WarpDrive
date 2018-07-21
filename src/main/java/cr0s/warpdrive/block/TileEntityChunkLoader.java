@@ -2,6 +2,7 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumComponentType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -120,7 +121,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		
 		isPowered = energy_consume(chunkloading_getEnergyRequired(), !isEnabled);
 		
-		updateMetadata(isEnabled ? isPowered ? 2 : 1 : 0);
+		updateBlockState(null, BlockProperties.ACTIVE, isEnabled && isPowered);
 	}
 	
 	private void setBounds(final int negX, final int posX, final int negZ, final int posZ) {

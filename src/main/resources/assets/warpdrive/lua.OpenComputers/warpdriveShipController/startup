@@ -646,6 +646,9 @@ function ship_register()
   w.device_register("warpdriveShipController",
       function(deviceType, address, wrap) ship = wrap end,
       function() end)
+  w.device_register("warpdriveShipCore",
+      function(deviceType, address, wrap) ship = wrap end,
+      function() end)
   w.event_register("shipCoreCooldownDone"  , function() w.status_showWarning("Ship core cooldown done")   return false end )
   w.data_register("ship", ship_read, nil, ship_name)
 end

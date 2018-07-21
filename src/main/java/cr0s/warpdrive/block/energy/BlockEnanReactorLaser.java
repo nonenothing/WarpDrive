@@ -3,7 +3,6 @@ package cr0s.warpdrive.block.energy;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
-import cr0s.warpdrive.data.EnumValidPowered;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -49,7 +48,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return (blockState.getValue(BlockProperties.ACTIVE) ? 0x8 : 0x0)
-		       | (blockState.getValue(BlockProperties.FACING).getIndex());
+		     | (blockState.getValue(BlockProperties.FACING).getIndex());
 	}
 	
 	@Nonnull
@@ -63,7 +62,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		world.setBlockState(blockPos, blockState
-		                              .withProperty(BlockProperties.FACING, EnumFacing.NORTH)
-		                              .withProperty(BlockProperties.VALID_POWERED, EnumValidPowered.INVALID));
+				                              .withProperty(BlockProperties.ACTIVE, false)
+				                              .withProperty(BlockProperties.FACING, EnumFacing.NORTH) );
 	}
 }

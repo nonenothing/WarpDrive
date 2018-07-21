@@ -1,9 +1,12 @@
 package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -15,6 +18,28 @@ public class BlockAcceleratorController extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setUnlocalizedName("warpdrive.atomic.accelerator_controller");
+		
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false));
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, BlockProperties.ACTIVE);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(final int metadata) {
+		return getDefaultState()
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
+	}
+	
+	@Override
+	public int getMetaFromState(final IBlockState blockState) {
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0);
 	}
 	
 	@Nonnull

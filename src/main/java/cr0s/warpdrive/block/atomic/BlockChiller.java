@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
@@ -10,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,11 +33,28 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		super(registryName, enumTier);
 		
 		setUnlocalizedName("warpdrive.atomic.chiller." + enumTier.getName());
+		
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false));
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, BlockProperties.ACTIVE);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(final int metadata) {
+		return getDefaultState()
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
 	}
 	
 	@Override
-	public int damageDropped(final IBlockState blockState) {
-		return 0;
+	public int getMetaFromState(final IBlockState blockState) {
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -81,7 +100,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		if (entity.isDead || !(entity instanceof EntityLivingBase)) {
 			return;
 		}
-		if (world.getBlockState(blockPos) == null) { // @TODO: add proper state handling == 0) {
+		if (!world.getBlockState(blockPos).getValue(BlockProperties.ACTIVE)) {
 			return;
 		}
 		if (!entity.isImmuneToFire()) {
@@ -105,8 +124,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(final IBlockState blockState, final World world, final BlockPos blockPos, final Random random) {
-		final int metadata = this.getMetaFromState(world.getBlockState(blockPos)); // @TODO MC1.10
-		if (metadata == 0) {
+		if (!blockState.getValue(BlockProperties.ACTIVE)) {
 			return;
 		}
 		
@@ -130,7 +148,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		                - (world.getBlockState(blockPos.down(2).south()).getBlock() == this ? 1 : 0);
 		if (world.rand.nextInt(17) < countNearby) {
 			world.playSound(null, blockPos,
-				SoundEvents.CHILLER, SoundCategory.AMBIENT, metadata == 1 ? 1.0F : 0.15F, 1.0F);
+				SoundEvents.CHILLER, SoundCategory.AMBIENT, 1.0F, 1.0F);
 		}
 		
 		// particle effect, loosely based on redstone ore
