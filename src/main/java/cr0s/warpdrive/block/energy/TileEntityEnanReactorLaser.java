@@ -23,6 +23,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
 import net.minecraftforge.fml.common.Optional;
 
@@ -55,17 +57,22 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
 		
-		final TileEntityEnanReactorCore reactorCore = getReactorCore();
-		if (reactorCore == null) {
+		if (reactorFace == EnumReactorFace.UNKNOWN) {
+			final MutableBlockPos mutableBlockPos = new MutableBlockPos(pos);
 			// laser isn't linked yet, let's try to update nearby reactors
 			for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
 				if (reactorFace.indexStability < 0) {
 					continue;
 				}
 				
-				final TileEntity tileEntity = world.getTileEntity(pos.add(- reactorFace.x, - reactorFace.y, - reactorFace.z));
-				if (tileEntity instanceof TileEntityEnanReactorCore) {
-					((TileEntityEnanReactorCore) tileEntity).onBlockUpdateDetected();
+				mutableBlockPos.setPos(pos.getX() - reactorFace.x,
+				                       pos.getY() - reactorFace.y,
+				                       pos.getZ() - reactorFace.z);
+				if (world.isBlockLoaded(mutableBlockPos, true)) {
+					final TileEntity tileEntity = world.getTileEntity(mutableBlockPos);
+					if (tileEntity instanceof TileEntityEnanReactorCore) {
+						((TileEntityEnanReactorCore) tileEntity).onBlockUpdateDetected();
+					}
 				}
 			}
 		}
@@ -95,8 +102,8 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		// refresh blockstate
 		IBlockState blockState_old = world.getBlockState(pos);
 		IBlockState blockState_new;
-		if (reactorFace.propertyLaser != null) {
-			blockState_new = blockState_old.withProperty(BlockProperties.ACTIVE, true).withProperty(BlockProperties.FACING, reactorFace.propertyLaser);
+		if (reactorFace.facingLaserProperty != null) {
+			blockState_new = blockState_old.withProperty(BlockProperties.ACTIVE, true).withProperty(BlockProperties.FACING, reactorFace.facingLaserProperty);
 		} else {
 			blockState_new = blockState_old.withProperty(BlockProperties.ACTIVE, false).withProperty(BlockProperties.FACING, EnumFacing.DOWN);
 		}
@@ -114,11 +121,15 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		}
 		TileEntityEnanReactorCore reactorCore = weakReactorCore != null ? weakReactorCore.get() : null;
 		if (reactorCore == null) {
-			final TileEntity tileEntity = world.getTileEntity(
-				pos.offset(reactorFace.facing, -1));
+			final BlockPos blockPos = pos.add(- reactorFace.x, - reactorFace.y, - reactorFace.z);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityEnanReactorCore) {
 				reactorCore = (TileEntityEnanReactorCore) tileEntity;
 				weakReactorCore = new WeakReference<>(reactorCore);
+				vReactorCore = new Vector3(reactorCore).translate(0.5);
+			} else {
+				WarpDrive.logger.error(String.format("%s Invalid TileEntityEnanReactorCore: %s",
+				                                     this, tileEntity));
 			}
 		}
 		return reactorCore;

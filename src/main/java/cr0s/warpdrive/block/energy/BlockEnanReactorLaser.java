@@ -63,6 +63,6 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		world.setBlockState(blockPos, blockState
 				                              .withProperty(BlockProperties.ACTIVE, false)
-				                              .withProperty(BlockProperties.FACING, EnumFacing.NORTH) );
+				                              .withProperty(BlockProperties.FACING, EnumFacing.DOWN) );
 	}
 }

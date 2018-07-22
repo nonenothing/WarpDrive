@@ -401,12 +401,19 @@ public class WarpDriveConfig {
 	public static int      TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS = 2;
 	public static int      TRANSPORTER_BEACON_MAX_ENERGY_STORED = 60000;
 	public static int      TRANSPORTER_BEACON_ENERGY_PER_TICK = 60000 / (300 * 20);  // 10 EU/t over 5 minutes
-	public static int      TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS = 1 * 20;
+	public static int      TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS = 20;
 	
 	// Enantiomorphic power reactor
-	public static int[]    ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER = { 100000000, 100000000, 500000000, 1000000000 };
-	public static int      ENAN_REACTOR_UPDATE_INTERVAL_TICKS = 5;
+	public static int[]    ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER = { 100000000, 100000000, 500000000, 2000000000 };
+	public static final int ENAN_REACTOR_UPDATE_INTERVAL_TICKS = 5; // hardcoded in the equations,
 	public static int      ENAN_REACTOR_MAX_LASERS_PER_SECOND = 6;
+	public static int[]    ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER = { 4, 4, 4, 4 };
+	public static int[]    ENAN_REACTOR_GENERATION_MAX_RF_BY_TIER = { 64000, 64000, 192000, 576000 };
+	public static int[]    ENAN_REACTOR_EXPLOSION_MAX_RADIUS_BY_TIER = { 6, 6, 8, 10 };
+	public static double[] ENAN_REACTOR_EXPLOSION_MAX_REMOVAL_CHANCE_BY_TIER = { 0.1D, 0.1D, 0.1D, 0.1D };
+	public static int[]    ENAN_REACTOR_EXPLOSION_COUNT_BY_TIER = { 3, 3, 3, 3 };
+	public static float[]  ENAN_REACTOR_EXPLOSION_STRENGTH_MIN_BY_TIER = { 4.0F, 4.0F, 5.0F, 6.0F };
+	public static float[]  ENAN_REACTOR_EXPLOSION_STRENGTH_MAX_BY_TIER = { 7.0F, 7.0F, 9.0F, 11.0F };
 	
 	// Subspace capacitor
 	public static int[]    CAPACITOR_MAX_ENERGY_STORED_BY_TIER = { 20000000, 800000, 4000000, 20000000 };
@@ -1045,12 +1052,16 @@ public class WarpDriveConfig {
 		
 		// Enantiomorphic reactor
 		ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER =
-				config.get("enantiomorphic_reactor", "max_energy_stored_by_tier", ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER, "Maximum energy stored for a given tier").getIntList();
+				config.get("enantiomorphic_reactor", "max_energy_stored_by_tier", ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER, "Maximum energy stored in the core for a given tier").getIntList();
 		clampByTier(1, Integer.MAX_VALUE, ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER);
-		ENAN_REACTOR_UPDATE_INTERVAL_TICKS = Commons.clamp(1, 300,
-				config.get("enantiomorphic_reactor", "update_interval_ticks", ENAN_REACTOR_UPDATE_INTERVAL_TICKS, "Update speed of the reactor simulation").getInt());
 		ENAN_REACTOR_MAX_LASERS_PER_SECOND = Commons.clamp(4, 80,
 				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabilisation laser shots per seconds before loosing efficiency").getInt());
+		ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER =
+		        config.get("enantiomorphic_reactor", "min_generation_RF_by_tier", ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER, "Minimum energy added to the core when enabled, measured in RF/t, for a given tier").getIntList();
+		clampByTier(1, Integer.MAX_VALUE, ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER);
+		ENAN_REACTOR_GENERATION_MAX_RF_BY_TIER =
+				config.get("enantiomorphic_reactor", "max_generation_RF_by_tier", ENAN_REACTOR_GENERATION_MAX_RF_BY_TIER, "Maximum energy added to the core when enabled, measured in RF/t, for a given tier").getIntList();
+		clampByTier(1, Integer.MAX_VALUE, ENAN_REACTOR_GENERATION_MAX_RF_BY_TIER);
 		
 		// Subspace capacitor
 		CAPACITOR_MAX_ENERGY_STORED_BY_TIER = config.get("capacitor", "max_energy_stored_by_tier", CAPACITOR_MAX_ENERGY_STORED_BY_TIER, "Maximum energy stored for each subspace capacitor tier").getIntList();

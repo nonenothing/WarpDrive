@@ -11,8 +11,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -58,17 +56,16 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 		return new TileEntityEnanReactorCore();
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void breakBlock(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState) {
 		super.breakBlock(world, blockPos, blockState);
 		
-		for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(enumTier)) {
 			if (reactorFace.indexStability < 0) {
 				continue;
 			}
 			
-			final TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos.add(reactorFace.x, reactorFace.y, reactorFace.z));
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
 				if (((TileEntityEnanReactorLaser) tileEntity).getReactorFace() == reactorFace) {
 					((TileEntityEnanReactorLaser) tileEntity).setReactorFace(EnumReactorFace.UNKNOWN, null);
