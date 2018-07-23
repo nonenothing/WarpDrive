@@ -158,12 +158,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	private WarpDriveText getEnergyStatus() {
-		if (energy_getMaxStorage() == 0) {
+		final int energy_maxStorage = energy_getMaxStorage();
+		if (energy_maxStorage == 0) {
 			return new WarpDriveText();
 		}
 		return new WarpDriveText(null, "warpdrive.energy.status_line",
 			Commons.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
-			Commons.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
+			Commons.format((long) convertInternalToEU_floor(energy_maxStorage)) );
 	}
 	
 	@Override
