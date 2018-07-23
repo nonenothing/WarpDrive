@@ -10,8 +10,10 @@ import cr0s.warpdrive.render.*;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -88,6 +90,20 @@ public class ClientProxy extends CommonProxy {
 		final Item item = itemStack.getItem();
 		ResourceLocation resourceLocation = item.getRegistryName();
 		assert resourceLocation != null;
+		
+		// reuse blockstate rendering for ItemBlocks
+		if (item instanceof ItemBlock) {
+			final int damage = itemStack.getItemDamage();
+			if (damage < 0 || damage > 15) {
+				throw new IllegalArgumentException(String.format("Invalid damage %d for %s",
+				                                                 damage, itemStack.getItem()));
+			}
+			final Block block = ((ItemBlock) item).getBlock();
+			final String variant = block.getStateFromMeta(damage).toString().split("[\\[\\]]")[1];
+			return new ModelResourceLocation(resourceLocation, variant);
+		}
+		
+		// use damage value as suffix for pure items
 		if (item.getHasSubtypes()) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + itemStack.getItemDamage());
 		}

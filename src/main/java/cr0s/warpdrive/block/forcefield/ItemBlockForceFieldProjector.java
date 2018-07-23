@@ -27,20 +27,8 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
-		final String stringVariant = "inventory";
-/*		if (itemStack.hasTagCompound() && itemStack.getTagCompound() != null) {
-			final NBTTagCompound tagCompound = itemStack.getTagCompound();
-			stringVariant = "facing=" + (tagCompound.getBoolean("isDoubleSided") ? "east" : "north")
-					+ ",is_double_sided=false"
-					+ "state=connected_powered,shape=" + EnumForceFieldShape.get(tagCompound.getByte("shape")).getName();
-		} else {
-			if (damage >= 0 && damage < 2) {
-				stringVariant = "facing=" + (damage == 1 ? "east" : "north")
-						+ ",is_double_sided=false"
-						+ ",state=connected_powered,shape=" + EnumForceFieldShape.NONE.getName();
-			}
-		}/**/
-		return new ModelResourceLocation(resourceLocation, stringVariant);
+		final String variant = "inventory";
+		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	
 	@Nonnull

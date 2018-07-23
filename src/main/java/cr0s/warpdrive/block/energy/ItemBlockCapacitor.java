@@ -33,7 +33,7 @@ public class ItemBlockCapacitor extends ItemBlockAbstractBase {
 		}
 		final ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
-		final String variant = block.getStateFromMeta(damage).toString().split("[\\[\\]]")[1];
+		final String variant = "inventory";
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 }
