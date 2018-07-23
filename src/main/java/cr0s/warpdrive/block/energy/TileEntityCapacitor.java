@@ -162,9 +162,15 @@ public class TileEntityCapacitor extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String toString() {
-		return String.format("%s %s %8d",
-		                     getClass().getSimpleName(),
-		                     Commons.format(world, pos),
-		                     energy_getEnergyStored());
+		if (enumTier == null) {
+			return String.format("%s %s",
+			                     getClass().getSimpleName(),
+			                     Commons.format(world, pos));
+		} else {
+			return String.format("%s %s %8d",
+			                     getClass().getSimpleName(),
+			                     Commons.format(world, pos),
+			                     energy_getEnergyStored());
+		}
 	}
 }
