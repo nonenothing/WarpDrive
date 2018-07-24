@@ -15,10 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	ItemBlockHull(final Block block) {
-		super(block);
-		
-		setMaxDamage(0);
-		setHasSubtypes(true);
+		super(block, true, false);
 	}
 	
 	@Nonnull

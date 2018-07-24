@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.forcefield;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -143,7 +144,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
-		return new ItemBlockForceField(this);
+		return new ItemBlockAbstractBase(this, true, true);
 	}
 	
 	@Override

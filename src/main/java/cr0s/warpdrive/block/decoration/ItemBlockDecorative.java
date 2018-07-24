@@ -10,9 +10,7 @@ import javax.annotation.Nonnull;
 public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	
 	public ItemBlockDecorative(final Block block) {
-		super(block);
-		
-		setHasSubtypes(true);
+		super(block, true, false);
 	}
 	
 	@Nonnull

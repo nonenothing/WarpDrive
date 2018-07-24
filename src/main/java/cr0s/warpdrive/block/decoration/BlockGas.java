@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.decoration;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumGasColor;
 import cr0s.warpdrive.data.EnumTier;
@@ -66,7 +67,7 @@ public class BlockGas extends BlockAbstractBase {
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
-		return new ItemBlockGas(this);
+		return new ItemBlockAbstractBase(this, true, false);
 	}
 	
 	@Override

@@ -69,7 +69,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
-		return new ItemBlockAbstractBase(this);
+		return new ItemBlockAbstractBase(this, false, true);
 	}
 	
 	@SideOnly(Side.CLIENT)

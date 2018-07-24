@@ -30,7 +30,7 @@ import java.util.UUID;
 public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements IItemTransporterBeacon {
 	
 	public ItemBlockTransporterBeacon(final Block block) {
-		super(block);
+		super(block, false, false);
 		
 		setMaxStackSize(1);
 		setMaxDamage(100 * 8);

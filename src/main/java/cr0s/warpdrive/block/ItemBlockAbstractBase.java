@@ -35,12 +35,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
+	final boolean hasUniqueName;
+	
 	// warning: ItemBlock is created during registration, while block is still being constructed.
 	// As such, we can't use block properties from constructor
-	public ItemBlockAbstractBase(final Block block) {
+	public ItemBlockAbstractBase(final Block block, final boolean hasSubtypes, final boolean hasUniqueName) {
 		super(block);
 		
+		setHasSubtypes(hasSubtypes);
 		setUnlocalizedName(block.getUnlocalizedName());
+		this.hasUniqueName = hasUniqueName;
 	}
 	
 	@Override
@@ -51,7 +55,8 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(final ItemStack itemStack) {
-		if ( itemStack == null 
+		if ( hasUniqueName
+		  || itemStack == null
 		  || !(block instanceof BlockAbstractContainer)
 		  || !((BlockAbstractContainer) block).hasSubBlocks ) {
 			return getUnlocalizedName();
