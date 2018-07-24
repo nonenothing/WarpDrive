@@ -11,5 +11,6 @@ public class BlockProperties {
 	public static final PropertyDirection              FACING        = PropertyDirection.create("facing");
 	public static final UnlistedPropertyBlockState     CAMOUFLAGE    = new UnlistedPropertyBlockState("camouflage");
 	public static final PropertyEnum<EnumValidPowered> VALID_POWERED = PropertyEnum.create("valid_powered", EnumValidPowered.class);
+	public static final PropertyEnum<EnumFrameType>    FRAME         = PropertyEnum.create("frame", EnumFrameType.class);
 	
 }

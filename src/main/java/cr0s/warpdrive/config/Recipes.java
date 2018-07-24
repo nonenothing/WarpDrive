@@ -16,6 +16,7 @@ import cr0s.warpdrive.item.ItemTuningDriver;
 
 import java.util.Map.Entry;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.EnumDyeColor;
 
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -1104,6 +1105,45 @@ public class Recipes {
 		                                       'R', WarpDrive.blockEnanReactorCore[2],
 		                                       'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 		                                       'S', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR) ));
+		
+		// Enantiomorphic reactor frame is 1 Hull block, 4 Iron bars, gives 4
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[1], 4, 0), false, " b ", "bhb", " b ",
+		                                       'h', "blockHull1_plain",
+		                                       'b', ironBars ));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[2], 4, 0), false, " b ", "bhb", " b ",
+		                                       'h', "blockHull2_plain",
+		                                       'b', ironBars ));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[3], 4, 0), false, " b ", "bhb", " b ",
+		                                       'h', "blockHull3_plain",
+		                                       'b', ironBars ));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[1], 4, 0), false, " b ", "bhb", " b ",
+		                                       'h', "blockHull1_glass",
+		                                       'b', ironBars ));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[2], 4, 0), false, " b ", "bhb", " b ",
+		                                       'h', "blockHull2_glass",
+		                                       'b', ironBars ));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[3], 4, 0), false, " b ", "bhb", " b ",
+		                                       'h', "blockHull3_glass",
+		                                       'b', ironBars ));
+		
+		// Enantiomorphic reactor frame symbols are from dies
+		for (final EnumTier enumTier : EnumTier.nonCreative()) {
+			final Block blockFrame = WarpDrive.blockEnanReactorFramePlain[enumTier.getIndex()];
+			WarpDrive.register(new ShapedOreRecipe(groupMachines,
+			                                       new ItemStack(blockFrame, 1, 1), false, " y ", " f ", "y y",
+			                                       'f', blockFrame,
+			                                       'y', "dyeYellow" ));
+			WarpDrive.register(new ShapedOreRecipe(groupMachines,
+			                                       new ItemStack(blockFrame, 1, 2), false, " y ", "yf ", " y ",
+			                                       'f', blockFrame,
+			                                       'y', "dyeYellow" ));
+		}
 		
 		// Enantiomorphic reactor stabilization laser is 1 HV Machine casing, 2 Advanced hull, 1 Computer interface, 1 Power interface, 1 Lense, 1 Redstone, 2 glass pane
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
