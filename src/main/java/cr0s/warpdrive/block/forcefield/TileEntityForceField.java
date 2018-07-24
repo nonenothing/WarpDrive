@@ -31,7 +31,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	// number of projectors check ignored before self-destruction
 	private int gracePeriod_calls = 3;
 	
-	TileEntityForceField() {
+	public TileEntityForceField() {
 		super();
 	}
 	
