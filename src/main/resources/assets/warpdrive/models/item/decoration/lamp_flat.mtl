@@ -5,5 +5,5 @@
 newmtl txt_lamp_flat
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
-d 0.100000
+d 1.000000
 map_Kd warpdrive:blocks/decoration/lamp_flat

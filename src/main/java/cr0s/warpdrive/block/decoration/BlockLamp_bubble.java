@@ -4,11 +4,15 @@ import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nonnull;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockLamp_bubble extends BlockAbstractLamp {
 	
@@ -36,5 +40,18 @@ public class BlockLamp_bubble extends BlockAbstractLamp {
 			case EAST : return AABB_EAST ;
 			default   : return AABB_UP;
 		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isTranslucent(final IBlockState state) {
+		return true;
+	}
+	
+	@Nonnull
+	@SideOnly(Side.CLIENT)
+	@Override
+	public BlockRenderLayer getBlockLayer() {
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 }
