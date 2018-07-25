@@ -2,22 +2,15 @@ package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.computer.IEnanReactorCore;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumReactorFace;
-import cr0s.warpdrive.data.EnumReactorReleaseMode;
+import cr0s.warpdrive.data.EnumReactorOutputMode;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -26,9 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
-import net.minecraftforge.fml.common.Optional;
-
-public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implements IEnanReactorCore {
+public class TileEntityEnanReactorCore extends TileEntityEnanReactorController {
 	
 	private static final int ENAN_REACTOR_SETUP_TICKS = 1200;
 	
@@ -47,9 +38,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	// persistent properties
 	private boolean isEnabled = false;
-	private EnumReactorReleaseMode releaseMode = EnumReactorReleaseMode.OFF;
-	private int releaseRate = 0;
-	private int releaseAbove = 0;
+	private EnumReactorOutputMode enumReactorOutputMode = EnumReactorOutputMode.OFF;
+	private int outputThreshold = 0;
 	private double instabilityTarget = 50.0D;
 	private int stabilizerEnergy = 10000;
 	
@@ -68,22 +58,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	private int lastGenerationRate = 0;
 	private int releasedThisTick = 0; // amount of energy released during current tick update
 	private long releasedThisCycle = 0; // amount of energy released during current cycle
-	private long releasedLastCycle = 0;
+	private long energyReleasedLastCycle = 0;
 	
 	public TileEntityEnanReactorCore() {
 		super();
 		
 		peripheralName = "warpdriveEnanReactorCore";
-		addMethods(new String[] {
-			"instability",	// returns ins0,1,2,3
-			"instabilityTarget",
-			"release",		// releases all energy
-			"releaseRate",	// releases energy when more than arg0 is produced
-			"releaseAbove",	// releases any energy above arg0 amount
-			"stabilizerEnergy",
-			"state"
-		});
-		CC_scripts = Collections.singletonList("startup");
 	}
 	
 	@Override
@@ -126,10 +106,10 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			return;
 		}
 		updateTicks = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS;
-		releasedLastCycle = releasedThisCycle;
+		energyReleasedLastCycle = releasedThisCycle;
 		releasedThisCycle = 0;
 		
-		updateMetadata();
+		refreshBlockState();
 		
 		if (!hold) {// still loading/booting => hold simulation
 			// unstable at all time
@@ -323,7 +303,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 	}
 	
-	private void updateMetadata() {
+	private void refreshBlockState() {
 		double maxInstability = 0.0D;
 		for (final Double instability : instabilityValues) {
 			if (instability > maxInstability) {
@@ -396,15 +376,17 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	// Common OC/CC methods
 	@Override
-	}
-	
-	@Override
 	public Object[] energy() {
-		return new Object[] { containedEnergy, energyStored_max, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
+		return new Object[] { containedEnergy, energyStored_max, energyReleasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
 	}
 	
 	@Override
-	public Object[] instability() {
+	public Object[] isAssemblyValid() {
+		return null; // @TODO isAssemblyValid()
+	}
+	
+	@Override
+	public Double[] getInstability() {
 		// computer is alive => start updating reactor
 		hold = false;
 		
@@ -412,11 +394,11 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(enumTier)) {
 			result.add(reactorFace.indexStability, instabilityValues[reactorFace.indexStability]);
 		}
-		return result.toArray();
+		return result.toArray(new Double[0]);
 	}
 	
 	@Override
-	public Object[] instabilityTarget(final Object[] arguments) {
+	public Double[] instabilityTarget(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			final double instabilityTargetRequested;
 			try {
@@ -426,83 +408,48 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 					WarpDrive.logger.error(String.format("%s LUA error on instabilityTarget(): Double expected for 1st argument %s",
 					                                     this, arguments[0]));
 				}
-				return new Object[] { instabilityTarget };
+				return new Double[] { instabilityTarget };
 			}
 			
 			instabilityTarget = Commons.clamp(0.0D, 100.0D, instabilityTargetRequested);
 		}
-		return new Object[] { instabilityTarget };
+		return new Double[] { instabilityTarget };
 	}
 	
 	@Override
-	public Object[] release(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final boolean releaseRequested;
+	public Object[] outputMode(final Object[] arguments) {
+		if ( arguments.length == 2
+		  && arguments[0] != null ) {
+			final EnumReactorOutputMode enumReactorOutputModeRequested;
 			try {
-				releaseRequested = Commons.toBool(arguments[0]);
-			} catch (final Exception exception) {
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(String.format("%s LUA error on release(): Boolean expected for 1st argument %s",
-					                                     this, arguments[0]));
+				enumReactorOutputModeRequested = EnumReactorOutputMode.byName(arguments[0].toString());
+				if (enumReactorOutputModeRequested == null) {
+					throw new NullPointerException();
 				}
-				return new Object[] { releaseMode != EnumReactorReleaseMode.OFF };
+			} catch (final Exception exception) {
+				final String message = String.format("%s LUA error on outputMode(): enum(%s) expected for 1st argument %s",
+				                                     this, Arrays.toString(EnumReactorOutputMode.values()), arguments[0]);
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(message);
+				}
+				return new Object[] { enumReactorOutputMode.getName(), outputThreshold };
 			}
 			
-			releaseMode = releaseRequested ? EnumReactorReleaseMode.UNLIMITED : EnumReactorReleaseMode.OFF;
-			releaseAbove = 0;
-			releaseRate = 0;
-		}
-		return new Object[] { releaseMode != EnumReactorReleaseMode.OFF };
-	}
-	
-	@Override
-	public Object[] releaseRate(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final int releaseRateRequested;
+			final int outputThresholdRequested;
 			try {
-				releaseRateRequested = Commons.toInt(arguments[0]);
+				outputThresholdRequested = Commons.toInt(arguments[1]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(String.format("%s LUA error on releaseRate(): Integer expected for 1st argument %s",
+					WarpDrive.logger.error(String.format("%s LUA error on outputMode(): integer expected for 2nd argument %s",
 					                                     this, arguments[0]));
 				}
-				return new Object[] { releaseMode.getName(), releaseRate };
+				return new Object[] { enumReactorOutputMode.getName(), outputThreshold };
 			}
 			
-			if (releaseRateRequested <= 0) {
-				releaseMode = EnumReactorReleaseMode.OFF;
-				releaseRate = 0;
-			} else {
-				// player has to adjust it
-				releaseRate = releaseRateRequested;
-				releaseMode = EnumReactorReleaseMode.AT_RATE;
-			}
+			enumReactorOutputMode = enumReactorOutputModeRequested;
+			outputThreshold = outputThresholdRequested;
 		}
-		return new Object[] { releaseMode.getName(), releaseRate };
-	}
-	
-	@Override
-	public Object[] releaseAbove(final Object[] arguments) {
-		final int releaseAboveRequested;
-		try {
-			releaseAboveRequested = Commons.toInt(arguments[0]);
-		} catch (final Exception exception) {
-			if (WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.error(String.format("%s LUA error on releaseAbove(): Integer expected for 1st argument %s",
-				                                     this, arguments[0]));
-			}
-			return new Object[] { releaseMode.getName(), releaseAbove };
-		}
-		
-		if (releaseAboveRequested <= 0) {
-			releaseMode = EnumReactorReleaseMode.OFF;
-			releaseAbove = 0;
-		} else {
-			releaseMode = EnumReactorReleaseMode.ABOVE;
-			releaseAbove = releaseAboveRequested;
-		}
-		
-		return new Object[] { releaseMode.getName(), releaseAbove };
+		return new Object[] { enumReactorOutputMode.getName(), outputThreshold };
 	}
 	
 	@Override
@@ -527,96 +474,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public Object[] state() {
 		final String status = getStatusHeaderInPureText();
-		if (releaseMode == EnumReactorReleaseMode.OFF || releaseMode == EnumReactorReleaseMode.UNLIMITED) {
-			return new Object[] { status, isEnabled, containedEnergy, releaseMode.getName(), 0 };
-		} else if (releaseMode == EnumReactorReleaseMode.ABOVE) {
-			return new Object[] { status, isEnabled, containedEnergy, releaseMode.getName(), releaseAbove };
-		} else {
-			return new Object[] { status, isEnabled, containedEnergy, releaseMode.getName(), releaseRate };
-		}
-	}
-	
-	// OpenComputer callback methods
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] instability(final Context context, final Arguments arguments) {
-		return instability();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] instabilityTarget(final Context context, final Arguments arguments) {
-		return instabilityTarget(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] release(final Context context, final Arguments arguments) {
-		return release(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] releaseRate(final Context context, final Arguments arguments) {
-		return releaseRate(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] releaseAbove(final Context context, final Arguments arguments) {
-		return releaseAbove(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] stabilizerEnergy(final Context context, final Arguments arguments) {
-		return stabilizerEnergy(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] state(final Context context, final Arguments arguments) {
-		return state();
-	}
-	
-	// ComputerCraft IPeripheral methods implementation
-	@Override
-	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
-		// computer is alive => start updating reactor
-		hold = false;
-		
-		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
-		
-		try {
-			switch (methodName) {
-			case "instability":
-				return instability();
-				
-			case "instabilityTarget":
-				return instabilityTarget(arguments);
-				
-			case "release":
-				return release(arguments);
-				
-			case "releaseRate":
-				return releaseRate(arguments);
-				
-			case "releaseAbove":
-				return releaseAbove(arguments);
-				
-			case "stabilizerEnergy":
-				return stabilizerEnergy(arguments);
-				
-			case "state":
-				return state();
-			}
-		} catch (final Exception exception) {
-			exception.printStackTrace();
-			return new String[] { exception.getMessage() };
-		}
-		
-		return super.callMethod(computer, context, method, arguments);
+		return new Object[] { status, isEnabled, containedEnergy, enumReactorOutputMode.getName(), outputThreshold };
 	}
 	
 	// POWER INTERFACES
@@ -625,22 +483,25 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		if (hold) {// still loading/booting => hold output
 			return 0;
 		}
-		int result = 0;
+		
+		// restrict max output rate to twice the generation
 		final int capacity = Math.max(0, 2 * lastGenerationRate - releasedThisTick);
-		if (releaseMode == EnumReactorReleaseMode.UNLIMITED) {
+		
+		int result = 0;
+		if (enumReactorOutputMode == EnumReactorOutputMode.UNLIMITED) {
 			result = Math.min(Math.max(0, containedEnergy), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info(String.format("PotentialOutput Manual %d RF (%d internal) capacity %d",
 				                                    result, convertRFtoInternal_floor(result), capacity));
 			}
-		} else if (releaseMode == EnumReactorReleaseMode.ABOVE) {
-			result = Math.min(Math.max(0, containedEnergy - releaseAbove), capacity);
+		} else if (enumReactorOutputMode == EnumReactorOutputMode.ABOVE) {
+			result = Math.min(Math.max(0, lastGenerationRate - outputThreshold), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info(String.format("PotentialOutput Above %d RF (%d internal) capacity %d",
 				                                    result, convertRFtoInternal_floor(result), capacity));
 			}
-		} else if (releaseMode == EnumReactorReleaseMode.AT_RATE) {
-			final int remainingRate = Math.max(0, releaseRate - releasedThisTick);
+		} else if (enumReactorOutputMode == EnumReactorOutputMode.AT_RATE) {
+			final int remainingRate = Math.max(0, outputThreshold - releasedThisTick);
 			result = Math.min(Math.max(0, containedEnergy), Math.min(remainingRate, capacity));
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info(String.format("PotentialOutput Rated %d RF (%d internal) remainingRate %d RF/t capacity %d",
@@ -686,9 +547,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
 		
-		tagCompound.setInteger("releaseMode", releaseMode.ordinal());
-		tagCompound.setInteger("releaseRate", releaseRate);
-		tagCompound.setInteger("releaseAbove", releaseAbove);
+		tagCompound.setString("outputMode", enumReactorOutputMode.getName());
+		tagCompound.setInteger("outputThreshold", outputThreshold);
 		tagCompound.setDouble("instabilityTarget", instabilityTarget);
 		tagCompound.setInteger("stabilizerEnergy", stabilizerEnergy);
 		
@@ -705,9 +565,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		
-		releaseMode = EnumReactorReleaseMode.get(tagCompound.getInteger("releaseMode"));
-		releaseRate = tagCompound.getInteger("releaseRate");
-		releaseAbove = tagCompound.getInteger("releaseAbove");
+		enumReactorOutputMode = EnumReactorOutputMode.byName(tagCompound.getString("outputMode"));
+		outputThreshold = tagCompound.getInteger("outputThreshold");
 		instabilityTarget = tagCompound.getDouble("instabilityTarget");
 		stabilizerEnergy = tagCompound.getInteger("stabilizerEnergy");
 		
@@ -727,9 +586,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeItemDropNBT(tagCompound);
-		tagCompound.removeTag("releaseMode");
-		tagCompound.removeTag("releaseRate");
-		tagCompound.removeTag("releaseAbove");
+		
+		tagCompound.removeTag("outputMode");
+		tagCompound.removeTag("outputThreshold");
 		tagCompound.removeTag("instabilityTarget");
 		tagCompound.removeTag("stabilizerEnergy");
 		
