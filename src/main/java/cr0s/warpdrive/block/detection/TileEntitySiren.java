@@ -21,10 +21,10 @@ public class TileEntitySiren extends TileEntityAbstractMachine {
 	// (none)
 	
 	// computed properties
-	private EnumSirenState state = EnumSirenState.STOPPED;
+	private EnumSirenState enumSirenState = EnumSirenState.STOPPED;
 	private boolean isIndustrial = false;
 	private float range = 0.0F;
-	private int timeToLastUpdate = 0;
+	private int tickUpdate = 0;
 	
 	@SideOnly(Side.CLIENT)
 	private SirenSound sound;
@@ -52,69 +52,70 @@ public class TileEntitySiren extends TileEntityAbstractMachine {
 		 * It's less responsive like this, but doesn't completely freak out when
 		 * spamming the redstone on and off. */
 		
-		if (this.timeToLastUpdate <= 0) {
-			this.timeToLastUpdate = 10;
+		tickUpdate--;
+		if (tickUpdate <= 0) {
+			tickUpdate = 10;
 		} else {
-			this.timeToLastUpdate--;
 			return;
 		}
         
-		if (!hasWorld() || !world.isRemote) {
+		if ( world == null
+		  || !world.isRemote ) {
 		    return;
         }
 		if (sound == null) {
 		    setSound();
         }
-
+		
 		// Siren sound logic.
-		switch (this.state) {
-			case STOPPED:
-				if (this.isPlaying()) {
-					this.state = EnumSirenState.STOPPING;
-				}
-				if (this.isPowered()) {
-					this.state = EnumSirenState.STARTING;
-				}
-				break;
-            
-			case STARTING:
-				if (this.startSound()) {
-					this.state = EnumSirenState.STARTED;
-				} else {
-					this.state = EnumSirenState.STOPPING;
-				}
-				break;
-            
-			case STARTED:
-				if (!this.isPowered()) {
-					this.state = EnumSirenState.STOPPING;
-				} else if (!this.isPlaying()) {
-					this.state = EnumSirenState.STARTING;
-				}
-				break;
-            
-			case STOPPING:
-				if (this.isPlaying()) {
-					this.stopSound();
-				} else {
-					this.state = EnumSirenState.STOPPED;
-				}
-				break;
-            
-			default:
-				if (this.isPlaying()) {
-					this.state = EnumSirenState.STOPPING;
-				} else {
-					this.state = EnumSirenState.STOPPED;
-				}
-				break;
+		switch (enumSirenState) {
+		case STOPPED:
+			if (isPlaying()) {// (recover)
+				enumSirenState = EnumSirenState.STOPPING;
+			} else if (isPowered()) {
+				enumSirenState = EnumSirenState.STARTING;
+			}
+			break;
+			
+		case STARTING:
+			if (startSound()) {
+				enumSirenState = EnumSirenState.STARTED;
+			} else {
+				enumSirenState = EnumSirenState.STOPPING;
+			}
+			break;
+			
+		case STARTED:
+			if (!isPowered()) {
+				enumSirenState = EnumSirenState.STOPPING;
+			} else if (!isPlaying()) {
+				enumSirenState = EnumSirenState.STARTING;
+			}
+			break;
+			
+		case STOPPING:
+			if (isPlaying()) {
+				stopSound();
+			} else {
+				enumSirenState = EnumSirenState.STOPPED;
+			}
+			break;
+   
+		default:
+			if (isPlaying()) {
+				enumSirenState = EnumSirenState.STOPPING;
+			} else {
+				enumSirenState = EnumSirenState.STOPPED;
+			}
+			break;
 		}
 	}
     
 	// Stops the siren when the chunk is unloaded.
 	@Override
 	public void onChunkUnload() {
-		if (world.isRemote && this.isPlaying()) {
+		if ( world.isRemote
+		  && isPlaying() ) {
 		    stopSound();
         }
 		super.onChunkUnload();
@@ -142,7 +143,7 @@ public class TileEntitySiren extends TileEntityAbstractMachine {
 			try {
 				Minecraft.getMinecraft().getSoundHandler().playSound(sound);
 				return true;
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException exception) {
 				return false;
 			}
 		} else {
