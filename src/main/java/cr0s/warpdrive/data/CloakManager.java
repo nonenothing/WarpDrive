@@ -4,6 +4,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.state.IBlockState;
@@ -80,11 +81,10 @@ public class CloakManager {
 	}
 	
 	public void updateCloakedArea(
-			final World world,
-			final int dimensionId, final BlockPos blockPosCore, final byte tier,
+			@Nonnull final World world, @Nonnull final BlockPos blockPosCore, final boolean isFullyTransparent,
 			final int minX, final int minY, final int minZ,
 			final int maxX, final int maxY, final int maxZ) {
-		final CloakedArea newArea = new CloakedArea(world, dimensionId, blockPosCore, tier, minX, minY, minZ, maxX, maxY, maxZ);
+		final CloakedArea newArea = new CloakedArea(world, world.provider.getDimension(), blockPosCore, isFullyTransparent, minX, minY, minZ, maxX, maxY, maxZ);
 		
 		// find existing one
 		for (final CloakedArea area : cloaks) {

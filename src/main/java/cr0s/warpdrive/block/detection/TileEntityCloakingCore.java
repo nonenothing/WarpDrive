@@ -7,6 +7,7 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CloakedArea;
+import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -21,7 +22,6 @@ import java.util.Arrays;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -37,7 +37,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 	private static final int LASER_REFRESH_TICKS = 100;
 	private static final int LASER_DURATION_TICKS = 110;
 	
-	public byte tier = 1; // cloaking field tier, 1 or 2
+	public boolean isFullyTransparent = false;
 	
 	// inner coils color map
 	private final float[] innerCoilColor_r = { 1.00f, 1.00f, 1.00f, 1.00f, 0.75f, 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f };
@@ -70,10 +70,10 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 		
 		peripheralName = "warpdriveCloakingCore";
 		addMethods(new String[] {
-			"tier",				// set field tier to 1 or 2, return field tier
-			"isAssemblyValid",	// returns true or false
 		});
-		CC_scripts = Arrays.asList("cloak1", "cloak2", "uncloak");
+		CC_scripts = Arrays.asList("enable", "disable");
+		
+		setUpgradeMaxCount(EnumComponentType.DIAMOND_CRYSTAL, 1);
 	}
 	
 	@Override
@@ -95,7 +95,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 		
 		updateTicks--;
 		if (updateTicks <= 0) {
-			updateTicks = ((tier == 1) ? 20 : (tier == 2) ? 10 : 20) * WarpDriveConfig.CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS; // resetting timer
+			isFullyTransparent = hasUpgrade(EnumComponentType.DIAMOND_CRYSTAL);
+			updateTicks = ((!isFullyTransparent) ? 20 : 10) * WarpDriveConfig.CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS; // resetting timer
 			
 			isRefreshNeeded = validateAssembly();
 			
@@ -123,9 +124,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 						isRefreshNeeded = true;
 						
 						// Register cloak
-						WarpDrive.cloaks.updateCloakedArea(world,
-								world.provider.getDimension(), pos, tier,
-								minX, minY, minZ, maxX, maxY, maxZ);
+						WarpDrive.cloaks.updateCloakedArea(world, pos, isFullyTransparent,
+						                                   minX, minY, minZ, maxX, maxY, maxZ);
 						if (!soundPlayed) {
 							soundPlayed = true;
 							world.playSound(null, pos, SoundEvents.CLOAK, SoundCategory.BLOCKS, 4F, 1F);
@@ -157,9 +157,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 					} else {// enabled, cloaking and valid
 						if (hasEnoughPower) {// enabled, cloaking and able to
 							if (isRefreshNeeded) {
-								WarpDrive.cloaks.updateCloakedArea(world,
-										world.provider.getDimension(), pos, tier,
-										minX, minY, minZ, maxX, maxY, maxZ);
+								WarpDrive.cloaks.updateCloakedArea(world, pos, isFullyTransparent,
+								                                   minX, minY, minZ, maxX, maxY, maxZ);
 							}
 							
 							// IDLE
@@ -221,18 +220,18 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 	}
 	
 	private void drawLasers() {
-		float r = 0.0f;
-		float g = 1.0f;
-		float b = 0.0f;
+		float r;
+		float g;
+		float b;
 		if (!isCloaking) {// out of energy
 			r = 0.75f;
 			g = 0.50f;
 			b = 0.50f;
-		} else if (tier == 1) {
+		} else if (!isFullyTransparent) {
 			r = 0.00f;
 			g = 1.00f;
 			b = 0.25f;
-		} else if (tier == 2) {
+		} else {
 			r = 0.00f;
 			g = 0.25f;
 			b = 1.00f;
@@ -306,7 +305,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 		final int energyRequired_new;
 		int volume_new = 0;
 		final MutableBlockPos mutableBlockPos = new MutableBlockPos(pos);
-		if (tier == 1) {// tier1 = gaz and air blocks don't count
+		if (!isFullyTransparent) {// partial transparency = gaz and air blocks don't count
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
 					for (z = minZ; z <= maxZ; z++) {
@@ -318,7 +317,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 				}
 			}
 			energyRequired_new = volume_new * WarpDriveConfig.CLOAKING_TIER1_ENERGY_PER_BLOCK;
-		} else {// tier2 = everything counts
+		} else {// full transparency = everything counts
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
 					for (z = minZ; z <= maxZ; z++) {
@@ -339,20 +338,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 			WarpDrive.logger.info(String.format("%s Requiring %d EU for %d blocks",
 			                                    this, energyRequired, volume));
 		}
-	}
-	
-	@Override
-	public void readFromNBT(final NBTTagCompound tagCompound) {
-		super.readFromNBT(tagCompound);
-		tier = tagCompound.getByte("tier");
-	}
-	
-	@Nonnull
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-		tagCompound = super.writeToNBT(tagCompound);
-		tagCompound.setByte("tier", tier);
-		return tagCompound;
 	}
 	
 	public boolean validateAssembly() {
@@ -462,39 +447,21 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 			textStatus = textValidityIssues;
 		} else if (!isEnabled) {
 			textStatus = new WarpDriveText(null, "warpdrive.cloaking_core.disabled",
-					tier,
-					volume);
+			                               isFullyTransparent ? 2 : 1,
+			                               volume);
 		} else if (!isCloaking) {
 			textStatus = new WarpDriveText(Commons.styleWarning, "warpdrive.cloaking_core.low_power",
-					tier,
-					volume);
+			                               isFullyTransparent ? 2 : 1,
+			                               volume);
 		} else {
 			textStatus = new WarpDriveText(Commons.styleCorrect, "warpdrive.cloaking_core.cloaking",
-			                               tier,
+			                               isFullyTransparent ? 2 : 1,
 			                               volume);
 		}
 		return super.getStatusHeader().append(textStatus);
 	}
 	
 	// Common OC/CC methods
-	public Object[] tier(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final int tier_new;
-			try {
-				tier_new = Commons.toInt(arguments[0]);
-			} catch (final Exception exception) {
-				return new Integer[] { (int) tier };
-			}
-			if (tier_new == 2) {
-				tier = 2;
-			} else {
-				tier = 1;
-			}
-			markDirty();
-		}
-		return new Integer[] { (int) tier };
-	}
-	
 	@Override
 	public Object[] getEnergyRequired() {
 		final int updateRate = ((!isFullyTransparent) ? 20 : 10) * WarpDriveConfig.CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS;
@@ -508,12 +475,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] tier(final Context context, final Arguments arguments) {
-		return tier(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] isAssemblyValid(final Context context, final Arguments arguments) {
 		return isAssemblyValid();
 	}
@@ -525,9 +486,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
-		case "tier":
-			return tier(arguments);
-			
 		case "isAssemblyValid":
 			return isAssemblyValid();
 		}

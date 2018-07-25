@@ -16,6 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMessage> {
+	
 	private int coreX;
 	private int coreY;
 	private int coreZ;
@@ -25,7 +26,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	private int maxX;
 	private int maxY;
 	private int maxZ;
-	private byte tier;
+	private boolean isFullyTransparent;
 	private boolean isUncloaking;
 
 	@SuppressWarnings("unused")
@@ -43,7 +44,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		this.maxX = area.maxX;
 		this.maxY = area.maxY;
 		this.maxZ = area.maxZ;
-		this.tier = area.tier;
+		this.isFullyTransparent = area.isFullyTransparent;
 		this.isUncloaking = isUncloaking;
 	}
 	
@@ -58,8 +59,8 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		maxX = buffer.readInt();
 		maxY = buffer.readInt();
 		maxZ = buffer.readInt();
+		isFullyTransparent = buffer.readBoolean();
 		isUncloaking = buffer.readBoolean();
-		tier = buffer.readByte();
 	}
 
 	@Override
@@ -73,8 +74,8 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		buffer.writeInt(maxX);
 		buffer.writeInt(maxY);
 		buffer.writeInt(maxZ);
+		buffer.writeBoolean(isFullyTransparent);
 		buffer.writeBoolean(isUncloaking);
-		buffer.writeByte(tier);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -84,7 +85,8 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 			WarpDrive.cloaks.removeCloakedArea(player.world.provider.getDimension(), new BlockPos(coreX, coreY, coreZ));
 		} else { 
 			// Hide the area
-			WarpDrive.cloaks.updateCloakedArea(player.world, player.world.provider.getDimension(), new BlockPos(coreX, coreY, coreZ), tier, minX, minY, minZ, maxX, maxY, maxZ);
+			WarpDrive.cloaks.updateCloakedArea(player.world, new BlockPos(coreX, coreY, coreZ), isFullyTransparent,
+			                                   minX, minY, minZ, maxX, maxY, maxZ);
 		}
 	}
 	
@@ -101,7 +103,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 			WarpDrive.logger.info(String.format("Received cloak packet: %s area (%d %d %d) -> (%d %d %d) tier %d",
 			                                    ((cloakMessage.isUncloaking) ? "UNCLOAKING" : "cloaking"),
 			                                    cloakMessage.minX, cloakMessage.minY, cloakMessage.minZ,
-			                                    cloakMessage.maxX, cloakMessage.maxY, cloakMessage.maxZ, cloakMessage.tier));
+			                                    cloakMessage.maxX, cloakMessage.maxY, cloakMessage.maxZ, cloakMessage.isFullyTransparent ? 2 : 1));
 		}
 		
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;

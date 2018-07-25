@@ -7,6 +7,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.EntityFXBeam;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -38,16 +39,16 @@ public class CloakedArea {
 	public int minX, minY, minZ;
 	public int maxX, maxY, maxZ;
 	private CopyOnWriteArraySet<UUID> playersInArea;
-	public byte tier;
+	public boolean isFullyTransparent;
 	public IBlockState blockStateFog;
 	
 	public CloakedArea(final World world,
-			final int dimensionId, final BlockPos blockPosCore, final byte tier,
-			final int minX, final int minY, final int minZ,
-			final int maxX, final int maxY, final int maxZ) {
+	                   final int dimensionId, @Nonnull final BlockPos blockPosCore, final boolean isFullyTransparent,
+	                   final int minX, final int minY, final int minZ,
+	                   final int maxX, final int maxY, final int maxZ) {
 		this.dimensionId = dimensionId;
 		this.blockPosCore = blockPosCore;
-		this.tier = tier;
+		this.isFullyTransparent = isFullyTransparent;
 		
 		this.minX = minX;
 		this.minY = minY;
@@ -70,7 +71,7 @@ public class CloakedArea {
 			}
 		}
 		
-		if (tier == 1) {
+		if (!isFullyTransparent) {
 			blockStateFog = WarpDrive.blockGas.getDefaultState().withProperty(BlockGas.COLOR, EnumGasColor.DARKNESS);
 		} else {
 			blockStateFog = Blocks.AIR.getDefaultState();
