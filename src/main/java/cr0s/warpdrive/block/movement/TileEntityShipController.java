@@ -145,12 +145,12 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 	
 	// Common OC/CC methods
 	@Override
-	public Object[] position() {
+	public Object[] getLocalPosition() {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		if (tileEntityShipCore == null) {
 			return null;
 		}
-		return tileEntityShipCore.position();
+		return tileEntityShipCore.getLocalPosition();
 	}
 	
 	@Override

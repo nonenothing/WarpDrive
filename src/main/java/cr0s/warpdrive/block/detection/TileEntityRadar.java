@@ -42,6 +42,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		
 		peripheralName = "warpdriveRadar";
 		addMethods(new String[] {
+				"getGlobalPosition",
 				"radius",
 				"getEnergyRequired",
 				"start",
@@ -107,14 +108,14 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	// Common OC/CC methods
-	@Override
-	public Object[] position() {
+	public Object[] getGlobalPosition() {
 		final CelestialObject celestialObject = CelestialObjectManager.get(world, pos.getX(), pos.getZ());
 		if (celestialObject != null) {
+			final String galaxyName = StarMapRegistry.getGalaxyName(celestialObject, pos.getX(), pos.getY(), pos.getZ());
 			final Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, pos.getX(), pos.getY(), pos.getZ());
-			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
+			return new Object[] { galaxyName, celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
 		} else {
-			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), Commons.format(world), pos.getX(), pos.getY(), pos.getZ() };
+			return new Object[] { StarMapRegistry.GALAXY_UNDEFINED, Commons.format(world), pos.getX(), pos.getY(), pos.getZ() };
 		}
 	}
 	
@@ -227,14 +228,14 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] radius(final Context context, final Arguments arguments) {
-		return radius(OC_convertArgumentsAndLogCall(context, arguments));
+	public Object[] getGlobalPosition(final Context context, final Arguments arguments) {
+		return getGlobalPosition();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
-		return getEnergyRequired(OC_convertArgumentsAndLogCall(context, arguments));
+	public Object[] radius(final Context context, final Arguments arguments) {
+		return radius(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -292,6 +293,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
+		case "getGlobalPosition":
+			return getGlobalPosition();
+			
 		case "radius":
 			return radius(arguments);
 		

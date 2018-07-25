@@ -2,12 +2,18 @@ package cr0s.warpdrive.api.computer;
 
 public interface IInterfaced {
 	
-	// Declare type
-	Object[] interfaced();
+	// return true if it supports the interface
+	Object[] isInterfaced();
 	
-	// Return block coordinates
-	Object[] position();
+	// return local block coordinates
+	Object[] getLocalPosition();
 	
-	// Return version
-	Object[] version();
+	// return tier index and name
+	Object[] getTier();
+	
+	// return upgradability and status
+	Object[] getUpgrades();
+	
+	// return the mod version
+	Integer[] getVersion();
 }

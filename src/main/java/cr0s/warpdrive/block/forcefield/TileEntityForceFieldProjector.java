@@ -1175,6 +1175,61 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return bResult;
 	}
 	
+	// Common OC/CC methods
+	@Override
+	public Object[] getEnergyRequired() {
+		return new Object[0];   // @TODO getEnergyRequired for projector
+	}
+	
+	private Object[] state() {    // isConnected, isPowered, shape
+		final int energy = energy_getEnergyStored();
+		final String status = getStatusHeaderInPureText();
+		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
+	}
+	
+	public Object[] min(final Object[] arguments) {
+		return computer_getOrSetVector3(this::getMin, this::setMin, arguments);
+	}
+	
+	public Object[] max(final Object[] arguments) {
+		return computer_getOrSetVector3(this::getMax, this::setMax, arguments);
+	}
+	
+	public Object[] rotation(final Object[] arguments) {
+		if ( arguments != null
+		  && arguments.length > 0
+		  && arguments[0] != null ) {
+			try {
+				if (arguments.length == 1) {
+					final float value = Commons.toFloat(arguments[0]);
+					setRotation(value, 0, 0);
+				} else if (arguments.length == 2) {
+					final float value1 = Commons.toFloat(arguments[0]);
+					final float value2 = Commons.toFloat(arguments[1]);
+					setRotation(value1, value2, 0);
+				} else if (arguments.length == 3) {
+					final float value1 = Commons.toFloat(arguments[0]);
+					final float value2 = Commons.toFloat(arguments[1]);
+					final float value3 = Commons.toFloat(arguments[2]);
+					setRotation(value1, value2, value3);
+				}
+			} catch (final Exception exception) {
+				final String message = String.format("Float expected for all arguments %s",
+				                                     Arrays.toString(arguments));
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(String.format("%s LUA error on rotation(): %s",
+					                                     this, message));
+				}
+				return new Object[] { rotationYaw, rotationPitch, rotationRoll, message };
+			}
+		}
+		return new Float[] { rotationYaw, rotationPitch, rotationRoll };
+	}
+	
+	public Object[] translation(final Object[] arguments) {
+		return computer_getOrSetVector3(this::getTranslation, this::setTranslation, arguments);
+	}
+	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
@@ -1185,60 +1240,25 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] min(final Context context, final Arguments arguments) {
-		if (arguments.count() == 1) {
-			setMin((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
-		} else if (arguments.count() == 2) {
-			setMin((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(0));
-		} else if (arguments.count() == 3) {
-			setMin((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(2));
-		}
-		return new Double[] { v3Min.x, v3Min.y, v3Min.z };
+		return min(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] max(final Context context, final Arguments arguments) {
-		if (arguments.count() == 1) {
-			setMax((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
-		} else if (arguments.count() == 2) {
-			setMax((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(0));
-		} else if (arguments.count() == 3) {
-			setMax((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(2));
-		}
-		return new Double[] { v3Max.x, v3Max.y, v3Max.z };
+		return max(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] rotation(final Context context, final Arguments arguments) {
-		if (arguments.count() == 1) {
-			setRotation((float)arguments.checkDouble(0), rotationPitch, rotationRoll);
-		} else if (arguments.count() == 2) {
-			setRotation((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), rotationRoll);
-		} else if (arguments.count() == 3) {
-			setRotation((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(2));
-		}
-		return new Float[] { rotationYaw, rotationPitch, rotationRoll };
-	}
-	
-	// Common OC/CC methods
-	private Object[] state() {    // isConnected, isPowered, shape
-		final int energy = energy_getEnergyStored();
-		final String status = getStatusHeaderInPureText();
-		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
+		return rotation(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] translation(final Context context, final Arguments arguments) {
-		if (arguments.count() == 1) {
-			setTranslation((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
-		} else if (arguments.count() == 2) {
-			setTranslation((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(0));
-		} else if (arguments.count() == 3) {
-			setTranslation((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(2));
-		}
-		return new Double[] { v3Translation.x, v3Translation.y, v3Translation.z };
+		return translation(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
@@ -1249,47 +1269,19 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		switch (methodName) {
 		case "min":
-			if (arguments.length == 1 && arguments[0] != null) {
-				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
-			} else if (arguments.length == 2) {
-				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
-			} else if (arguments.length == 3) {
-				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
-			}
-			return new Double[] { v3Min.x, v3Min.y, v3Min.z };
+			return min(arguments);
 		
 		case "max":
-			if (arguments.length == 1 && arguments[0] != null) {
-				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
-			} else if (arguments.length == 2) {
-				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
-			} else if (arguments.length == 3) {
-				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
-			}
-			return new Double[] { v3Max.x, v3Max.y, v3Max.z };
+			return max(arguments);
 		
 		case "rotation":
-			if (arguments.length == 1 && arguments[0] != null) {
-				setRotation(Commons.toFloat(arguments[0]), rotationPitch, rotationRoll);
-			} else if (arguments.length == 2) {
-				setRotation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), rotationRoll);
-			} else if (arguments.length == 3) {
-				setRotation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
-			}
-			return new Float[] { rotationYaw, rotationPitch, rotationRoll };
+			return rotation(arguments);
 		
 		case "state":
 			return state();
 		
 		case "translation":
-			if (arguments.length == 1 && arguments[0] != null) {
-				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
-			} else if (arguments.length == 2) {
-				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
-			} else if (arguments.length == 3) {
-				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
-			}
-			return new Double[] { v3Translation.x, v3Translation.y, v3Translation.z };
+			return translation(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

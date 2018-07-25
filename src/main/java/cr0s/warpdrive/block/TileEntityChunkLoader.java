@@ -44,7 +44,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 				"enable",
 				"bounds",
 				"radius",				
-				"upgrades",
 				"getEnergyRequired"
 		});
 		
@@ -203,10 +202,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		return new Object[] { radiusXneg, radiusXpos, radiusZneg, radiusZpos };
 	}
 	
-	public Object[] upgrades() {
-		return new Object[] { getUpgradesAsString() };
-	}
-	
 	public Object[] getEnergyRequired() {
 		return new Object[] { chunkloading_getEnergyRequired() };
 	}
@@ -232,12 +227,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] upgrades(final Context context, final Arguments arguments) {
-		return upgrades();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
@@ -257,9 +246,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 			
 		case "enable":
 			return enable(arguments);
-			
-		case "upgrades":
-			return upgrades();
 			
 		case "getEnergyRequired":
 			return getEnergyRequired();

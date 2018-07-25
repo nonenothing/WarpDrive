@@ -2,8 +2,10 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.FunctionGet;
+import cr0s.warpdrive.api.FunctionSetVector;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTier;
+import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -68,9 +70,11 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		super();
 		
 		addMethods(new String[] {
-				"interfaced",
-				"position",
-				"version"
+				"isInterfaced",
+				"getLocalPosition",
+				"getTier",
+				"getUpgrades",
+				"getVersion",
 		});
 	}
 	
@@ -229,21 +233,28 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		return methodName;
 	}
 	
-	// Declare type
+	// Common OC/CC methods
 	@Override
-	public Object[] interfaced() {
-		return new String[] { "I'm a WarpDrive computer interfaced tile entity." };
+	public Object[] isInterfaced() {
+		return new Object[] { true, "I'm a WarpDrive computer interfaced tile entity." };
 	}
 	
-	// Return block coordinates
 	@Override
-	public Object[] position() {
-		return new Object[] { pos.getX(), pos.getY(), pos.getZ(), "?", pos.getX(), pos.getY(), pos.getZ() };
+	public Object[] getLocalPosition() {
+		return new Object[] { pos.getX(), pos.getY(), pos.getZ() };
 	}
 	
-	// Return version
 	@Override
-	public Object[] version() {
+	public Object[] getTier() {
+		return new Object[] { enumTier.getIndex(), enumTier.getName() };
+	}
+	
+	public Object[] getUpgrades() {
+		return new Object[] { isUpgradeable(), getUpgradesAsString() };
+	}
+	
+	@Override
+	public Integer[] getVersion() {
 		if (WarpDriveConfig.LOGGING_LUA) {
 			WarpDrive.logger.info(String.format("Version is %s isDev %s", WarpDrive.VERSION, WarpDrive.isDev));
 		}
@@ -257,7 +268,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		for (final String string : strings) {
 			integers.add(Integer.parseInt(string));
 		}
-		return integers.toArray();
+		return integers.toArray(new Integer[0]);
 	}
 	
 	// ComputerCraft IPeripheral methods
@@ -289,6 +300,39 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		return vDefault;
 	}
 	
+	protected Object[] computer_getOrSetVector3(final FunctionGet<Vector3> getVector, final FunctionSetVector<Float> setVector, final Object[] arguments) {
+		if ( arguments != null
+		  && arguments.length > 0
+		  && arguments[0] != null ) {
+			try {
+				if (arguments.length == 1) {
+					final float value = Commons.toFloat(arguments[0]);
+					setVector.apply(value, value, value);
+				} else if (arguments.length == 2) {
+					final float valueXZ = Commons.toFloat(arguments[0]);
+					final float valueY = Commons.toFloat(arguments[1]);
+					setVector.apply(valueXZ, valueY, valueXZ);
+				} else if (arguments.length == 3) {
+					final float valueX = Commons.toFloat(arguments[0]);
+					final float valueY = Commons.toFloat(arguments[1]);
+					final float valueZ = Commons.toFloat(arguments[2]);
+					setVector.apply(valueX, valueY, valueZ);
+				}
+			} catch (final Exception exception) {
+				final String message = String.format("Float expected for all arguments %s",
+				                                     Arrays.toString(arguments));
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(String.format("%s LUA error on %s: %s",
+					                                     this, setVector, message));
+				}
+				final Vector3 v3Actual = getVector.apply();
+				return new Object[] { v3Actual.x, v3Actual.y, v3Actual.z, message };
+			}
+		}
+		final Vector3 v3Actual = getVector.apply();
+		return new Double[] { v3Actual.x, v3Actual.y, v3Actual.z };
+	}
+	
 	protected UUID computer_getUUID(final UUID uuidDefault, final Object[] arguments) {
 		try {
 			if (arguments.length == 1 && arguments[0] != null) {
@@ -311,14 +355,20 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
-		case "interfaced":
-			return interfaced();
+		case "isInterfaced":
+			return isInterfaced();
 			
-		case "position":
-			return position();
+		case "getLocalPosition":
+			return getLocalPosition();
 			
-		case "version":
-			return version();
+		case "getTier":
+			return getTier();
+			
+		case "getUpgrades":
+			return getUpgrades();
+			
+		case "getVersion":
+			return getVersion();
 		}
 		
 		return null;
@@ -396,20 +446,32 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	// OpenComputers methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] position(final Context context, final Arguments arguments) {
-		return position();
+	public Object[] isInterfaced(final Context context, final Arguments arguments) {
+		return isInterfaced();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] version(final Context context, final Arguments arguments) {
-		return version();
+	public Object[] getLocalPosition(final Context context, final Arguments arguments) {
+		return getLocalPosition();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] interfaced(final Context context, final Arguments arguments) {
-		return interfaced();
+	public Object[] getUpgrades(final Context context, final Arguments arguments) {
+		return getUpgrades();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "opencomputers")
+	public Object[] getTier(final Context context, final Arguments arguments) {
+		return getTier();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "opencomputers")
+	public Object[] getVersion(final Context context, final Arguments arguments) {
+		return getVersion();
 	}
 	
 	@Optional.Method(modid = "opencomputers")

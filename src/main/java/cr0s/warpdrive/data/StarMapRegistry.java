@@ -383,6 +383,21 @@ public class StarMapRegistry {
 		return arrayListRadarEchos;
 	}
 	
+	public static String GALAXY_UNDEFINED = "???";
+	public static String getGalaxyName(final CelestialObject celestialObject, final double x, final double y, final double z) {
+		if (celestialObject == null) {
+			// not a registered area
+			return GALAXY_UNDEFINED;
+		}
+		CelestialObject celestialObjectNode = celestialObject;
+		boolean hasHyperspace = celestialObjectNode.isHyperspace();
+		while (celestialObjectNode.parent != null) {
+			celestialObjectNode = celestialObjectNode.parent;
+			hasHyperspace |= celestialObjectNode.isHyperspace();
+		}
+		return hasHyperspace ? celestialObjectNode.getDisplayName() : GALAXY_UNDEFINED;
+	}
+	
 	public static Vector3 getUniversalCoordinates(final CelestialObject celestialObject, final double x, final double y, final double z) {
 		if (celestialObject == null) {
 			// not a registered area
