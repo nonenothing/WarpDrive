@@ -4,7 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ISequencerCallbacks;
 import cr0s.warpdrive.api.WarpDriveText;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 import cr0s.warpdrive.block.movement.BlockShipCore;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
@@ -53,7 +53,7 @@ import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityShipScanner extends TileEntityAbstractInterfaced implements ISequencerCallbacks {
+public class TileEntityShipScanner extends TileEntityAbstractMachine implements ISequencerCallbacks {
 	
 	// persistent properties
 	private String schematicFileName = "";
@@ -99,6 +99,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (world.isRemote) {
 			return;
 		}
+		
+		// @TODO inmplement ShipScanner.isEnabled
 		
 		searchTicks++;
 		if (searchTicks > WarpDriveConfig.SS_SEARCH_INTERVAL_TICKS) {
@@ -292,7 +294,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		schematic.setShort("Length", length);
 		schematic.setShort("Height", height);
 		schematic.setInteger("shipMass", shipCore.shipMass);
-		schematic.setString("shipName", shipCore.shipName);
+		schematic.setString("shipName", shipCore.name);
 		schematic.setInteger("shipVolume", shipCore.shipVolume);
 		
 		// Save new format
@@ -390,7 +392,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		
 		// Generate unique file name
 		final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
-		final String shipName = shipCore.shipName.replaceAll("[^ -~]", "").replaceAll("[:/\\\\]", "");
+		final String shipName = Commons.sanitizeFileName(shipCore.name.replaceAll("[^-~]", "")
+		                                                              .replaceAll(" ", "_"));
 		do {
 			final Date now = new Date();
 			schematicFileName = shipName + "_" + sdfDate.format(now);

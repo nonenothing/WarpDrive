@@ -4,7 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ITransporterBeacon;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.StarMapRegistryItem;
@@ -29,10 +29,9 @@ import net.minecraft.world.WorldServer;
 
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implements ITransporterBeacon {
+public class TileEntityTransporterBeacon extends TileEntityAbstractEnergyConsumer implements ITransporterBeacon {
 	
 	// persistent properties
-	private boolean isEnabled = true;
 	private String nameTransporterCore;
 	private UUID uuidTransporterCore;
 	private int tickDeploying = 0;
@@ -48,7 +47,6 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		
 		peripheralName = "warpdriveTransporterBeacon";
 		addMethods(new String[] {
-				"enable",
 				"isActive"
 		});
 	}
@@ -136,19 +134,12 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	
 	// Common OC/CC methods
 	@Override
-	public Boolean[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final boolean isEnabled_old = isEnabled;
-			isEnabled = Commons.toBool(arguments[0]);
-			
-			// enabling up => redeploy
-			if (!isEnabled_old && isEnabled) {
-				tickDeploying = 0;
-			}
-			
-			markDirty();
+	public void setIsEnabled(boolean isEnabled) {
+		super.setIsEnabled(isEnabled);
+		// enabling up => redeploy
+		if (isEnabled) {
+			tickDeploying = 0;
 		}
-		return new Boolean[] { isEnabled };
 	}
 	
 	@Override
@@ -161,13 +152,12 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		return isActive;
 	}
 	
-	// OpenComputers callback methods
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
+	@Override
+	public Object[] getEnergyRequired() {
+		return new Object[] { WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK };
 	}
 	
+	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] isActive(final Context context, final Arguments arguments) {
@@ -181,9 +171,6 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
-		case "enable":
-			return enable(arguments);
-		
 		case "isActive":
 			return isActive(arguments);
 		}
@@ -240,7 +227,6 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 			tagCompound.setLong("uuidLeast", uuidTransporterCore.getLeastSignificantBits());
 		}
 		
-		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setInteger("tickDeploying", tickDeploying);
 		return tagCompound;
 	}
@@ -256,7 +242,6 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 			nameTransporterCore = "";
 		}
 		
-		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 		tickDeploying = tagCompound.getInteger("tickDeploying");
 	}
 	

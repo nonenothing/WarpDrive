@@ -1,8 +1,6 @@
 package cr0s.warpdrive.api.computer;
 
-public interface ITransporterBeacon extends IEnergy {
-	
-	Boolean[] enable(final Object[] arguments);
+public interface ITransporterBeacon extends IEnergyConsumer {
 	
 	Boolean[] isActive(final Object[] arguments);
 	

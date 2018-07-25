@@ -3,11 +3,7 @@ package cr0s.warpdrive.api.computer;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 
-public interface ITransporterCore extends IEnergy, IBeamFrequency, IStarMapRegistryTileEntity {
-	
-	Object[] transporterName(final Object[] arguments);
-	
-	Object[] enable(final Object[] arguments);
+public interface ITransporterCore extends IEnergyConsumer, IBeamFrequency, IStarMapRegistryTileEntity {
 	
 	Object[] state();
 	
@@ -18,8 +14,6 @@ public interface ITransporterCore extends IEnergy, IBeamFrequency, IStarMapRegis
 	Object[] energyFactor(final Object[] arguments);
 	
 	Object[] getLockStrength();
-	
-	Object[] getEnergyRequired();
 	
 	Object[] energize(final Object[] arguments);
 }

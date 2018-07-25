@@ -2,7 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.computer.ILift;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumLiftMode;
 import cr0s.warpdrive.data.SoundEvents;
@@ -29,13 +29,12 @@ import net.minecraft.util.math.BlockPos;
 
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
+public class TileEntityLift extends TileEntityAbstractEnergyConsumer implements ILift {
 	
 	private static final double LIFT_GRAB_RADIUS = 0.4D;
 	
 	// persistent properties
 	private EnumLiftMode mode = EnumLiftMode.INACTIVE;
-	private boolean isEnabled = true;
 	private EnumLiftMode computerMode = EnumLiftMode.REDSTONE;
 	
 	// computed properties
@@ -51,7 +50,6 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 		IC2_sourceTier = 2;
 		peripheralName = "warpdriveLift";
 		addMethods(new String[] {
-				"enable",
 				"mode",
 				"state"
 		});
@@ -188,11 +186,6 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			final byte byteValue = tagCompound.getByte("mode");
 			mode = EnumLiftMode.get(Commons.clamp(0, 3, byteValue == -1 ? 3 : byteValue));
 		}
-		if (tagCompound.hasKey("computerEnabled")) {
-			isEnabled = tagCompound.getBoolean("computerEnabled");  // up to 1.3.30 included
-		} else if (tagCompound.hasKey("isEnabled")) {
-			isEnabled = tagCompound.getBoolean("isEnabled");
-		}
 		if (tagCompound.hasKey("computerMode")) {
 			final byte byteValue = tagCompound.getByte("computerMode");
 			computerMode = EnumLiftMode.get(Commons.clamp(0, 3, byteValue == -1 ? 3 : byteValue));
@@ -204,7 +197,6 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setByte("mode", (byte) mode.ordinal());
-		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setByte("computerMode", (byte) computerMode.ordinal());
 		return tagCompound;
 	}
@@ -228,12 +220,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
 	// Common OC/CC methods
 	@Override
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			isEnabled = Commons.toBool(arguments[0]);
-			markDirty();
-		}
-		return new Object[] { isEnabled };
+	public Object[] getEnergyRequired() {
+		return new Object[] { WarpDriveConfig.LIFT_ENERGY_PER_ENTITY };
 	}
 	
 	@Override

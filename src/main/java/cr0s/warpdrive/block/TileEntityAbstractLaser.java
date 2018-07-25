@@ -18,7 +18,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
 
 // Abstract class to manage laser mediums
-public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfaced implements IAbstractLaser {
+public abstract class TileEntityAbstractLaser extends TileEntityAbstractMachine implements IAbstractLaser {
 	
 	// configuration overridden by derived classes
 	protected EnumFacing[] laserMedium_directionsValid = EnumFacing.values();

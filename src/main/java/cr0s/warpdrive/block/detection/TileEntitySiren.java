@@ -1,6 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
-import cr0s.warpdrive.block.TileEntityAbstractBase;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 import cr0s.warpdrive.client.SirenSound;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.SoundEvents;
@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntitySiren extends TileEntityAbstractBase {
+public class TileEntitySiren extends TileEntityAbstractMachine {
 	
 	public enum EnumSirenState {
 		STARTING, STARTED, STOPPING, STOPPED

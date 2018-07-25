@@ -8,7 +8,7 @@ import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.api.computer.ITransporterCore;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.block.forcefield.BlockForceField;
 import cr0s.warpdrive.block.forcefield.TileEntityForceField;
 import cr0s.warpdrive.config.Dictionary;
@@ -75,14 +75,12 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityTransporterCore extends TileEntityAbstractEnergy implements ITransporterCore, IBeamFrequency, IStarMapRegistryTileEntity {
+public class TileEntityTransporterCore extends TileEntityAbstractEnergyConsumer implements ITransporterCore, IBeamFrequency, IStarMapRegistryTileEntity {
 	
 	// persistent properties
 	private UUID uuid = null;
 	private ArrayList<BlockPos> vLocalScanners = null;
 	private int beamFrequency = -1;
-	private String transporterName = "";
-	private boolean isEnabled = true;
 	private boolean isLockRequested = false;
 	private boolean isEnergizeRequested = false;
 	private Object remoteLocationRequested = null;  // can be VectorI() coordinates, or transporter UUID, or player name
@@ -122,14 +120,11 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		peripheralName = "warpdriveTransporterCore";
 		addMethods(new String[] {
 			"beamFrequency",
-			"transporterName",
-			"enable",
 			"state",
 			"remoteLocation",
 			"lock",
 			"energyFactor",
 			"getLockStrength",
-			"getEnergyRequired",
 			"energize"
 		});
 		CC_scripts = Collections.singletonList("startup");
@@ -544,7 +539,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public String getStarMapName() {
-		return transporterName;
+		return name;
 	}
 	
 	@Override
@@ -1450,8 +1445,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		tagCompound.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, beamFrequency);
-		tagCompound.setString("name", transporterName);
-		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setBoolean("isLockRequested", isLockRequested);
 		tagCompound.setBoolean("isEnergizeRequested", isEnergizeRequested);
 		
@@ -1505,8 +1498,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		beamFrequency = tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
-		transporterName = tagCompound.getString("name");
-		isEnabled = tagCompound.getBoolean("isEnabled");
 		isLockRequested = tagCompound.getBoolean("isLockRequested");
 		isEnergizeRequested = tagCompound.getBoolean("isEnergizeRequested");
 		
@@ -1546,7 +1537,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		tagCompound.removeTag("uuidMost");
 		tagCompound.removeTag("uuidLeast");
 		tagCompound.removeTag(IBeamFrequency.BEAM_FREQUENCY_TAG);
-		tagCompound.removeTag("name");
 		
 		return tagCompound;
 	}
@@ -1560,30 +1550,27 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeItemDropNBT(tagCompound);
-		tagCompound.removeTag("isEnabled");
+		
 		return tagCompound;
 	}
 	
 	// Common OC/CC methods
 	@Override
-	public String[] transporterName(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final String transporterNameNew = arguments[0].toString();
-			if (!transporterName.equals(transporterNameNew)) {
-				transporterName = transporterNameNew;
-				uuid = UUID.randomUUID();
-			}
+	public String[] name(final Object[] arguments) {
+		final String name_old = name;
+		super.name(arguments);
+		if (!name_old.equals(name)) {
+			uuid = UUID.randomUUID();
 		}
-		return new String[] { transporterName, uuid == null ? null : uuid.toString() };
+		return new String[] { name, uuid == null ? null : uuid.toString() };
 	}
 	
 	@Override
-	public Boolean[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			isEnabled = Commons.toBool(arguments[0]);
+	public void setIsEnabled(boolean isEnabled) {
+		super.setIsEnabled(isEnabled);
+		if (isEnabled) {
 			markDirty();
 		}
-		return new Boolean[] { isEnabled };
 	}
 	
 	@Override
@@ -1695,18 +1682,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] transporterName(final Context context, final Arguments arguments) {
-		return transporterName(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
@@ -1737,12 +1712,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
-		return getEnergyRequired();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] energize(final Context context, final Arguments arguments) {
 		return energize(OC_convertArgumentsAndLogCall(context, arguments));
 	}
@@ -1760,12 +1729,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 			return new Integer[] { beamFrequency };
 			
-		case "transporterName":
-			return transporterName(arguments);
-		
-		case "enable":
-			return enable(arguments);
-		
 		case "state":
 			return state();
 		
@@ -1781,9 +1744,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		case "getLockStrength":
 			return getLockStrength();
 		
-		case "getEnergyRequired":
-			return getEnergyRequired();
-		
 		case "energize":
 			return energize(arguments);
 		}
@@ -1795,7 +1755,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public String toString() {
 		return String.format("%s \'%s\' %s Beam %d %s",
 		                     getClass().getSimpleName(),
-		                     transporterName, uuid,
+		                     name, uuid,
 		                     beamFrequency,
 		                     Commons.format(world, pos));
 	}

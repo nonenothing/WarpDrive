@@ -528,7 +528,8 @@ public class JumpSequencer extends AbstractSequencer {
 		try {
 			// Generate unique file name
 			final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
-			final String shipName = ship.shipCore.shipName.replaceAll("[^ -~]", "").replaceAll("[:/\\\\]", "");
+			final String shipName = Commons.sanitizeFileName(ship.shipCore.name.replaceAll("[^-~]", "")
+			                                                                   .replaceAll(" ", "_"));
 			String schematicFileName;
 			do {
 				final Date now = new Date();
@@ -545,7 +546,7 @@ public class JumpSequencer extends AbstractSequencer {
 			schematic.setShort("Length", length);
 			schematic.setShort("Height", height);
 			schematic.setInteger("shipMass", ship.shipCore.shipMass);
-			schematic.setString("shipName", ship.shipCore.shipName);
+			schematic.setString("shipName", ship.shipCore.name);
 			schematic.setInteger("shipVolume", ship.shipCore.shipVolume);
 			final NBTTagCompound tagCompoundShip = new NBTTagCompound();
 			ship.writeToNBT(tagCompoundShip);
@@ -1671,7 +1672,7 @@ public class JumpSequencer extends AbstractSequencer {
 	public String toString() {
 		return String.format("%s/%d \'%s\' @ %s (%d %d %d) #%d",
 		                     getClass().getSimpleName(), hashCode(),
-		                     (ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
+		                     (ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.name),
 		                     Commons.format(sourceWorld),
 		                     ship == null ? -1 : ship.core.getX(), ship == null ? -1 : ship.core.getY(), ship == null ? -1 : ship.core.getZ(),
 		                     ticks);

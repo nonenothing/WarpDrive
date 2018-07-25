@@ -83,6 +83,11 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
+	public Object[] getEnergyRequired() {
+		return new Object[0];
+	}
+	
+	@Override
 	public IForceFieldUpgradeEffector getUpgradeEffector() {
 		return isEnabled ? getUpgrade() : null;
 	}

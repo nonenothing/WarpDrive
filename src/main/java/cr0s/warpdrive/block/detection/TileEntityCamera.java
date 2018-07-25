@@ -3,7 +3,7 @@ package cr0s.warpdrive.block.detection;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumCameraType;
 import cr0s.warpdrive.network.PacketHandler;
@@ -21,7 +21,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityCamera extends TileEntityAbstractInterfaced implements IVideoChannel {
+public class TileEntityCamera extends TileEntityAbstractMachine implements IVideoChannel {
 	
 	private int videoChannel = -1;
 

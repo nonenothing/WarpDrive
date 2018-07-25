@@ -4,7 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.WarpDriveText;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -20,10 +20,9 @@ import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfaced implements IControlChannel {
+public class TileEntityAcceleratorControlPoint extends TileEntityAbstractMachine implements IControlChannel {
 	
 	// persistent properties
-	private boolean isEnabled = true;
 	private int controlChannel = -1;
 	
 	// computed properties
@@ -35,7 +34,6 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		
 		peripheralName = "warpdriveAcceleratorControlPoint";
 		addMethods(new String[] {
-			"enable",
 			"state",
 			"controlChannel"
 		});
@@ -104,7 +102,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	@Override
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
+		
 		controlChannel = tagCompound.getInteger(CONTROL_CHANNEL_TAG);
 	}
 	
@@ -112,7 +110,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
-		tagCompound.setBoolean("isEnabled", isEnabled);
+		
 		tagCompound.setInteger(CONTROL_CHANNEL_TAG, controlChannel);
 		return tagCompound;
 	}
@@ -131,29 +129,42 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		readFromNBT(tagCompound);
 	}
 	
-	public boolean getIsEnabled() {
-		return isEnabled;
+	@Override
+	public void setIsEnabled(final boolean isEnabled) {
+		super.setIsEnabled(isEnabled);
+		WarpDrive.starMap.onBlockUpdated(world, pos, world.getBlockState(pos));
 	}
 	
-	public void setIsEnabled(final boolean isEnabled) {
-		this.isEnabled = isEnabled;
-		WarpDrive.starMap.onBlockUpdated(world, pos, world.getBlockState(pos));
+	// Common OC/CC methods
+	public Object[] controlChannel(final Object[] arguments) {
+		if ( arguments != null
+		  && arguments.length == 1
+		  && arguments[0] != null ) {
+			final int controlChannelRequested;
+			try {
+				controlChannelRequested = Commons.toInt(arguments[0]);
+			} catch (final Exception exception) {
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(String.format("%s LUA error on enable(): Integer expected for 1st argument %s",
+					                                     this, arguments[0]));
+				}
+				return new Object[] { controlChannel };
+			}
+			setControlChannel(controlChannelRequested);
+		}
+		return new Integer[] { controlChannel };
+	}
+	
+	private Object[] state() {
+		final String status = getStatusHeaderInPureText();
+		return new Object[] { status, isEnabled, controlChannel };
 	}
 	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] controlChannel(final Context context, final Arguments arguments) {
-		if (arguments.count() == 1) {
-			setControlChannel(arguments.checkInteger(0));
-		}
-		return new Integer[] { controlChannel };
+		return controlChannel(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -162,52 +173,18 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		return state();
 	}
 	
-	// Common OC/CC methods
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final boolean enable;
-			try {
-				enable = Commons.toBool(arguments[0]);
-			} catch (final Exception exception) {
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(String.format("%s LUA error on enable(): Boolean expected for 1st argument %s",
-					                                     this, arguments[0]));
-				}
-				return new Object[] { isEnabled };
-			}
-			setIsEnabled(enable);
-		}
-		return new Object[] { isEnabled };
-	}
-	
-	private Object[] state() {    // isConnected, isPowered, shape
-		final String status = getStatusHeaderInPureText();
-		return new Object[] { status, isEnabled, controlChannel };
-	}
-	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
-		try {
-			switch (methodName) {
-			case "enable":
-				return enable(arguments);
+		switch (methodName) {
+		case "controlChannel":
+			return controlChannel(arguments);
 			
-			case "controlChannel":
-				if (arguments.length == 1 && arguments[0] != null) {
-					setControlChannel(Commons.toInt(arguments[0]));
-				}
-				return new Integer[] { controlChannel };
-				
-			case "state":
-				return state();
-			}
-		} catch (final Exception exception) {
-			exception.printStackTrace();
-			return new String[] { exception.getMessage() };
+		case "state":
+			return state();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

@@ -140,8 +140,9 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		// sneaking with an empty hand
 		if ( itemStackHeld.isEmpty()
 		  && entityPlayer.isSneaking() ) {
-			final boolean isEnabledOld = tileEntityTransporterBeacon.enable(new Object[] { })[0];
-			final boolean isEnabledNew = tileEntityTransporterBeacon.enable(new Object[] { !isEnabledOld })[0];
+			final boolean isEnabledOld = tileEntityTransporterBeacon.getIsEnabled();
+			tileEntityTransporterBeacon.setIsEnabled(!isEnabledOld);
+			final boolean isEnabledNew = tileEntityTransporterBeacon.getIsEnabled();
 			if (isEnabledOld != isEnabledNew) {
 				if (isEnabledNew) {
 					Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(this)

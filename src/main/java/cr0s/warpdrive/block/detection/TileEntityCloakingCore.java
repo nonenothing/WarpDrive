@@ -3,7 +3,7 @@ package cr0s.warpdrive.block.detection;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.WarpDriveText;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CloakedArea;
@@ -30,14 +30,13 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
+public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 	
 	private static final int CLOAKING_CORE_SOUND_UPDATE_TICKS = 40;
 	private static final int DISTANCE_INNER_COILS_BLOCKS = 2;
 	private static final int LASER_REFRESH_TICKS = 100;
 	private static final int LASER_DURATION_TICKS = 110;
 	
-	public boolean isEnabled = false;
 	public byte tier = 1; // cloaking field tier, 1 or 2
 	
 	// inner coils color map
@@ -73,7 +72,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		addMethods(new String[] {
 			"tier",				// set field tier to 1 or 2, return field tier
 			"isAssemblyValid",	// returns true or false
-			"enable"			// set field enable state (true or false), return true if enabled
 		});
 		CC_scripts = Arrays.asList("cloak1", "cloak2", "uncloak");
 	}
@@ -347,7 +345,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		tier = tagCompound.getByte("tier");
-		isEnabled = tagCompound.getBoolean("enabled");
 	}
 	
 	@Nonnull
@@ -355,7 +352,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setByte("tier", tier);
-		tagCompound.setBoolean("enabled", isEnabled);
 		return tagCompound;
 	}
 	
@@ -499,16 +495,14 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		return new Integer[] { (int) tier };
 	}
 	
-	public Object[] isAssemblyValid() {
-		return new Object[] { isValid, Commons.removeFormatting(textValidityIssues.getUnformattedText()) };
+	@Override
+	public Object[] getEnergyRequired() {
+		final int updateRate = ((!isFullyTransparent) ? 20 : 10) * WarpDriveConfig.CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS;
+		return new Object[] { energyRequired / updateRate };
 	}
 	
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			isEnabled = Commons.toBool(arguments[0]);
-			markDirty();
-		}
-		return new Object[] { isEnabled };
+	public Object[] isAssemblyValid() {
+		return new Object[] { isValid, Commons.removeFormatting(textValidityIssues.getUnformattedText()) };
 	}
 	
 	// OpenComputer callback methods
@@ -524,12 +518,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		return isAssemblyValid();
 	}
 	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
@@ -542,9 +530,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			
 		case "isAssemblyValid":
 			return isAssemblyValid();
-			
-		case "enable":
-			return enable(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

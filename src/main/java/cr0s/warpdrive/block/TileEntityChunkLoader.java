@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.Optional;
 public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	
 	// persistent properties
-	private boolean isEnabled = false;
 	private int radiusXneg = 0;
 	private int radiusXpos = 0;
 	private int radiusZneg = 0;
@@ -41,10 +40,8 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		
 		peripheralName = "warpdriveChunkLoader";
 		addMethods(new String[] {
-				"enable",
 				"bounds",
-				"radius",				
-				"getEnergyRequired"
+				"radius",
 		});
 		
 		setUpgradeMaxCount(EnumComponentType.SUPERCONDUCTOR, 5);
@@ -90,7 +87,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		return 1.0D - 0.1D * upgradeCount;
 	}
 	
-	public long chunkloading_getEnergyRequired() {
+	public long calculateEnergyRequired() {
 		return (long) Math.ceil(getEnergyFactor() * chunkloading_getArea() * WarpDriveConfig.CHUNK_LOADER_ENERGY_PER_CHUNK);
 	}
 	
@@ -118,7 +115,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 			return;
 		}
 		
-		isPowered = energy_consume(chunkloading_getEnergyRequired(), !isEnabled);
+		isPowered = energy_consume(calculateEnergyRequired(), !isEnabled);
 		
 		updateBlockState(null, BlockProperties.ACTIVE, isEnabled && isPowered);
 	}
@@ -160,9 +157,9 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		tagCompound = super.writeToNBT(tagCompound);
-		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
-		setBounds(tagCompound.getInteger("radiusXneg"), tagCompound.getInteger("radiusXpos"), tagCompound.getInteger("radiusZneg"), tagCompound.getInteger("radiusZpos"));
+		
+		setBounds(tagCompound.getInteger("radiusXneg"), tagCompound.getInteger("radiusXpos"),
+		          tagCompound.getInteger("radiusZneg"), tagCompound.getInteger("radiusZpos"));
 		isPowered = tagCompound.getBoolean("isPowered");
 	}
 	
@@ -170,7 +167,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
-		tagCompound.setBoolean("isEnabled", isEnabled);
+		
 		tagCompound.setInteger("radiusXneg", radiusXneg);
 		tagCompound.setInteger("radiusZneg", radiusZneg);
 		tagCompound.setInteger("radiusXpos", radiusXpos);
@@ -180,13 +177,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	// Common OC/CC methods
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			isEnabled = Commons.toBool(arguments[0]);
-		}
-		return new Object[] { isEnabled };
-	}
-	
 	public Object[] bounds(final Object[] arguments) {
 		if (arguments.length == 4) {
 			setBounds(Commons.toInt(arguments[0]), Commons.toInt(arguments[1]), Commons.toInt(arguments[2]), Commons.toInt(arguments[3]));
@@ -203,16 +193,10 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	public Object[] getEnergyRequired() {
-		return new Object[] { chunkloading_getEnergyRequired() };
+		return new Object[] { calculateEnergyRequired() };
 	}
 	
 	// OpenComputer callback methods
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] bounds(final Context context, final Arguments arguments) {
@@ -225,12 +209,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		return radius(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
-		return getEnergyRequired();
-	}
-	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "computercraft")
@@ -238,17 +216,11 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
-		case "radius":
-			return radius(arguments);
-			
 		case "bounds":
 			return bounds(arguments);
 			
-		case "enable":
-			return enable(arguments);
-			
-		case "getEnergyRequired":
-			return getEnergyRequired();
+		case "radius":
+			return radius(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

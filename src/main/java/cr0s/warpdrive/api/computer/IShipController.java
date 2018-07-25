@@ -10,8 +10,6 @@ public interface IShipController extends IInterfaced {
 	
 	Object[] isInHyperspace();
 	
-	Object[] shipName(Object[] arguments);
-	
 	Object[] dim_positive(Object[] arguments);
 	
 	Object[] dim_negative(Object[] arguments);
@@ -19,8 +17,6 @@ public interface IShipController extends IInterfaced {
 	Object[] energy();
 	
 	Object[] command(Object[] arguments);
-	
-	Object[] enable(Object[] arguments);
 	
 	Object[] getShipSize();
 	
@@ -31,6 +27,4 @@ public interface IShipController extends IInterfaced {
 	Object[] rotationSteps(Object[] arguments);
 	
 	Object[] targetName(Object[] arguments);
-	
-	Object[] getEnergyRequired();
 }

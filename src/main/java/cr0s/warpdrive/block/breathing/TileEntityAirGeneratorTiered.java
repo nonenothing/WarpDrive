@@ -2,34 +2,22 @@ package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CelestialObjectManager;
-import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-
-import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
-import net.minecraftforge.fml.common.Optional;
-
-public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
+public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergyConsumer {
 	
 	// persistent properties
-	protected EnumTier enumTier = null;
-	private boolean isEnabled = true;
+	// (none)
 	
 	// computed properties
 	private int maxEnergyStored = 0;
@@ -39,9 +27,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		super();
 		
 		peripheralName = "warpdriveAirGenerator";
-		addMethods(new String[] {
-				"enable"
-		});
+		// addMethods(new String[] {
+		// });
 	}
 	
 	@Override
@@ -138,20 +125,6 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(final NBTTagCompound tagCompound) {
-		super.readFromNBT(tagCompound);
-		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
-	}
-	
-	@Nonnull
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-		tagCompound = super.writeToNBT(tagCompound);
-		tagCompound.setBoolean("isEnabled", isEnabled);
-		return tagCompound;
-	}
-	
-	@Override
 	public int energy_getMaxStorage() {
 		return maxEnergyStored;
 	}
@@ -161,31 +134,9 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		return true;
 	}
 	
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			isEnabled = Commons.toBool(arguments[0]);
-		}
-		return new Object[] { isEnabled };
-	}
-	
-	// OpenComputer callback methods
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-			return enable(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
-		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
-		
-		switch (methodName) {
-		case "enable": 
-			return enable(arguments);		
-		}
-		
-		return super.callMethod(computer, context, method, arguments);
+	public Object[] getEnergyRequired() {
+		return new Object[] { WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK_BY_TIER[enumTier.getIndex()] / (double) WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS,
+		                      WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK_BY_TIER[enumTier.getIndex()] / (double) WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS };
 	}
 }

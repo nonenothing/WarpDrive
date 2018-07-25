@@ -2,7 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyConsumer;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
@@ -25,7 +25,7 @@ import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityRadar extends TileEntityAbstractEnergy {
+public class TileEntityRadar extends TileEntityAbstractEnergyConsumer {
 	
 	private ArrayList<RadarEcho> results;
 	
@@ -44,7 +44,6 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		addMethods(new String[] {
 				"getGlobalPosition",
 				"radius",
-				"getEnergyRequired",
 				"start",
 				"getScanDuration",
 				"getResults",
@@ -132,15 +131,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return new Integer[] { radius };
 	}
 	
-	private Object[] getEnergyRequired(final Object[] arguments) {
-		try {
-			if (arguments.length == 1 && arguments[0] != null) {
-				return new Object[] { calculateEnergyRequired(Commons.toInt(arguments[0])) };
-			}
-		} catch (final Exception exception) {
-			return new Integer[] { -1 };
-		}
-		return new Integer[] { -1 };
+	@Override
+	public Object[] getEnergyRequired() {
+		return new Object[] { calculateEnergyRequired(radius) };
 	}
 	
 	private Object[] getScanDuration(final Object[] arguments) {
@@ -234,12 +227,6 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] radius(final Context context, final Arguments arguments) {
-		return radius(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] getScanDuration(final Context context, final Arguments arguments) {
 		return getScanDuration(OC_convertArgumentsAndLogCall(context, arguments));
 	}
@@ -298,9 +285,6 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			
 		case "radius":
 			return radius(arguments);
-		
-		case "getEnergyRequired":
-			return getEnergyRequired(arguments);
 		
 		case "getScanDuration":
 			return getScanDuration(arguments);

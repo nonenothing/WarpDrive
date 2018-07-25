@@ -1,6 +1,6 @@
 package cr0s.warpdrive.api.computer;
 
-public interface IAbstractLaser extends IInterfaced {
+public interface IAbstractLaser extends IMachine {
 	
 	Object[] energy();
 	

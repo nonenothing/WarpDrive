@@ -3,7 +3,7 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
 import cr0s.warpdrive.data.EnumTier;
@@ -26,14 +26,12 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced implements IStarMapRegistryTileEntity {
+public class TileEntityJumpGateCore extends TileEntityAbstractMachine implements IStarMapRegistryTileEntity {
 	
 	private static final int BOUNDING_BOX_INTERVAL_TICKS = 60;
 	
 	// persistent properties
-	private EnumTier tier = EnumTier.BASIC;
 	private UUID uuid = null;
-	public String nameJumpGate = "default";
 	private int maxX, maxY, maxZ;
 	private int minX, minY, minZ;
 	
@@ -150,8 +148,6 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		
-		tier = EnumTier.get(tagCompound.getByte("tier"));
-		nameJumpGate = tagCompound.getString("name");
 		uuid = new UUID(tagCompound.getLong("uuidMost"), tagCompound.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			uuid = UUID.randomUUID();
@@ -171,8 +167,6 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
 		
-		tagCompound.setByte("tier", (byte) tier.getIndex());
-		tagCompound.setString("name", nameJumpGate);
 		if (uuid != null) {
 			tagCompound.setLong("uuidMost", uuid.getMostSignificantBits());
 			tagCompound.setLong("uuidLeast", uuid.getLeastSignificantBits());
@@ -248,7 +242,7 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	
 	@Override
 	public String getStarMapName() {
-		return nameJumpGate;
+		return name;
 	}
 	
 	@Override
@@ -257,20 +251,6 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	}
 	
 	// Common OC/CC methods
-	public Object[] name(final Object[] arguments) {
-		if (arguments != null && arguments.length == 1 && arguments[0] != null) {
-			final String namePrevious = nameJumpGate;
-			nameJumpGate = Commons.sanitizeFileName((String) arguments[0]);
-			if (!nameJumpGate.equals(namePrevious)) {
-				WarpDrive.logger.info(String.format("Jumpgate renamed from '%s' to '%s' with player(s) %s",
-				                                    namePrevious == null ? "-null-" : namePrevious,
-				                                    nameJumpGate,
-				                                    getAllPlayersInArea()));
-			}
-		}
-		return new Object[] { nameJumpGate };
-	}
-	
 	public Object[] area(final Object[] arguments) {
 		try {
 			if (arguments != null && arguments.length == 6) {
@@ -306,13 +286,5 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 		}
 		
 		return new Integer[] { minX, minY, minZ, maxX, maxY, maxZ };
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s '%s' %s",
-		                     getClass().getSimpleName(),
-		                     nameJumpGate,
-		                     Commons.format(world, pos));
 	}
 }

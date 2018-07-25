@@ -1,18 +1,14 @@
 package cr0s.warpdrive.block.movement;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
 
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
-import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 
 public class TileEntityShipController extends TileEntityAbstractShipController {
 	
@@ -64,15 +60,14 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 				  && tileEntityShipCore.refreshLink(this) ) {
 					isSynchronized = true;
 					synchronizeFrom(tileEntityShipCore);
-					if ( !tileEntityShipCore.isEnabled
-					  && isEnabled ) {
-						tileEntityShipCore.command(new Object[] { command.getName() });
-						tileEntityShipCore.enable(new Object[] { true });
+					if ( !tileEntityShipCore.isCommandConfirmed
+					  && isCommandConfirmed ) {
+						tileEntityShipCore.command(new Object[] { enumShipCommand.getName(), true });
 					}
 				}
 			}
 			
-			updateBlockState(null, BlockShipController.COMMAND, command);
+			updateBlockState(null, BlockShipController.COMMAND, enumShipCommand);
 		}
 	}
 	
@@ -122,27 +117,6 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 		return null;
 	}
 	
-	@Override
-	public String getAllPlayersInArea() {
-		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos).grow(10.0D);
-		final List list = world.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-		final StringBuilder stringBuilderResult = new StringBuilder();
-		
-		boolean isFirst = true;
-		for (final Object object : list) {
-			if (!(object instanceof EntityPlayer)) {
-				continue;
-			}
-			if (isFirst) {
-				isFirst = false;
-			} else {
-				stringBuilderResult.append(", ");
-			}
-			stringBuilderResult.append(((EntityPlayer) object).getName());
-		}
-		return stringBuilderResult.toString();
-	}
-	
 	// Common OC/CC methods
 	@Override
 	public Object[] getLocalPosition() {
@@ -182,12 +156,12 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 	}
 	
 	@Override
-	public Object[] shipName(final Object[] arguments) {
+	public String[] name(final Object[] arguments) {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		if (tileEntityShipCore == null) {
-			return super.shipName(null); // return current local values
+			return super.name(null); // return current local values
 		}
-		return new Object[] { tileEntityShipCore.shipName(arguments) };
+		return tileEntityShipCore.name(arguments);
 	}
 	
 	@Override
@@ -273,14 +247,5 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 			return new Object[] { false, "No ship core detected" };
 		}
 		return tileEntityShipCore.getEnergyRequired();
-	}
-	
-	@Override
-	public String toString() {
-		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
-		return String.format("%s \'%s\' %s",
-		                     getClass().getSimpleName(),
-		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName,
-		                     Commons.format(world, pos.getX(), pos.getY(), pos.getZ()));
 	}
 }

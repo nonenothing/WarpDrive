@@ -2,7 +2,7 @@ package cr0s.warpdrive;
 
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ISecurityStation;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -22,7 +22,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntitySecurityStation extends TileEntityAbstractInterfaced implements ISecurityStation {
+public class TileEntitySecurityStation extends TileEntityAbstractMachine implements ISecurityStation {
 	
 	// persistent properties
 	public final ArrayList<String> players = new ArrayList<>();

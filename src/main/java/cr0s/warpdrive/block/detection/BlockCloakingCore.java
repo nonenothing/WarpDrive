@@ -81,7 +81,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 			// + " isInvalid? " + te.isInvalid() + " Valid? " + te.isValid + " Cloaking? " + te.isCloaking + " Enabled? " + te.isEnabled
 			return true;
 		} else if (itemStackHeld.getItem() == Item.getItemFromBlock(Blocks.REDSTONE_TORCH)) {
-			cloakingCore.isEnabled = !cloakingCore.isEnabled;
+			cloakingCore.setIsEnabled(!cloakingCore.getIsEnabled());
 			Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 			return true;
 		}
@@ -94,7 +94,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		
 		if (tileEntity instanceof TileEntityCloakingCore) {
-			((TileEntityCloakingCore) tileEntity).isEnabled = false;
+			((TileEntityCloakingCore) tileEntity).setIsEnabled(false);
 			((TileEntityCloakingCore) tileEntity).disableCloakingField();
 		}
 		

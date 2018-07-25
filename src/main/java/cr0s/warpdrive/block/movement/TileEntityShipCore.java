@@ -151,8 +151,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 			
 			// report cooldown time when a command is requested
 			if ( isEnabled
-			  && command != EnumShipCommand.IDLE
-			  && command != EnumShipCommand.MAINTENANCE ) {
+			  && enumShipCommand != EnumShipCommand.IDLE
+			  && enumShipCommand != EnumShipCommand.MAINTENANCE ) {
 				if (ticksCooldown % 20 == 0) {
 					final int seconds = ticksCooldown / 20;
 					if (!isCooldownReported || (seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
@@ -301,9 +301,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		
 		switch (stateCurrent) {
 		case IDLE:
-			if ( command != EnumShipCommand.IDLE
-			  && command != EnumShipCommand.MAINTENANCE ) {
-				commandCurrent = command;
+			if ( enumShipCommand != EnumShipCommand.IDLE
+			  && enumShipCommand != EnumShipCommand.MAINTENANCE ) {
+				commandCurrent = enumShipCommand;
 				stateCurrent = EnumShipCoreState.ONLINE;
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 //					WarpDrive.logger.info(String.format("%s state IDLE -> ONLINE",
@@ -359,7 +359,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 			
 			default:
 				WarpDrive.logger.error(String.format("%s Invalid controller command %s for current state %s",
-				                                     this, command, stateCurrent));
+				                                     this, enumShipCommand, stateCurrent));
 				break;
 			}
 			break;
@@ -456,7 +456,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	}
 	
 	public boolean isOffline() {
-		return command == EnumShipCommand.OFFLINE;
+		return enumShipCommand == EnumShipCommand.OFFLINE;
 	}
 	
 	public boolean isBusy() {
@@ -594,7 +594,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		}
 		updateAfterResize();
 		if (!isValid) {
-			Commons.addChatMessage(entityPlayerMP, new TextComponentString(!shipName.isEmpty() ? shipName : "ShipCore").setStyle(Commons.styleHeader)
+			Commons.addChatMessage(entityPlayerMP, new TextComponentString(!name.isEmpty() ? name : "ShipCore").setStyle(Commons.styleHeader)
 			                                       .appendSibling(reasonInvalid));
 			return false;
 		}
@@ -1156,7 +1156,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	public String getStarMapName() {
-		return shipName.isEmpty() ? "ShipCore" : shipName;
+		return name.isEmpty() ? "ShipCore" : name;
 	}
 	
 	@Override
@@ -1193,7 +1193,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	@Override
 	public Object[] getEnergyRequired() {
 		final WarpDriveText reason = new WarpDriveText();
-		final int energyRequired = getEnergyRequired(command, reason);
+		final int energyRequired = getEnergyRequired(enumShipCommand, reason);
 		if (energyRequired < 0) {
 			return new Object[] { false, reason.getUnformattedComponentText() };
 		}
@@ -1208,18 +1208,10 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	@Override
 	public Object[] getMaxJumpDistance() {
 		final WarpDriveText reason = new WarpDriveText();
-		final int maximumDistance_blocks = getMaxJumpDistance(command, reason);
+		final int maximumDistance_blocks = getMaxJumpDistance(enumShipCommand, reason);
 		if (maximumDistance_blocks < 0) {
 			return new Object[] { false, reason.toString() };
 		}
 		return new Object[] { true, maximumDistance_blocks };
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s '%s' %s",
-		                     getClass().getSimpleName(),
-		                     shipName,
-		                     Commons.format(world, pos));
 	}
 }

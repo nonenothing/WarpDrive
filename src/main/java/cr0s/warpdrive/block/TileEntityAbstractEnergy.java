@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.WarpDriveText;
+import cr0s.warpdrive.api.computer.IEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import cofh.redstoneflux.api.IEnergyHandler;
@@ -35,7 +36,7 @@ import net.minecraftforge.fml.common.Optional;
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "ic2")
 })
-public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyProvider, IEnergyReceiver, IEnergyHandler, IEnergySink, IEnergySource, cr0s.warpdrive.api.computer.IEnergy {
+public abstract class TileEntityAbstractEnergy extends TileEntityAbstractMachine implements IEnergyProvider, IEnergyReceiver, IEnergyHandler, IEnergySink, IEnergySource, IEnergy {
 	
 	public static final String ENERGY_TAG = "energy";
 	
@@ -476,6 +477,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Override
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeItemDropNBT(tagCompound);
+		
 		if (isEnergyLostWhenBroken) {
 			tagCompound.removeTag(ENERGY_TAG);
 		}

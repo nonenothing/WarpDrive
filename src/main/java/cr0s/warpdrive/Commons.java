@@ -387,7 +387,10 @@ public class Commons {
 	}
 	
 	public static String sanitizeFileName(final String name) {
-		return name.replace("/", "").replace(".", "").replace("\\", ".");
+		return name.replace("/", "")
+		           .replace(".", "")
+		           .replace(":", "")
+		           .replace("\\", ".");
 	}
 	
 	public static ItemStack copyWithSize(final ItemStack itemStack, final int newSize) {

@@ -13,7 +13,7 @@ import net.minecraft.util.math.ChunkPos;
 
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
-public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractEnergy {
+public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractEnergyConsumer {
 	
 	// persistent properties
 	protected ChunkPos chunkMin = null;

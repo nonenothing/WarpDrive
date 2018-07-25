@@ -4,7 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.IShipController;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractMachine;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumShipCommand;
 import cr0s.warpdrive.data.VectorI;
@@ -21,10 +21,9 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fml.common.Optional;
 
-public abstract class TileEntityAbstractShipController extends TileEntityAbstractEnergy implements IShipController {
+public abstract class TileEntityAbstractShipController extends TileEntityAbstractMachine implements IShipController {
 	
 	// persistent properties
-	public String shipName = "default";
 	private int front, right, up;
 	private int back, left, down;
 	private boolean isResized = true;
@@ -33,8 +32,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	private int moveUp = 0;
 	private int moveRight = 0;
 	private byte rotationSteps = 0;
-	protected EnumShipCommand command = EnumShipCommand.IDLE;
-	protected boolean isEnabled = false;
+	protected EnumShipCommand enumShipCommand = EnumShipCommand.IDLE;
+	protected boolean isCommandConfirmed = false;
 	protected String nameTarget = "";
 	
 	public TileEntityAbstractShipController() {
@@ -46,18 +45,14 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 				"getOrientation",
 				"isInSpace",
 				"isInHyperspace",
-				"shipName",
 				"dim_positive",
 				"dim_negative",
-				"energy",
 				"command",
-				"enable",
 				"getShipSize",
 				"getMaxJumpDistance",
 				"movement",
 				"rotationSteps",
 				"targetName",
-				"getEnergyRequired",
 				});
 	}
 	
@@ -82,9 +77,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		
-		shipName = tagCompound.getString("shipName");
-		isEnabled = tagCompound.hasKey("isEnabled") && tagCompound.getBoolean("isEnabled");
-		setCommand(tagCompound.getString("command"));
+		boolean isConfirmed = tagCompound.hasKey("commandConfirmed") && tagCompound.getBoolean("commandConfirmed");
+		setCommand(tagCompound.getString("commandName"), isConfirmed);
 		
 		setFront(tagCompound.getInteger("front"));
 		setRight(tagCompound.getInteger("right"));
@@ -106,9 +100,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
 		
-		tagCompound.setString("shipName", shipName);
-		tagCompound.setBoolean("isEnabled", isEnabled);
-		tagCompound.setString("command", command.name());
+		tagCompound.setString("commandName", enumShipCommand.getName());
+		tagCompound.setBoolean("commandConfirmed", isCommandConfirmed);
 		
 		tagCompound.setInteger("front", getFront());
 		tagCompound.setInteger("right", getRight());
@@ -129,8 +122,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeItemDropNBT(tagCompound);
 		
-		tagCompound.removeTag("isEnabled");
-		tagCompound.removeTag("command");
+		tagCompound.removeTag("commandName");
+		tagCompound.removeTag("commandConfirmed");
 		
 		tagCompound.removeTag("front");
 		tagCompound.removeTag("right");
@@ -152,25 +145,27 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	}
 	
 	public EnumShipCommand getCommand() {
-		return command;
+		return enumShipCommand;
 	}
 	
-	protected void setCommand(final String command) {
+	protected void setCommand(final String command, final boolean isConfirmed) {
 		for (final EnumShipCommand enumShipCommand : EnumShipCommand.values()) {
 			if (enumShipCommand.name().equalsIgnoreCase(command)) {
-				this.command = enumShipCommand;
+				this.isCommandConfirmed = false;
+				this.enumShipCommand = enumShipCommand;
+				this.isCommandConfirmed = isConfirmed;
 				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA && hasWorld()) {
-					WarpDrive.logger.info(String.format("%s Command set to %s (%d)",
-					                                    this, this.command, this.command.ordinal()));
+					WarpDrive.logger.info(String.format("%s Command set to %s (%s)",
+					                                    this, this.enumShipCommand, this.isCommandConfirmed));
 				}
 			}
 		}
 	}
 	
 	protected void commandDone(final boolean success, final WarpDriveText reason) {
-		isEnabled = false;
-		command = EnumShipCommand.IDLE;
+		isCommandConfirmed = false;
+		enumShipCommand = EnumShipCommand.IDLE;
 	}
 	
 	protected int getFront() {
@@ -252,20 +247,18 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	}
 	
 	protected void synchronizeFrom(@Nonnull final TileEntityAbstractShipController shipController) {
-		shipName = shipController.shipName;
-		front    = shipController.front;
-		right    = shipController.right;
-		up       = shipController.up;
-		back     = shipController.back;
-		left     = shipController.left;
-		down     = shipController.down;
+		name  = shipController.name;
+		front = shipController.front;
+		right = shipController.right;
+		up    = shipController.up;
+		back  = shipController.back;
+		left  = shipController.left;
+		down  = shipController.down;
 	}
 	
 	String getTargetName() {
 		return nameTarget;
 	}
-	
-	abstract public String getAllPlayersInArea();
 	
 	// Common OC/CC methods
 	@Override
@@ -279,21 +272,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	
 	@Override
 	abstract public Object[] isInHyperspace();
-	
-	@Override
-	public Object[] shipName(final Object[] arguments) {
-		if (arguments != null && arguments.length == 1 && arguments[0] != null) {
-			final String shipNamePrevious = shipName;
-			shipName = Commons.sanitizeFileName((String) arguments[0]);
-			if (!shipName.equals(shipNamePrevious)) {
-				WarpDrive.logger.info(String.format("Ship renamed from '%s' to '%s' with player(s) %s",
-				                                    shipNamePrevious == null ? "-null-" : shipNamePrevious,
-				                                    shipName,
-				                                    getAllPlayersInArea()));
-			}
-		}
-		return new Object[] { shipName };
-	}
 	
 	@Override
 	public Object[] dim_positive(final Object[] arguments) {
@@ -340,22 +318,15 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	@Override
 	public Object[] command(final Object[] arguments) {
 		try {
-			if (arguments.length == 1 && arguments[0] != null) {
-				setCommand(arguments[0].toString());
+			if ( arguments.length == 2
+			  && arguments[0] != null ) {
+				setCommand(arguments[0].toString(), Commons.toBool(arguments[1]));
 			}
 		} catch (final Exception exception) {
-			return new Object[] { command.toString() };
+			return new Object[] { enumShipCommand.toString() };
 		}
 		
-		return new Object[] { command.toString() };
-	}
-	
-	@Override
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			isEnabled = Commons.toBool(arguments[0]);
-		}
-		return new Object[] { isEnabled };
+		return new Object[] { enumShipCommand.toString() };
 	}
 	
 	@Override
@@ -398,9 +369,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		return new Object[] { nameTarget };
 	}
 	
-	@Override
-	public abstract Object[] getEnergyRequired();
-	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
@@ -428,12 +396,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] shipName(final Context context, final Arguments arguments) {
-		return shipName(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] dim_positive(final Context context, final Arguments arguments) {
 		return dim_positive(OC_convertArgumentsAndLogCall(context, arguments));
 	}
@@ -446,20 +408,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] energy(final Context context, final Arguments arguments) {
-		return energy();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] command(final Context context, final Arguments arguments) {
 		return command(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -492,12 +442,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		return targetName(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
-	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
-		return getEnergyRequired();
-	}
-	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
@@ -517,23 +461,14 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		case "isInHyperspace":
 			return isInHyperspace();
 		
-		case "shipName":
-			return shipName(arguments);
-		
 		case "dim_positive":
 			return dim_positive(arguments);
 		
 		case "dim_negative":
 			return dim_negative(arguments);
 		
-		case "energy":
-			return energy();
-		
 		case "command":
 			return command(arguments);
-		
-		case "enable":
-			return enable(arguments);
 		
 		case "getShipSize":
 			return getShipSize();
@@ -549,9 +484,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		
 		case "targetName":
 			return targetName(arguments);
-		
-		case "getEnergyRequired":
-			return getEnergyRequired();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

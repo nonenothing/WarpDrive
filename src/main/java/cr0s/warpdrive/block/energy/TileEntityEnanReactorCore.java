@@ -75,8 +75,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		peripheralName = "warpdriveEnanReactorCore";
 		addMethods(new String[] {
-			"enable",
-			"energy",		// returns energy, max energy, energy rate
 			"instability",	// returns ins0,1,2,3
 			"instabilityTarget",
 			"release",		// releases all energy
@@ -398,26 +396,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	// Common OC/CC methods
 	@Override
-	public Object[] enable(final Object[] arguments) {
-		if (arguments.length == 1 && arguments[0] != null) {
-			final boolean enableRequest;
-			try {
-				enableRequest = Commons.toBool(arguments[0]);
-			} catch (final Exception exception) {
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(String.format("%s LUA error on enable(): Boolean expected for 1st argument %s",
-					                                     this, arguments[0]));
-				}
-				return enable(new Object[0]);
-			}
-			if (isEnabled && !enableRequest) {
-				sendEvent("reactorDeactivation");
-			} else if (!isEnabled && enableRequest) {
-				sendEvent("reactorActivation");
-			}
-			isEnabled = enableRequest;
-		}
-		return new Object[] { isEnabled };
 	}
 	
 	@Override
@@ -561,19 +539,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(OC_convertArgumentsAndLogCall(context, arguments));
-	}
-	
-	@Callback
-	@Override
-	@Optional.Method(modid = "opencomputers")
-	public Object[] energy(final Context context, final Arguments arguments) {
-		return energy();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] instability(final Context context, final Arguments arguments) {
 		return instability();
 	}
@@ -625,12 +590,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		try {
 			switch (methodName) {
-			case "enable":
-				return enable(arguments);
-				
-			case "energy":
-				return energy();
-				
 			case "instability":
 				return instability();
 				
@@ -727,7 +686,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
 		
-		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setInteger("releaseMode", releaseMode.ordinal());
 		tagCompound.setInteger("releaseRate", releaseRate);
 		tagCompound.setInteger("releaseAbove", releaseAbove);
@@ -747,7 +705,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		
-		isEnabled = tagCompound.getBoolean("isEnabled");
 		releaseMode = EnumReactorReleaseMode.get(tagCompound.getInteger("releaseMode"));
 		releaseRate = tagCompound.getInteger("releaseRate");
 		releaseAbove = tagCompound.getInteger("releaseAbove");
@@ -770,7 +727,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeItemDropNBT(tagCompound);
-		tagCompound.removeTag("isEnabled");
 		tagCompound.removeTag("releaseMode");
 		tagCompound.removeTag("releaseRate");
 		tagCompound.removeTag("releaseAbove");
@@ -780,13 +736,5 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		tagCompound.removeTag("energy");
 		tagCompound.removeTag("instability");
 		return tagCompound;
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s %s %s",
-		                     getClass().getSimpleName(), 
-		                     connectedComputers == null ? "~NULL~" : connectedComputers,
-		                     Commons.format(world, pos));
 	}
 }

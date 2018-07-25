@@ -156,7 +156,7 @@ public class JumpShip {
 	}
 	
 	public void messageToAllPlayersOnShip(final WarpDriveText textComponent) {
-		final ITextComponent messageFormatted = new TextComponentString((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName + " " : "ShipCore ").setStyle(Commons.styleHeader)
+		final ITextComponent messageFormatted = new TextComponentString((shipCore != null && !shipCore.name.isEmpty()) ? shipCore.name + " " : "ShipCore ").setStyle(Commons.styleHeader)
 						.appendSibling(textComponent);
 		if (entitiesOnShip == null) {
 			// entities not saved yet, get them now
@@ -246,7 +246,7 @@ public class JumpShip {
 	public String toString() {
 		return String.format("%s/%d \'%s\' %s",
 		                     getClass().getSimpleName(), hashCode(),
-		                     shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.shipName),
+		                     shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.name),
 			                 Commons.format(world, core));
 	}
 	
