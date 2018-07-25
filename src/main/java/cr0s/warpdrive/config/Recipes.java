@@ -729,7 +729,7 @@ public class Recipes {
 		                                                            "ore:nuggetPulsatingIron", 0, // EnderIO
 		                                                            "minecraft:ghast_tear", 0);   // vanilla
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockRadarController), false, "PAP", "PtP", "pmc",
+		                                       new ItemStack(WarpDrive.blockRadar), false, "PAP", "PtP", "pmc",
 		                                       't', itemStackMotors[2],
 		                                       'P', oreCloakingPlate,
 		                                       'A', oreAntenna,

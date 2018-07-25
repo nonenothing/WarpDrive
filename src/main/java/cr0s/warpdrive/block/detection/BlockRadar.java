@@ -1,9 +1,9 @@
 package cr0s.warpdrive.block.detection;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import cr0s.warpdrive.data.EnumRadarMode;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -11,22 +11,17 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockRadar extends BlockAbstractContainer {
 	
 	public static final PropertyEnum<EnumRadarMode> MODE = PropertyEnum.create("mode", EnumRadarMode.class);
 	
-	public BlockRadar(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockRadar(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.detection.radar");
-		registerTileEntity(TileEntityRadar.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState().withProperty(MODE, EnumRadarMode.INACTIVE));
 	}
@@ -54,10 +49,5 @@ public class BlockRadar extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityRadar();
-	}
-	
-	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return 2;
 	}
 }
