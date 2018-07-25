@@ -7,12 +7,12 @@ import cr0s.warpdrive.data.CelestialObjectManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -43,7 +43,8 @@ public class RenderOverlayLocation {
 		}
 		
 		// start rendering
-		GL11.glEnable(GL11.GL_BLEND);
+		GlStateManager.enableBlend();
+		minecraft.getTextureManager().bindTexture(Gui.ICONS);
 		
 		// show current location name & description
 		RenderCommons.drawText(widthScreen, heightScreen, name, description,
@@ -62,8 +63,7 @@ public class RenderOverlayLocation {
 		// @TODO: show orbiting planet?
 		
 		// close rendering
-		minecraft.getTextureManager().bindTexture(Gui.ICONS);
-		GL11.glDisable(GL11.GL_BLEND);
+		// (done by GlStateManager & TextureManager)
 	}
 	
 	@SubscribeEvent
