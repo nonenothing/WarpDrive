@@ -2,8 +2,6 @@ package cr0s.warpdrive.api.computer;
 
 public interface IShipController extends IInterfaced {
 	
-	Object[] isAssemblyValid();
-	
 	Object[] getOrientation();
 	
 	Object[] isInSpace();

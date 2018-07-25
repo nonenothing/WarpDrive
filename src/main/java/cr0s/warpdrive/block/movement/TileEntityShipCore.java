@@ -6,6 +6,8 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.EventWarpDrive.Ship.PreJump;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.api.WarpDriveText;
+import cr0s.warpdrive.api.computer.IMultiBlockCoreOrController;
+import cr0s.warpdrive.api.computer.IMultiBlockCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.ShipMovementCosts;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -25,7 +27,9 @@ import cr0s.warpdrive.render.EntityFXBoundingBox;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -55,7 +59,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityShipCore extends TileEntityAbstractShipController implements IStarMapRegistryTileEntity {
+public class TileEntityShipCore extends TileEntityAbstractShipController implements IStarMapRegistryTileEntity, IMultiBlockCore {
 	
 	private static final int LOG_INTERVAL_TICKS = 20 * 180;
 	private static final int BOUNDING_BOX_INTERVAL_TICKS = 60;
@@ -64,6 +68,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	public EnumFacing facing;
 	public UUID uuid = null;
 	private double isolationRate = 0.0D;
+	private Set<BlockPos> blockPosShipControllers = new CopyOnWriteArraySet<>();
 	private int ticksCooldown = 0;
 	private int warmupTime_ticks = 0;
 	protected int jumpCount = 0;
@@ -478,6 +483,36 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		return ticksCooldown > 0;
 	}
 	
+	public boolean refreshLink(final IMultiBlockCoreOrController multiblockController) {
+		assert multiblockController instanceof TileEntityShipController;
+		final TileEntityShipController tileEntityShipController = (TileEntityShipController) multiblockController;
+		
+		final boolean isValid = !isUpgradeable();
+		
+		final BlockPos blockPos = tileEntityShipController.getPos();
+		if (blockPosShipControllers.contains(blockPos)) {
+			if (!isValid) {
+				blockPosShipControllers.remove(blockPos);
+				WarpDrive.logger.info(String.format("%s link removed to %s",
+				                                    this, tileEntityShipController));
+			}
+		} else if (isValid) {
+			blockPosShipControllers.add(blockPos);
+			WarpDrive.logger.info(String.format("%s link added to %s",
+			                                    this, tileEntityShipController));
+		}
+		return isValid;
+	}
+	
+	public void removeLink(final IMultiBlockCoreOrController multiblockController) {
+		assert multiblockController instanceof TileEntityShipController;
+		final TileEntityShipController tileEntityShipController = (TileEntityShipController) multiblockController;
+		final BlockPos blockPos = tileEntityShipController.getPos();
+		blockPosShipControllers.remove(blockPos);
+		WarpDrive.logger.info(String.format("%s link removed to %s",
+		                                    this, tileEntityShipController));
+	}
+	
 	@Override
 	protected void commandDone(final boolean success, @Nonnull final WarpDriveText reason) {
 		assert success || !reason.getUnformattedText().isEmpty();
@@ -485,11 +520,20 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		if (!success) {
 			Commons.messageToAllPlayersInArea(this, reason);
 		}
-		// @TODO implement remote controllers
-	}
-	
-	protected boolean refreshLink(final TileEntityShipController tileEntityShipController) {
-		return false; // @TODO implement remote controllers
+		for (final BlockPos blockPos : blockPosShipControllers) {
+			if (!world.isBlockLoaded(blockPos, false)) {
+				continue;
+			}
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
+			if (!(tileEntity instanceof TileEntityShipController)) {
+				blockPosShipControllers.remove(blockPos);
+				WarpDrive.logger.info(String.format("%s link removed to invalid instance of TileEntityShipController %s",
+				                                    this, tileEntity));
+				
+				continue;
+			}
+			((TileEntityShipController) tileEntity).commandDone(success, reason);
+		}
 	}
 	
 	public String getAllPlayersInArea() {

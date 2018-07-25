@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 public class TileEntityShipController extends TileEntityAbstractShipController {
 	
 	// persistent properties
-	private boolean isSynchronized = false;
+	// (none)
 	
 	// computed properties
 	private final int updateInterval_ticks = 20 * WarpDriveConfig.SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS;
@@ -56,10 +56,9 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 					tileEntityShipCoreWeakReference = new WeakReference<>(tileEntityShipCore);
 				}
 				
-				if ( !isSynchronized
-				  && tileEntityShipCore.refreshLink(this) ) {
-					isSynchronized = true;
-					synchronizeFrom(tileEntityShipCore);
+				final boolean isSynchronized = tileEntityShipCore.refreshLink(this);
+				if (isSynchronized) {
+					onCoreUpdated(tileEntityShipCore);
 					if ( !tileEntityShipCore.isCommandConfirmed
 					  && isCommandConfirmed ) {
 						tileEntityShipCore.command(new Object[] { enumShipCommand.getName(), true });

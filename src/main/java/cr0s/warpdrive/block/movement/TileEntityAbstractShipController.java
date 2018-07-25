@@ -3,8 +3,9 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.WarpDriveText;
+import cr0s.warpdrive.api.computer.IMultiBlockCore;
 import cr0s.warpdrive.api.computer.IShipController;
-import cr0s.warpdrive.block.TileEntityAbstractMachine;
+import cr0s.warpdrive.block.TileEntityAbstractEnergyCoreOrController;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumShipCommand;
 import cr0s.warpdrive.data.VectorI;
@@ -21,7 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fml.common.Optional;
 
-public abstract class TileEntityAbstractShipController extends TileEntityAbstractMachine implements IShipController {
+public abstract class TileEntityAbstractShipController extends TileEntityAbstractEnergyCoreOrController implements IShipController {
 	
 	// persistent properties
 	private int front, right, up;
@@ -41,7 +42,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		
 		// (abstract) peripheralName = "xxx";
 		addMethods(new String[] {
-				"isAssemblyValid",
 				"getOrientation",
 				"isInSpace",
 				"isInHyperspace",
@@ -246,14 +246,18 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		markDirty();
 	}
 	
-	protected void synchronizeFrom(@Nonnull final TileEntityAbstractShipController shipController) {
-		name  = shipController.name;
-		front = shipController.front;
-		right = shipController.right;
-		up    = shipController.up;
-		back  = shipController.back;
-		left  = shipController.left;
-		down  = shipController.down;
+	@Override
+	public void onCoreUpdated(@Nonnull final IMultiBlockCore multiblockCore) {
+		super.onCoreUpdated(multiblockCore);
+		
+		assert multiblockCore instanceof TileEntityShipCore;
+		final TileEntityShipCore tileEntityShipCore = (TileEntityShipCore) multiblockCore;
+		front = tileEntityShipCore.getFront();
+		right = tileEntityShipCore.getRight();
+		up    = tileEntityShipCore.getUp();
+		back  = tileEntityShipCore.getBack();
+		left  = tileEntityShipCore.getLeft();
+		down  = tileEntityShipCore.getDown();
 	}
 	
 	String getTargetName() {
@@ -261,9 +265,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	}
 	
 	// Common OC/CC methods
-	@Override
-	abstract public Object[] isAssemblyValid();
-	
 	@Override
 	abstract public Object[] getOrientation();
 	
@@ -372,12 +373,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "opencomputers")
-	public Object[] isAssemblyValid(final Context context, final Arguments arguments) {
-		return isAssemblyValid();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "opencomputers")
 	public Object[] getOrientation(final Context context, final Arguments arguments) {
 		return getOrientation();
 	}
@@ -449,9 +444,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
-		case "isAssemblyValid":
-			return isAssemblyValid();
-		
 		case "getOrientation":
 			return getOrientation();
 		
