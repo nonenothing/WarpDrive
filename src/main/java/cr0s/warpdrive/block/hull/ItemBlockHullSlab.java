@@ -36,10 +36,10 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	@Nonnull
 	@Override
 	public EnumActionResult onItemUse(@Nonnull final EntityPlayer entityPlayer, final World world, @Nonnull final BlockPos blockPos,
-	                                  @Nonnull final EnumHand hand, @Nonnull EnumFacing facing,
+	                                  @Nonnull final EnumHand enumHand, @Nonnull EnumFacing facing,
 	                                  final float hitX, final float hitY, final float hitZ) {
 		// get context
-		final ItemStack itemStackHeld = entityPlayer.getHeldItem(hand);
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		if (itemStackHeld.isEmpty()) {
 			return EnumActionResult.FAIL;
 		}
@@ -111,8 +111,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 				}
 				
 				// try to place ignoring the existing block
-				@SuppressWarnings("deprecation")
-				final IBlockState blockStatePlaced = blockSlab.getStateForPlacement(world, blockPosSide, facing, hitX, hitY, hitZ, metadataItem, entityPlayer);
+				final IBlockState blockStatePlaced = blockSlab.getStateForPlacement(world, blockPosSide, facing, hitX, hitY, hitZ, metadataItem, entityPlayer, enumHand);
 				final EnumFacing enumFacingPlaced = blockStatePlaced.getValue(BlockHullSlab.VARIANT).getFacing().getOpposite();
 				
 				// try to merge slabs when right-clicking on a side block
@@ -153,7 +152,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 			}
 		}
 		
-		return super.onItemUse(entityPlayer, world, blockPos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(entityPlayer, world, blockPos, enumHand, facing, hitX, hitY, hitZ);
 	}
 	
 	@Override

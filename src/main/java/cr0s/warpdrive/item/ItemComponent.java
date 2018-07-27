@@ -133,10 +133,10 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess world, final BlockPos blockPos, final EntityPlayer player) {
-		final Block block = world.getBlockState(blockPos).getBlock();
+	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess blockAccess, final BlockPos blockPos, final EntityPlayer player) {
+		final Block block = blockAccess.getBlockState(blockPos).getBlock();
 		
 		return block instanceof BlockCapacitor
-		    || super.doesSneakBypassUse(itemStack, world, blockPos, player);
+		    || super.doesSneakBypassUse(itemStack, blockAccess, blockPos, player);
 	}
 }

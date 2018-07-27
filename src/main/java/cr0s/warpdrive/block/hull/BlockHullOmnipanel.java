@@ -38,7 +38,9 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 		setLightLevel(10.0F / 15.0F);
 		setSoundType(SoundType.GLASS);
 		setTranslationKey("warpdrive.hull." + enumTier.getName() + ".omnipanel.");
-		setDefaultState(blockState.getBaseState().withProperty(BlockColored.COLOR, EnumDyeColor.WHITE));
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockColored.COLOR, EnumDyeColor.WHITE)
+		               );
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));
 	}
@@ -46,7 +48,7 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getPushReaction(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState blockState) {
 		return EnumPushReaction.BLOCK;
 	}
 	

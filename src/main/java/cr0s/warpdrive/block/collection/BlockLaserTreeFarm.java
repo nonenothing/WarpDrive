@@ -23,7 +23,9 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		
 		setTranslationKey("warpdrive.collection.laser_tree_farm");
 
-		setDefaultState(getDefaultState().withProperty(MODE, EnumLaserTreeFarmMode.INACTIVE));
+		setDefaultState(getDefaultState()
+				                .withProperty(MODE, EnumLaserTreeFarmMode.INACTIVE)
+		               );
 	}
 	
 	@Nonnull

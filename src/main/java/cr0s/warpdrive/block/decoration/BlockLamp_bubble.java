@@ -30,8 +30,8 @@ public class BlockLamp_bubble extends BlockAbstractLamp {
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		switch (state.getValue(BlockProperties.FACING)) {
+	public AxisAlignedBB getBoundingBox(IBlockState blockState, IBlockAccess source, BlockPos pos) {
+		switch (blockState.getValue(BlockProperties.FACING)) {
 			case DOWN : return AABB_DOWN ;
 			case UP   : return AABB_UP   ;
 			case NORTH: return AABB_NORTH;
@@ -44,7 +44,7 @@ public class BlockLamp_bubble extends BlockAbstractLamp {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isTranslucent(final IBlockState state) {
+	public boolean isTranslucent(final IBlockState blockState) {
 		return true;
 	}
 	

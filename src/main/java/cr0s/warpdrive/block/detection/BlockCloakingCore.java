@@ -28,7 +28,9 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		
 		setTranslationKey("warpdrive.detection.cloaking_core");
 		
-		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false));
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false)
+		               );
 	}
 	
 	@Nonnull

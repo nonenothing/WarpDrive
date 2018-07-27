@@ -37,47 +37,47 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean causesSuffocation(final IBlockState state) {
+	public boolean causesSuffocation(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullBlock(IBlockState state) {
+	public boolean isFullBlock(final IBlockState blockState) {
 		return true;
 	}
 	
 	@Override
-	public boolean isAir(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
+	public boolean isAir(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos pos) {
 		return false;
 	}
 	
 	@Override
-	public boolean isReplaceable(final IBlockAccess worldIn, @Nonnull final BlockPos blockPos) {
+	public boolean isReplaceable(final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return false;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(final World worldIn, @Nonnull final BlockPos blockPos) {
+	public boolean canPlaceBlockAt(final World world, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getPushReaction(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState blockState) {
 		return EnumPushReaction.BLOCK;
 	}
 	
 	@Nonnull
 	@Override
-	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
+	public Item getItemDropped(final IBlockState blockState, final Random rand, final int fortune) {
 		return Items.AIR;
 	}
 	

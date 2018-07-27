@@ -14,7 +14,9 @@ public class BlockAirSource extends BlockAbstractAir {
 	public BlockAirSource(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setDefaultState(getDefaultState().withProperty(BlockProperties.FACING, EnumFacing.DOWN));
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
+		               );
 	}
 	
 	@Nonnull
@@ -28,7 +30,7 @@ public class BlockAirSource extends BlockAbstractAir {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7));
+		       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override

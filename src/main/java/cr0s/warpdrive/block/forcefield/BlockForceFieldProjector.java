@@ -62,9 +62,9 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		setTranslationKey("warpdrive.force_field.projector." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
-				.withProperty(IS_DOUBLE_SIDED, false)
-				);
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
+				                .withProperty(IS_DOUBLE_SIDED, false)
+		               );
 	}
 	
 	@Nonnull
@@ -80,7 +80,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7))
+				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7))
 				.withProperty(IS_DOUBLE_SIDED, metadata > 7);
 	}
 	
@@ -134,21 +134,21 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(final IBlockState state) {
+	public boolean isFullCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess source, final BlockPos pos) {
-		switch (state.getValue(BlockProperties.FACING)) {
+	public AxisAlignedBB getBoundingBox(final IBlockState blockState, final IBlockAccess source, final BlockPos pos) {
+		switch (blockState.getValue(BlockProperties.FACING)) {
 			case DOWN : return AABB_DOWN ;
 			case UP   : return AABB_UP   ;
 			case NORTH: return AABB_NORTH;
@@ -180,8 +180,8 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public int damageDropped(final IBlockState state) {
-		return state.getValue(IS_DOUBLE_SIDED) ? 1 : 0;
+	public int damageDropped(final IBlockState blockState) {
+		return blockState.getValue(IS_DOUBLE_SIDED) ? 1 : 0;
 	}
 	
 	@Override

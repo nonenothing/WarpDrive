@@ -30,7 +30,7 @@ public abstract class BlockAbstractRotatingContainer extends BlockAbstractContai
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7));
+				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override

@@ -42,7 +42,9 @@ public class BlockGas extends BlockAbstractBase {
 		setHardness(0.0F);
 		setTranslationKey("warpdrive.decoration.gas");
 		
-		setDefaultState(getDefaultState().withProperty(COLOR, EnumGasColor.RED));
+		setDefaultState(getDefaultState()
+				                .withProperty(COLOR, EnumGasColor.RED)
+		               );
 	}
 	
 	@Nonnull
@@ -84,24 +86,24 @@ public class BlockGas extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean causesSuffocation(final IBlockState state) {
+	public boolean causesSuffocation(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullBlock(IBlockState state) {
+	public boolean isFullBlock(IBlockState blockState) {
 		return true;
 	}
 	
 	@Override
-	public boolean isAir(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
+	public boolean isAir(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos pos) {
 		return true;
 	}
 	
@@ -113,30 +115,30 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@Override
-	public boolean isReplaceable(final IBlockAccess worldIn, @Nonnull final BlockPos blockPos) {
+	public boolean isReplaceable(final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(final World worldIn, @Nonnull final BlockPos blockPos) {
+	public boolean canPlaceBlockAt(final World world, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
-	public boolean canCollideCheck(final IBlockState state, final boolean hitIfLiquid) {
+	public boolean canCollideCheck(final IBlockState blockState, final boolean hitIfLiquid) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getPushReaction(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState blockState) {
 		return EnumPushReaction.DESTROY;
 	}
 	
 	@Nonnull
 	@Override
-	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
+	public Item getItemDropped(final IBlockState blockState, final Random rand, final int fortune) {
 		return Items.AIR;
 	}
 	
@@ -147,7 +149,7 @@ public class BlockGas extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isTranslucent(final IBlockState state) {
+	public boolean isTranslucent(final IBlockState blockState) {
 		return true;
 	}
 	

@@ -33,7 +33,9 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		
 		setTranslationKey("warpdrive.force_field.relay." + enumTier.getName());
 		
-		setDefaultState(getDefaultState().withProperty(UPGRADE, EnumForceFieldUpgrade.NONE));
+		setDefaultState(getDefaultState()
+				                .withProperty(UPGRADE, EnumForceFieldUpgrade.NONE)
+		               );
 	}
 	
 	@Nonnull
@@ -57,8 +59,8 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getActualState(@Nonnull final IBlockState blockState, final IBlockAccess world, final BlockPos pos) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public IBlockState getActualState(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos pos) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(pos);
 		if (tileEntity instanceof TileEntityForceFieldRelay) {
 			return blockState.withProperty(UPGRADE, ((TileEntityForceFieldRelay) tileEntity).getUpgrade());
 		} else {

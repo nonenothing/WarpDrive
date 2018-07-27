@@ -53,13 +53,13 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getPushReaction(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState blockState) {
 		return EnumPushReaction.BLOCK;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
@@ -89,7 +89,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isTranslucent(final IBlockState state) {
+	public boolean isTranslucent(final IBlockState blockState) {
 		return true;
 	}
 	

@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class OrbInstance extends AbstractStructureInstance {
+	
 	protected OrbShell[] orbShells;
 	protected int[] orbShellThicknesses;
 	protected int totalThickness;

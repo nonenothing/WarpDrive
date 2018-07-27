@@ -78,7 +78,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
-			EnumFacing enumFacing = Commons.getFacingFromEntity(entityLiving);
+			final EnumFacing enumFacing = Commons.getFacingFromEntity(entityLiving);
 			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
 		}
 	}

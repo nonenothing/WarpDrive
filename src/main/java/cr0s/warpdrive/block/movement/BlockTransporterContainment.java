@@ -30,10 +30,11 @@ public class BlockTransporterContainment extends BlockAbstractBase {
 	}
 	
 	@Override
-	public boolean isNormalCube(final IBlockState state, final IBlockAccess blockAccess, final BlockPos blockPos) {
+	public boolean isNormalCube(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isSideSolid(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
 		return side == EnumFacing.DOWN;

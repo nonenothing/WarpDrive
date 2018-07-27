@@ -782,11 +782,8 @@ public class WarpDrive {
 	
 	// Register a Block with the default ItemBlock class.
 	public static <BLOCK extends Block> BLOCK register(final BLOCK block) {
-		if (block instanceof IBlockBase) {
-			return register(block, ((IBlockBase) block).createItemBlock());
-		} else {
-			return register(block, new ItemBlock(block));
-		}
+		assert block instanceof IBlockBase;
+		return register(block, ((IBlockBase) block).createItemBlock());
 	}
 	
 	// Register a Block with a custom ItemBlock class.

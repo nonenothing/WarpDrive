@@ -58,7 +58,7 @@ public class TileEntitySiren extends TileEntityAbstractMachine {
 		} else {
 			return;
 		}
-        
+		
 		if ( world == null
 		  || !world.isRemote ) {
 		    return;

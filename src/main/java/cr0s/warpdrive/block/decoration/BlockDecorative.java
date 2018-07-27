@@ -28,7 +28,9 @@ public class BlockDecorative extends BlockAbstractBase {
 		setHardness(1.5f);
 		setTranslationKey("warpdrive.decoration.decorative.");
 		
-		setDefaultState(getDefaultState().withProperty(TYPE, EnumDecorativeType.PLAIN));
+		setDefaultState(getDefaultState()
+				                .withProperty(TYPE, EnumDecorativeType.PLAIN)
+		               );
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
 	}
 	

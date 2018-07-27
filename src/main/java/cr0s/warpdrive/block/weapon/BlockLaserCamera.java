@@ -28,7 +28,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean causesSuffocation(final IBlockState state) {
+	public boolean causesSuffocation(final IBlockState blockState) {
 		return false;
 	}
 }

@@ -63,19 +63,19 @@ public class BlockAirShield extends BlockAbstractOmnipanel {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean causesSuffocation(final IBlockState state) {
+	public boolean causesSuffocation(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullBlock(final IBlockState state) {
+	public boolean isFullBlock(final IBlockState blockState) {
 		return false;
 	}
 	

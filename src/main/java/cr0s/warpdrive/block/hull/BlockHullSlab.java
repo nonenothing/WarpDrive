@@ -31,6 +31,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -76,7 +77,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		WarpDrive.register(this, new ItemBlockHullSlab(this));
 		
 		setDefaultState(getDefaultState()
-		                .withProperty(VARIANT, EnumVariant.PLAIN_DOWN));
+				                .withProperty(VARIANT, EnumVariant.PLAIN_DOWN)
+		               );
 	}
 	
 	@Nonnull
@@ -101,7 +103,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getPushReaction(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState blockState) {
 		return EnumPushReaction.BLOCK;
 	}
 	
@@ -171,21 +173,21 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullBlock(IBlockState state) {
-		return ((BlockSlab) state.getBlock()).isDouble();
+	public boolean isFullBlock(IBlockState blockState) {
+		return ((BlockSlab) blockState.getBlock()).isDouble();
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(final IBlockState state) {
-		return ((BlockSlab) state.getBlock()).isDouble();
+	public boolean isFullCube(final IBlockState blockState) {
+		return ((BlockSlab) blockState.getBlock()).isDouble();
 	}
 	
 	@Nonnull
 	@Override
-	public IBlockState getStateForPlacement(final World world, final BlockPos blockPos, final EnumFacing facing,
+	public IBlockState getStateForPlacement(@Nonnull final World world, @Nonnull final BlockPos blockPos, @Nonnull final EnumFacing facing,
 	                                        final float hitX, final float hitY, final float hitZ, final int metadata,
-	                                        final EntityLivingBase entityLivingBase) {
+	                                        @Nonnull final EntityLivingBase entityLivingBase, final EnumHand enumHand) {
 		final IBlockState blockState = getStateFromMeta(metadata);
 		
 		// full block?

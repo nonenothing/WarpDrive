@@ -77,8 +77,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		setBlockUnbreakable();
 		
 		setDefaultState(getDefaultState()
-		                .withProperty(FREQUENCY, 0)
-		);
+				                .withProperty(FREQUENCY, 0)
+		               );
 	}
 	
 	@Nonnull
@@ -178,19 +178,19 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean causesSuffocation(final IBlockState state) {
+	public boolean causesSuffocation(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullBlock(IBlockState state) {
+	public boolean isFullBlock(final IBlockState blockState) {
 		return false;
 	}
 	
@@ -207,7 +207,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Nonnull
 	@Override
-	public EnumBlockRenderType getRenderType(final IBlockState state) {
+	public EnumBlockRenderType getRenderType(final IBlockState blockState) {
 		return EnumBlockRenderType.MODEL;
 	}
 	

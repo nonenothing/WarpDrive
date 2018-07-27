@@ -44,8 +44,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractMachine
 	private long energyStored_internal = 0;
 	public static final double EU_PER_INTERNAL = 1.0D;
 	public static final double RF_PER_INTERNAL = 1800.0D / 437.5D;
-	public static final int IC2_sinkTier_max = Integer.MAX_VALUE;
-	public static final int IC2_sourceTier_max = 20;
+	// public static final int IC2_sinkTier_max = Integer.MAX_VALUE;
+	// public static final int IC2_sourceTier_max = 20;
 	protected int IC2_sinkTier = 3;
 	protected int IC2_sourceTier = 3;
 	protected boolean isEnergyLostWhenBroken = true;

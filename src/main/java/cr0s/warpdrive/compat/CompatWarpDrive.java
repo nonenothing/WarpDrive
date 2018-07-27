@@ -139,11 +139,11 @@ public class CompatWarpDrive implements IBlockTransformer {
 		  || block instanceof BlockShipCore ) {
 			switch (rotationSteps) {
 			case 1:
-				return mrotDirection[metadata & 7] | (metadata & 8);
+				return mrotDirection[metadata & 0x7] | (metadata & 0x8);
 			case 2:
-				return mrotDirection[mrotDirection[metadata & 7]] | (metadata & 8);
+				return mrotDirection[mrotDirection[metadata & 0x7]] | (metadata & 0x8);
 			case 3:
-				return mrotDirection[mrotDirection[mrotDirection[metadata & 7]]] | (metadata & 8);
+				return mrotDirection[mrotDirection[mrotDirection[metadata & 0x7]]] | (metadata & 0x8);
 			default:
 				return metadata;
 			}

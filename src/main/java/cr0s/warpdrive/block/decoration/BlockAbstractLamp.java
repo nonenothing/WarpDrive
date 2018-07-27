@@ -33,7 +33,9 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0] * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setTranslationKey(unlocalizedName);
-		setDefaultState(blockState.getBaseState().withProperty(BlockProperties.FACING, EnumFacing.NORTH));
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
+		               );
 		
 		setLightLevel(14.0F / 15.0F);
 	}
@@ -51,7 +53,7 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7));
+				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override
@@ -74,13 +76,13 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(final IBlockState state) {
+	public boolean isFullCube(final IBlockState blockState) {
 		return false;
 	}
 	
@@ -94,14 +96,14 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState withRotation(@Nonnull final IBlockState state, final Rotation rot) {
-		return state.withProperty(BlockProperties.FACING, rot.rotate(state.getValue(BlockProperties.FACING)));
+	public IBlockState withRotation(@Nonnull final IBlockState blockState, final Rotation rot) {
+		return blockState.withProperty(BlockProperties.FACING, rot.rotate(blockState.getValue(BlockProperties.FACING)));
 	}
 	
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState withMirror(@Nonnull final IBlockState state, final Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation(state.getValue(BlockProperties.FACING)));
+	public IBlockState withMirror(@Nonnull final IBlockState blockState, final Mirror mirrorIn) {
+		return blockState.withRotation(mirrorIn.toRotation(blockState.getValue(BlockProperties.FACING)));
 	}
 }

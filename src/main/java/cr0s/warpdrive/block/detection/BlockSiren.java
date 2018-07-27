@@ -36,7 +36,8 @@ public class BlockSiren extends BlockAbstractContainer {
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
-				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN) );
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
+		               );
 	}
 	
 	@Nonnull

@@ -94,6 +94,7 @@ public class ClientHandler {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void addBlockDetails(final ItemTooltipEvent event, final Block block) {
 		// item registry name
 		final ResourceLocation registryNameItem = event.getItemStack().getItem().getRegistryName();

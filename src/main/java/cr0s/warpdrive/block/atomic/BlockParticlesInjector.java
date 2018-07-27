@@ -18,7 +18,8 @@ public class BlockParticlesInjector extends BlockAcceleratorControlPoint {
 		setTranslationKey("warpdrive.atomic.particles_injector");
 		
 		setDefaultState(getDefaultState()
-				                .withProperty(BlockProperties.ACTIVE, false));
+				                .withProperty(BlockProperties.ACTIVE, false)
+		               );
 	}
 	
 	@Nonnull
@@ -32,7 +33,7 @@ public class BlockParticlesInjector extends BlockAcceleratorControlPoint {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0);
 	}
 	
 	@Override

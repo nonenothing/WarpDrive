@@ -110,7 +110,7 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 		
 		if (blockCarpentersBed.isInstance(block)) {
 			final int metadataNBT = nbtTileEntity.getInteger("cbMetadata");
-			final int rotation = (metadataNBT >> 13) & 7;
+			final int rotation = (metadataNBT >> 13) & 0x7;
 			final int state = metadataNBT & 0x1FFF;
 			switch (rotationSteps) {
 			case 1:
@@ -150,7 +150,7 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 		
 		if (blockCarpentersCollapsibleBlock.isInstance(block)) {
 			final int metadataNBT = nbtTileEntity.getInteger("cbMetadata");
-			final int state = metadataNBT & 7;
+			final int state = metadataNBT & 0x7;
 			final int weightXPZP = (metadataNBT & 0x7FFF07) >>  3;
 			final int weightXNZP = (metadataNBT & 0x7C1FFF) >> 13;
 			final int weightXNZN = (metadataNBT & 0x03FFFF) >> 18;
@@ -192,7 +192,7 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 		
 		if (blockCarpentersGarageDoor.isInstance(block)) {
 			final int metadataNBT = nbtTileEntity.getInteger("cbMetadata");
-			final int rotation = (metadataNBT >> 4) & 7;
+			final int rotation = (metadataNBT >> 4) & 0x7;
 			final int state = metadataNBT & 0xFF8F;
 			switch (rotationSteps) {
 			case 1:
@@ -211,7 +211,7 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 		
 		if (blockCarpentersGate.isInstance(block)) {
 			final int metadataNBT = nbtTileEntity.getInteger("cbMetadata");
-			final int rotation = (metadataNBT >> 4) & 7;
+			final int rotation = (metadataNBT >> 4) & 0x7;
 			final int state = metadataNBT & 0xFF8F;
 			switch (rotationSteps) {
 			case 1:

@@ -145,7 +145,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractMachine
 				controlChannelRequested = Commons.toInt(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(String.format("%s LUA error on enable(): Integer expected for 1st argument %s",
+					WarpDrive.logger.error(String.format("%s LUA error on controlChannel(): Integer expected for 1st argument %s",
 					                                     this, arguments[0]));
 				}
 				return new Object[] { controlChannel };

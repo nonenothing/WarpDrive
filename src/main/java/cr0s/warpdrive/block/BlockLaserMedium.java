@@ -20,7 +20,9 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 		
 		setTranslationKey("warpdrive.machines.laser_medium." + enumTier.getName());
 		
-		setDefaultState(getDefaultState().withProperty(LEVEL, 0));
+		setDefaultState(getDefaultState()
+				                .withProperty(LEVEL, 0)
+		               );
 	}
 	
 	@Nonnull

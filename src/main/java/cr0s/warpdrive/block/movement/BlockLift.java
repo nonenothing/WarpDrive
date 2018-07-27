@@ -22,7 +22,9 @@ public class BlockLift extends BlockAbstractContainer {
 		
 		setTranslationKey("warpdrive.movement.lift");
 		
-		setDefaultState(getDefaultState().withProperty(MODE, EnumLiftMode.INACTIVE));
+		setDefaultState(getDefaultState()
+				                .withProperty(MODE, EnumLiftMode.INACTIVE)
+		               );
 	}
 	
 	@Nonnull

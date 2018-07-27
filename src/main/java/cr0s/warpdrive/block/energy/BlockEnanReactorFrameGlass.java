@@ -29,13 +29,13 @@ public class BlockEnanReactorFrameGlass extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isTranslucent(final IBlockState state) {
+	public boolean isTranslucent(final IBlockState blockState) {
 		return true;
 	}
 	

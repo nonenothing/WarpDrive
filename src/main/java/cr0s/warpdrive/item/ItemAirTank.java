@@ -30,13 +30,13 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 			return;
 		}
 		list.add(new ItemStack(this, 1, 0));
-		list.add(new ItemStack(this, 1, getMaxDamage()));
 	}
 	
 	@Nonnull
 	@Override
 	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
 		return enumAirTankTier.getRarity();
+		list.add(new ItemStack(this, 1, getMaxDamage(null)));
 	}
 	
 	@Override
@@ -63,7 +63,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 		  || itemStack.getItem() != this ) {
 			return 0;
 		}
-		return getMaxDamage() - itemStack.getItemDamage();
+		return getMaxDamage(itemStack) - itemStack.getItemDamage();
 	}
 	
 	@Override
@@ -72,7 +72,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 		  || itemStack.getItem() != this ) {
 			return itemStack;
 		}
-		itemStack.setItemDamage(Math.min(getMaxDamage(), itemStack.getItemDamage() + 1)); // bypass unbreaking enchantment
+		itemStack.setItemDamage(Math.min(getMaxDamage(itemStack), itemStack.getItemDamage() + 1)); // bypass unbreaking enchantment
 		return itemStack;
 	}
 	

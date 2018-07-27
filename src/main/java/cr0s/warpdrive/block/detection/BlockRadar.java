@@ -23,7 +23,9 @@ public class BlockRadar extends BlockAbstractContainer {
 		
 		setTranslationKey("warpdrive.detection.radar");
 		
-		setDefaultState(getDefaultState().withProperty(MODE, EnumRadarMode.INACTIVE));
+		setDefaultState(getDefaultState()
+				                .withProperty(MODE, EnumRadarMode.INACTIVE)
+		               );
 	}
 	
 	@Nonnull

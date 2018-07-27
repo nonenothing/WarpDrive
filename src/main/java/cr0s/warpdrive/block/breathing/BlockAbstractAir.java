@@ -42,24 +42,24 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean causesSuffocation(final IBlockState state) {
+	public boolean causesSuffocation(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullBlock(IBlockState state) {
+	public boolean isFullBlock(IBlockState blockState) {
 		return true;
 	}
 	
 	@Override
-	public boolean isAir(final IBlockState state, final IBlockAccess blockAccess, final BlockPos pos) {
+	public boolean isAir(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos pos) {
 		return true;
 	}
 	
@@ -99,13 +99,13 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getPushReaction(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState blockState) {
 		return EnumPushReaction.DESTROY;
 	}
 	
 	@Nonnull
 	@Override
-	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
+	public Item getItemDropped(final IBlockState blockState, final Random rand, final int fortune) {
 		return Items.AIR;
 	}
 	

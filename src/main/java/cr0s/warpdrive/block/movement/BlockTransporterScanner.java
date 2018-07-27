@@ -62,7 +62,7 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 	}
 	
 	@Override
-	public boolean isNormalCube(final IBlockState state, final IBlockAccess blockAccess, final BlockPos blockPos) {
+	public boolean isNormalCube(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		return false;
 	}
 	

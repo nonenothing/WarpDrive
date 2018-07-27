@@ -25,7 +25,7 @@ public abstract class BlockAbstractAccelerator extends BlockAbstractBase impleme
 	}
 	
 	@Override
-	public boolean canCreatureSpawn(@Nonnull IBlockState blockState, @Nonnull IBlockAccess world, @Nonnull BlockPos blockPos, SpawnPlacementType type) {
+	public boolean canCreatureSpawn(@Nonnull IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, SpawnPlacementType type) {
 		return false;
 	}
 }

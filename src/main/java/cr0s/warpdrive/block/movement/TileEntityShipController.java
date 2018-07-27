@@ -181,10 +181,6 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 		return new Object[] { tileEntityShipCore.dim_negative(arguments) };
 	}
 	
-	// public Object[] command(final Object[] arguments);
-	
-	// public Object[] enable(final Object[] arguments);
-	
 	@Override
 	public Object[] energy() {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();

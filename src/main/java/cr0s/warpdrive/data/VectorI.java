@@ -121,12 +121,12 @@ public class VectorI implements Cloneable {
 		return true;
 	}
 	
-	public IBlockState getBlockState_noChunkLoading(final IBlockAccess world, final EnumFacing side) {
-		return getBlockState_noChunkLoading(world, x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset());
+	public IBlockState getBlockState_noChunkLoading(final IBlockAccess blockAccess, final EnumFacing side) {
+		return getBlockState_noChunkLoading(blockAccess, x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset());
 	}
 	
-	public IBlockState getBlockState_noChunkLoading(final IBlockAccess world) {
-		return getBlockState_noChunkLoading(world, x, y, z);
+	public IBlockState getBlockState_noChunkLoading(final IBlockAccess blockAccess) {
+		return getBlockState_noChunkLoading(blockAccess, x, y, z);
 	}
 	
 	static public IBlockState getBlockState_noChunkLoading(final IBlockAccess blockAccess, final int x, final int y, final int z) {
@@ -141,8 +141,8 @@ public class VectorI implements Cloneable {
 		return blockAccess.getBlockState(new BlockPos(x, y, z));
 	}
 	
-	public TileEntity getTileEntity(final IBlockAccess world) {
-		return world.getTileEntity(new BlockPos(x, y, z));
+	public TileEntity getTileEntity(final IBlockAccess blockAccess) {
+		return blockAccess.getTileEntity(new BlockPos(x, y, z));
 	}
 	
 	public void setBlockState(final World world, final IBlockState blockState) {

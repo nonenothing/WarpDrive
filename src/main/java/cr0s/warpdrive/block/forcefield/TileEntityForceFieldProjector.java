@@ -892,7 +892,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public float getRotationYaw() {
 		final int metadata = getBlockMetadata();
 		float totalYaw;
-		switch (EnumFacing.byIndex(metadata & 7)) {
+		switch (EnumFacing.byIndex(metadata & 0x7)) {
 		case DOWN : totalYaw =   0.0F; break;
 		case UP   : totalYaw =   0.0F; break;
 		case NORTH: totalYaw =  90.0F; break;
@@ -910,7 +910,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public float getRotationPitch() {
 		final int metadata = getBlockMetadata();
 		float totalPitch;
-		switch (EnumFacing.byIndex(metadata & 7)) {
+		switch (EnumFacing.byIndex(metadata & 0x7)) {
 		case DOWN : totalPitch =  180.0F; break;
 		case UP   : totalPitch =    0.0F; break;
 		case NORTH: totalPitch =  -90.0F; break;

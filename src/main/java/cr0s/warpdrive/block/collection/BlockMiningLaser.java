@@ -23,7 +23,9 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 		
 		setTranslationKey("warpdrive.collection.mining_laser");
 
-		setDefaultState(getDefaultState().withProperty(MODE, EnumMiningLaserMode.INACTIVE));
+		setDefaultState(getDefaultState()
+				                .withProperty(MODE, EnumMiningLaserMode.INACTIVE)
+		               );
 	}
 	
 	@Nonnull

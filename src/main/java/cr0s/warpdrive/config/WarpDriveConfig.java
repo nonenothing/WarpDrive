@@ -80,22 +80,22 @@ public class WarpDriveConfig {
 	
 	private static final boolean unused = false; // TODO
 	
-	private static String stringConfigDirectory;
-	private static File configDirectory;
+	private static String          stringConfigDirectory;
+	private static File            configDirectory;
 	private static DocumentBuilder xmlDocumentBuilder;
-	private static final String[] defaultXML_fillers = {
+	private static final String[]  defaultXML_fillers = {
 			"filler-default.xml",
 			"filler-netherores.xml",
 			"filler-undergroundbiomes.xml",
 	};
-	private static final String[] defaultXML_loots = {
+	private static final String[]  defaultXML_loots = {
 			"loot-default.xml",
 	};
-	private static final String[] defaultXML_structures = {
+	private static final String[]  defaultXML_structures = {
 			"structures-default.xml",
 			"structures-netherores.xml",
 	};
-	private static final String[] defaultXML_celestialObjects = {
+	private static final String[]  defaultXML_celestialObjects = {
 			"celestialObjects-default.xml"
 	};
 	
@@ -105,58 +105,58 @@ public class WarpDriveConfig {
 	/*
 	 * The variables which store whether or not individual mods are loaded
 	 */
-	public static boolean isAdvancedRepulsionSystemLoaded = false;
-	public static boolean isAdvancedSolarPanelLoaded = false;
-	public static boolean isCoFHCoreLoaded = false;
-	public static boolean isComputerCraftLoaded = false;
-	public static boolean isDefenseTechLoaded = false;
-	public static boolean isEnderIOLoaded = false;
-	public static boolean isForgeMultipartLoaded = false;
-	public static boolean isGregTechLoaded = false;
-	public static boolean isICBMClassicLoaded = false;
-	public static boolean isImmersiveEngineeringLoaded = false;
-	public static boolean isIndustrialCraft2Loaded = false;
-	public static boolean isNotEnoughItemsLoaded = false;
-	public static boolean isOpenComputersLoaded = false;
-	public static boolean isThermalExpansionLoaded = false;
-	public static boolean isThermalFoundationLoaded = false;
+	public static boolean              isAdvancedRepulsionSystemLoaded = false;
+	public static boolean              isAdvancedSolarPanelLoaded = false;
+	public static boolean              isCoFHCoreLoaded = false;
+	public static boolean              isComputerCraftLoaded = false;
+	public static boolean              isDefenseTechLoaded = false;
+	public static boolean              isEnderIOLoaded = false;
+	public static boolean              isForgeMultipartLoaded = false;
+	public static boolean              isGregTechLoaded = false;
+	public static boolean              isICBMClassicLoaded = false;
+	public static boolean              isImmersiveEngineeringLoaded = false;
+	public static boolean              isIndustrialCraft2Loaded = false;
+	public static boolean              isNotEnoughItemsLoaded = false;
+	public static boolean              isOpenComputersLoaded = false;
+	public static boolean              isThermalExpansionLoaded = false;
+	public static boolean              isThermalFoundationLoaded = false;
 	
-	public static ItemStack IC2_compressedAir;
-	public static ItemStack IC2_emptyCell;
-	public static Block IC2_rubberWood;
-	public static ItemStack IC2_Resin;
-	public static Block CC_Computer, CC_peripheral, CCT_Turtle, CCT_Expanded, CCT_Advanced;
+	public static ItemStack            IC2_compressedAir;
+	public static ItemStack            IC2_emptyCell;
+	public static Block                IC2_rubberWood;
+	public static ItemStack            IC2_Resin;
+	public static Block                CC_Computer, CC_peripheral, CCT_Turtle, CCT_Expanded, CCT_Advanced;
 	
 	// Mod configuration (see loadConfig() for comments/definitions)
 	// General
-	public static int G_SPACE_BIOME_ID = 95;
-	public static int G_SPACE_PROVIDER_ID = 14;
-	public static int G_HYPERSPACE_PROVIDER_ID = 15;
-	public static int G_ENTITY_SPHERE_GENERATOR_ID = 241;
-	public static int G_ENTITY_STAR_CORE_ID = 242;
-	public static int G_ENTITY_CAMERA_ID = 243;
-	public static int G_ENTITY_PARTICLE_BUNCH_ID = 244;
+	public static int                  G_SPACE_BIOME_ID = 95;
+	public static int                  G_SPACE_PROVIDER_ID = 14;
+	public static int                  G_HYPERSPACE_PROVIDER_ID = 15;
+	public static int                  G_ENTITY_SPHERE_GENERATOR_ID = 241;
+	public static int                  G_ENTITY_STAR_CORE_ID = 242;
+	public static int                  G_ENTITY_CAMERA_ID = 243;
+	public static int                  G_ENTITY_PARTICLE_BUNCH_ID = 244;
 	
-	public static final int LUA_SCRIPTS_NONE = 0;
-	public static final int LUA_SCRIPTS_TEMPLATES = 1;
-	public static final int LUA_SCRIPTS_ALL = 2;
-	public static int G_LUA_SCRIPTS = LUA_SCRIPTS_ALL;
-	public static String G_SCHEMALOCATION = "warpDrive_schematics";
-	public static int G_BLOCKS_PER_TICK = 3500;
-	public static boolean G_ENABLE_PROTECTION_CHECKS = true;
+	public static final int            LUA_SCRIPTS_NONE = 0;
+	public static final int            LUA_SCRIPTS_TEMPLATES = 1;
+	public static final int            LUA_SCRIPTS_ALL = 2;
+	public static int                  G_LUA_SCRIPTS = LUA_SCRIPTS_ALL;
+	public static String               G_SCHEMALOCATION = "warpDrive_schematics";
+	public static int                  G_BLOCKS_PER_TICK = 3500;
+	public static boolean              G_ENABLE_PROTECTION_CHECKS = true;
 	
 	// Client
-	public static float CLIENT_LOCATION_SCALE = 1.0F;
-	public static String CLIENT_LOCATION_FORMAT_TITLE = "§l%1$s";
-	public static int CLIENT_LOCATION_BACKGROUND_COLOR = Commons.colorARGBtoInt(64, 48, 48, 48);
-	public static int CLIENT_LOCATION_TEXT_COLOR = Commons.colorARGBtoInt(230, 180, 180, 240);
-	public static boolean CLIENT_LOCATION_HAS_SHADOW = true;
+	public static float                CLIENT_LOCATION_SCALE = 1.0F;
+	public static String               CLIENT_LOCATION_FORMAT_TITLE = "§l%1$s";
+	public static int                  CLIENT_LOCATION_BACKGROUND_COLOR = Commons.colorARGBtoInt(64, 48, 48, 48);
+	public static int                  CLIENT_LOCATION_TEXT_COLOR = Commons.colorARGBtoInt(230, 180, 180, 240);
+	public static boolean              CLIENT_LOCATION_HAS_SHADOW = true;
 	public static EnumDisplayAlignment CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.MIDDLE_RIGHT;
-	public static int CLIENT_LOCATION_SCREEN_OFFSET_X = 0;
-	public static int CLIENT_LOCATION_SCREEN_OFFSET_Y = -20;
+	public static int                  CLIENT_LOCATION_SCREEN_OFFSET_X = 0;
+	public static int                  CLIENT_LOCATION_SCREEN_OFFSET_Y = -20;
 	public static EnumDisplayAlignment CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.TOP_RIGHT;
-	public static float CLIENT_LOCATION_WIDTH_RATIO = 0.0F;
-	public static int CLIENT_LOCATION_WIDTH_MIN = 90;
+	public static float                CLIENT_LOCATION_WIDTH_RATIO = 0.0F;
+	public static int                  CLIENT_LOCATION_WIDTH_MIN = 90;
 	
 	public static EnumTooltipCondition CLIENT_TOOLTIP_REGISTRY_NAME = EnumTooltipCondition.ADVANCED_TOOLTIPS;
 	public static EnumTooltipCondition CLIENT_TOOLTIP_ORE_DICTIONARY_NAME = EnumTooltipCondition.ALWAYS;
@@ -204,95 +204,95 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_CLIENT_SYNCHRONIZATION = false;
 	
 	// Starmap
-	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
-	public static boolean STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS = false;
+	public static int              STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
+	public static boolean          STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS = false;
 	
 	// Space generator
-	public static int SPACE_GENERATOR_Y_MIN_CENTER = 55;
-	public static int SPACE_GENERATOR_Y_MAX_CENTER = 128;
-	public static int SPACE_GENERATOR_Y_MIN_BORDER = 5;
-	public static int SPACE_GENERATOR_Y_MAX_BORDER = 200;
+	public static int              SPACE_GENERATOR_Y_MIN_CENTER = 55;
+	public static int              SPACE_GENERATOR_Y_MAX_CENTER = 128;
+	public static int              SPACE_GENERATOR_Y_MIN_BORDER = 5;
+	public static int              SPACE_GENERATOR_Y_MAX_BORDER = 200;
 	
 	// Ship movement costs
 	public static ShipMovementCosts.Factors[] SHIP_MOVEMENT_COSTS_FACTORS = null;
 	
 	// Ship
-	public static int[]    SHIP_MAX_ENERGY_STORED_BY_TIER = { 0, 500000, 10000000, 100000000 };
-	public static int[]    SHIP_MASS_MAX_BY_TIER = { 2000000, 4000, 16000, 64000 };
-	public static int[]    SHIP_MASS_MIN_BY_TIER = { 0, 0, 3000, 12000 };
-	public static int      SHIP_MASS_MAX_ON_PLANET_SURFACE = 1200;
-	public static int      SHIP_MASS_MIN_FOR_HYPERSPACE = 3000;
-	public static int[]    SHIP_SIZE_MAX_PER_SIDE_BY_TIER = { 127, 32, 64, 127 };
-	public static int      SHIP_COLLISION_TOLERANCE_BLOCKS = 3;
-	public static int      SHIP_WARMUP_RANDOM_TICKS = 60;
-	public static int      SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
-	public static int      SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
-	public static int      SHIP_VOLUME_SCAN_BLOCKS_PER_TICK = 1000;
-	public static int      SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = 120;
-	public static String[] SHIP_MASS_UNLIMITED_PLAYER_NAMES = { "notch", "someone" };
+	public static int[]            SHIP_MAX_ENERGY_STORED_BY_TIER = { 0, 500000, 10000000, 100000000 };
+	public static int[]            SHIP_MASS_MAX_BY_TIER = { 2000000, 4000, 16000, 64000 };
+	public static int[]            SHIP_MASS_MIN_BY_TIER = { 0, 0, 3000, 12000 };
+	public static int              SHIP_MASS_MAX_ON_PLANET_SURFACE = 1200;
+	public static int              SHIP_MASS_MIN_FOR_HYPERSPACE = 3000;
+	public static int[]            SHIP_SIZE_MAX_PER_SIDE_BY_TIER = { 127, 32, 64, 127 };
+	public static int              SHIP_COLLISION_TOLERANCE_BLOCKS = 3;
+	public static int              SHIP_WARMUP_RANDOM_TICKS = 60;
+	public static int              SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
+	public static int              SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
+	public static int              SHIP_VOLUME_SCAN_BLOCKS_PER_TICK = 1000;
+	public static int              SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = 120;
+	public static String[]         SHIP_MASS_UNLIMITED_PLAYER_NAMES = { "notch", "someone" };
 	
 	// Jump gate
-	public static int[]    JUMP_GATE_SIZE_MAX_PER_SIDE_BY_TIER = { 127, 32, 64, 127 };
+	public static int[]            JUMP_GATE_SIZE_MAX_PER_SIDE_BY_TIER = { 127, 32, 64, 127 };
 	
 	// Radar
-	public static int      RADAR_MAX_ENERGY_STORED = 100000000; // 100kk eU
-	public static int      RADAR_SCAN_MIN_ENERGY_COST = 10000;
-	public static double[] RADAR_SCAN_ENERGY_COST_FACTORS = { 0.0, 0.0, 0.0, 0.0001 };
-	public static int      RADAR_SCAN_MIN_DELAY_SECONDS = 1;
-	public static double[] RADAR_SCAN_DELAY_FACTORS_SECONDS = { 1.0, 0.001, 0.0, 0.0 };
-	public static int      RADAR_MAX_ISOLATION_RANGE = 2;
-	public static int      RADAR_MIN_ISOLATION_BLOCKS = 2;
-	public static int      RADAR_MAX_ISOLATION_BLOCKS = 16;
-	public static double   RADAR_MIN_ISOLATION_EFFECT = 0.12;
-	public static double   RADAR_MAX_ISOLATION_EFFECT = 1.00;
+	public static int              RADAR_MAX_ENERGY_STORED = 100000000; // 100kk eU
+	public static int              RADAR_SCAN_MIN_ENERGY_COST = 10000;
+	public static double[]         RADAR_SCAN_ENERGY_COST_FACTORS = { 0.0, 0.0, 0.0, 0.0001 };
+	public static int              RADAR_SCAN_MIN_DELAY_SECONDS = 1;
+	public static double[]         RADAR_SCAN_DELAY_FACTORS_SECONDS = { 1.0, 0.001, 0.0, 0.0 };
+	public static int              RADAR_MAX_ISOLATION_RANGE = 2;
+	public static int              RADAR_MIN_ISOLATION_BLOCKS = 2;
+	public static int              RADAR_MAX_ISOLATION_BLOCKS = 16;
+	public static double           RADAR_MIN_ISOLATION_EFFECT = 0.12;
+	public static double           RADAR_MAX_ISOLATION_EFFECT = 1.00;
 	
 	// Siren
-	public static float[]  SIREN_RANGE_BLOCKS_BY_TIER = { 0.0F, 32.0F, 64.0F, 128.0F };
+	public static float[]          SIREN_RANGE_BLOCKS_BY_TIER = { 0.0F, 32.0F, 64.0F, 128.0F };
 	
 	// Ship Scanner
-	public static int      SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
-	public static int      SS_SEARCH_INTERVAL_TICKS = 20;
-	public static int      SS_SCAN_BLOCKS_PER_SECOND = 10;
-	public static int      SS_DEPLOY_BLOCKS_PER_INTERVAL = 10;
-	public static int      SS_DEPLOY_INTERVAL_TICKS = 4;
+	public static int              SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
+	public static int              SS_SEARCH_INTERVAL_TICKS = 20;
+	public static int              SS_SCAN_BLOCKS_PER_SECOND = 10;
+	public static int              SS_DEPLOY_BLOCKS_PER_INTERVAL = 10;
+	public static int              SS_DEPLOY_INTERVAL_TICKS = 4;
 	
 	// Laser medium
-	public static int[]    LASER_MEDIUM_MAX_ENERGY_STORED_BY_TIER = { 1000000, 10000, 30000, 100000 };
+	public static int[]            LASER_MEDIUM_MAX_ENERGY_STORED_BY_TIER = { 1000000, 10000, 30000, 100000 };
 	
 	// Laser Emitter
 	// 1 main laser + 4 boosting lasers = 10 * 100k + 0.6 * 40 * 100k = 3.4M
-	public static int      LASER_CANNON_MAX_MEDIUMS_COUNT = 10;
-	public static int      LASER_CANNON_MAX_LASER_ENERGY = 3400000;
-	public static int      LASER_CANNON_EMIT_FIRE_DELAY_TICKS = 5;
-	public static int      LASER_CANNON_EMIT_SCAN_DELAY_TICKS = 1;
+	public static int              LASER_CANNON_MAX_MEDIUMS_COUNT = 10;
+	public static int              LASER_CANNON_MAX_LASER_ENERGY = 3400000;
+	public static int              LASER_CANNON_EMIT_FIRE_DELAY_TICKS = 5;
+	public static int              LASER_CANNON_EMIT_SCAN_DELAY_TICKS = 1;
 	
-	public static double   LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY = 0.60D;
-	public static double   LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK  = 0.000200D;
-	public static double   LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK = 0.000005D;
-	public static double   LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK = 0.23D;
-	public static int      LASER_CANNON_RANGE_MAX = 500;
+	public static double           LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY = 0.60D;
+	public static double           LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK  = 0.000200D;
+	public static double           LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK = 0.000005D;
+	public static double           LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK = 0.23D;
+	public static int              LASER_CANNON_RANGE_MAX = 500;
 	
-	public static int      LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS = 20;
-	public static int      LASER_CANNON_ENTITY_HIT_ENERGY = 15000;
-	public static int      LASER_CANNON_ENTITY_HIT_BASE_DAMAGE = 3;
-	public static int      LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE = 30000;
-	public static int      LASER_CANNON_ENTITY_HIT_MAX_DAMAGE = 100;
+	public static int              LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS = 20;
+	public static int              LASER_CANNON_ENTITY_HIT_ENERGY = 15000;
+	public static int              LASER_CANNON_ENTITY_HIT_BASE_DAMAGE = 3;
+	public static int              LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE = 30000;
+	public static int              LASER_CANNON_ENTITY_HIT_MAX_DAMAGE = 100;
 	
-	public static int      LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD = 900000;
-	public static float    LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH = 4.0F;
-	public static int      LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
-	public static float    LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH = 4.0F;
+	public static int              LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD = 900000;
+	public static float            LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH = 4.0F;
+	public static int              LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
+	public static float            LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH = 4.0F;
 	
-	public static int      LASER_CANNON_BLOCK_HIT_ENERGY_MIN = 75000;
-	public static int      LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS = 150000;
-	public static int      LASER_CANNON_BLOCK_HIT_ENERGY_MAX = 750000;
-	public static double   LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS = 0.01;
-	public static double   LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX = 0.80;
+	public static int              LASER_CANNON_BLOCK_HIT_ENERGY_MIN = 75000;
+	public static int              LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS = 150000;
+	public static int              LASER_CANNON_BLOCK_HIT_ENERGY_MAX = 750000;
+	public static double           LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS = 0.01;
+	public static double           LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX = 0.80;
 	
-	public static float    LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD = 5.0F;
-	public static float    LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH = 8.0F;
-	public static int      LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
-	public static float    LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH = 50F;
+	public static float            LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD = 5.0F;
+	public static float            LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH = 8.0F;
+	public static int              LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
+	public static float            LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH = 50F;
 	
 	// Mining laser
 	// BuildCraft quarry values for reference
@@ -308,143 +308,143 @@ public class WarpDriveConfig {
 	// - overall consumption in 'all, space' is ML_EU_PER_LAYER_SPACE + ((ML_MAX_RADIUS * 2 + 1) ^ 2) * ML_EU_PER_BLOCK_SPACE => ~ 43150 EU/layer
 	// - overall consumption in 'ores, space' is ML_EU_PER_LAYER_SPACE + ((ML_MAX_RADIUS * 2 + 1) ^ 2) * ML_EU_PER_BLOCK_SPACE * ML_EU_MUL_ORESONLY / 25 => ~ 28630 EU/layer
 	// - at radius 5, one layer takes 403 ticks (2 * ML_SCAN_DELAY_TICKS + ML_MINE_DELAY_TICKS * (ML_MAX_RADIUS * 2 + 1) ^ 2)
-	public static int      MINING_LASER_MAX_MEDIUMS_COUNT = 3;
-	public static int      MINING_LASER_RADIUS_NO_LASER_MEDIUM = 4;
-	public static int      MINING_LASER_RADIUS_PER_LASER_MEDIUM = 1;
-	public static int      MINING_LASER_WARMUP_DELAY_TICKS = 20;
-	public static int      MINING_LASER_SCAN_DELAY_TICKS = 20;
-	public static int      MINING_LASER_MINE_DELAY_TICKS = 3;
-	public static int      MINING_LASER_SPACE_ENERGY_PER_LAYER = 20000;
-	public static int      MINING_LASER_PLANET_ENERGY_PER_LAYER = 33000;
-	public static int      MINING_LASER_SPACE_ENERGY_PER_BLOCK = 1500;
-	public static int      MINING_LASER_PLANET_ENERGY_PER_BLOCK = 2500;
-	public static double   MINING_LASER_ORESONLY_ENERGY_FACTOR = 15.0; // lower value encourages to keep the land 'clean'
-	public static double   MINING_LASER_SILKTOUCH_ENERGY_FACTOR = 1.5;
-	public static double   MINING_LASER_SILKTOUCH_DEUTERIUM_L = 0.0;
-	public static double   MINING_LASER_FORTUNE_ENERGY_FACTOR = 1.5;
+	public static int              MINING_LASER_MAX_MEDIUMS_COUNT = 3;
+	public static int              MINING_LASER_RADIUS_NO_LASER_MEDIUM = 4;
+	public static int              MINING_LASER_RADIUS_PER_LASER_MEDIUM = 1;
+	public static int              MINING_LASER_WARMUP_DELAY_TICKS = 20;
+	public static int              MINING_LASER_SCAN_DELAY_TICKS = 20;
+	public static int              MINING_LASER_MINE_DELAY_TICKS = 3;
+	public static int              MINING_LASER_SPACE_ENERGY_PER_LAYER = 20000;
+	public static int              MINING_LASER_PLANET_ENERGY_PER_LAYER = 33000;
+	public static int              MINING_LASER_SPACE_ENERGY_PER_BLOCK = 1500;
+	public static int              MINING_LASER_PLANET_ENERGY_PER_BLOCK = 2500;
+	public static double           MINING_LASER_ORESONLY_ENERGY_FACTOR = 15.0; // lower value encourages to keep the land 'clean'
+	public static double           MINING_LASER_SILKTOUCH_ENERGY_FACTOR = 1.5;
+	public static double           MINING_LASER_SILKTOUCH_DEUTERIUM_L = 0.0;
+	public static double           MINING_LASER_FORTUNE_ENERGY_FACTOR = 1.5;
 	
 	// Tree farm
-	public static int      TREE_FARM_MAX_MEDIUMS_COUNT = 5;
-	public static int      TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = 3;
-	public static int      TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = 2;
-	public static int      TREE_FARM_totalMaxRadius = 0;
-	public static int      TREE_FARM_MAX_LOG_DISTANCE = 8;
-	public static int      TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
+	public static int              TREE_FARM_MAX_MEDIUMS_COUNT = 5;
+	public static int              TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = 3;
+	public static int              TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = 2;
+	public static int              TREE_FARM_totalMaxRadius = 0;
+	public static int              TREE_FARM_MAX_LOG_DISTANCE = 8;
+	public static int              TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
 	
 	// Cloaking
-	public static int      CLOAKING_MAX_ENERGY_STORED = 500000000;
-	public static int      CLOAKING_COIL_CAPTURE_BLOCKS = 5;
-	public static int      CLOAKING_MAX_FIELD_RADIUS = 63;
-	public static int      CLOAKING_TIER1_ENERGY_PER_BLOCK = 32;
-	public static int      CLOAKING_TIER2_ENERGY_PER_BLOCK = 128;
-	public static int      CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS = 3;
+	public static int              CLOAKING_MAX_ENERGY_STORED = 500000000;
+	public static int              CLOAKING_COIL_CAPTURE_BLOCKS = 5;
+	public static int              CLOAKING_MAX_FIELD_RADIUS = 63;
+	public static int              CLOAKING_TIER1_ENERGY_PER_BLOCK = 32;
+	public static int              CLOAKING_TIER2_ENERGY_PER_BLOCK = 128;
+	public static int              CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS = 3;
 	
 	// Breathing
-	public static int      BREATHING_ENERGY_PER_CANISTER = 200;
-	public static int[]    BREATHING_ENERGY_PER_NEW_AIR_BLOCK_BY_TIER = { 0, 12, 180, 2610 };
-	public static int[]    BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK_BY_TIER = { 0, 4, 60, 870 };
-	public static int[]    BREATHING_MAX_ENERGY_STORED_BY_TIER = { 0, 1400, 21000, 304500 };  // almost 6 mn of autonomy
-	public static int      BREATHING_AIR_GENERATION_TICKS = 40;
-	public static int[]    BREATHING_AIR_GENERATION_RANGE_BLOCKS_BY_TIER = { 200, 16, 48, 144 };
-	public static int      BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS = 256;
-	public static int      BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
-	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
-	public static boolean  BREATHING_AIR_AT_ENTITY_DEBUG = false;
+	public static int              BREATHING_ENERGY_PER_CANISTER = 200;
+	public static int[]            BREATHING_ENERGY_PER_NEW_AIR_BLOCK_BY_TIER = { 0, 12, 180, 2610 };
+	public static int[]            BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK_BY_TIER = { 0, 4, 60, 870 };
+	public static int[]            BREATHING_MAX_ENERGY_STORED_BY_TIER = { 0, 1400, 21000, 304500 };  // almost 6 mn of autonomy
+	public static int              BREATHING_AIR_GENERATION_TICKS = 40;
+	public static int[]            BREATHING_AIR_GENERATION_RANGE_BLOCKS_BY_TIER = { 200, 16, 48, 144 };
+	public static int              BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS = 256;
+	public static int              BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
+	public static final boolean    BREATHING_AIR_BLOCK_DEBUG = false;
+	public static boolean          BREATHING_AIR_AT_ENTITY_DEBUG = false;
 	
-	public static int      BREATHING_AIR_TANK_BREATH_DURATION_TICKS = 300;
-	public static int[]    BREATHING_AIR_TANK_CAPACITY_BY_TIER = { 20, 32, 64, 128 };
+	public static int              BREATHING_AIR_TANK_BREATH_DURATION_TICKS = 300;
+	public static int[]            BREATHING_AIR_TANK_CAPACITY_BY_TIER = { 20, 32, 64, 128 };
 	
 	// IC2 Reactor cooler
-	public static int      IC2_REACTOR_MAX_HEAT_STORED = 30000;
-	public static int      IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK = 648;
-	public static int      IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK = 54;
-	public static int      IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK = 54;
-	public static int      IC2_REACTOR_COOLING_PER_INTERVAL = 1080;
-	public static double   IC2_REACTOR_ENERGY_PER_HEAT = 2.0D;
-	public static int      IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
+	public static int              IC2_REACTOR_MAX_HEAT_STORED = 30000;
+	public static int              IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK = 648;
+	public static int              IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK = 54;
+	public static int              IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK = 54;
+	public static int              IC2_REACTOR_COOLING_PER_INTERVAL = 1080;
+	public static double           IC2_REACTOR_ENERGY_PER_HEAT = 2.0D;
+	public static int              IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
 	
 	// Transporter
-	public static int      TRANSPORTER_MAX_ENERGY_STORED = 1000000;
-	public static int      TRANSPORTER_ENERGY_STORED_UPGRADE_BONUS = TRANSPORTER_MAX_ENERGY_STORED / 2;
-	public static int      TRANSPORTER_ENERGY_STORED_UPGRADE_MAX_QUANTITY = 8;
-	public static int      TRANSPORTER_SETUP_UPDATE_PARAMETERS_TICKS = 1 * 20;
-	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS = 8;
-	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_Y_BELOW_BLOCKS = 3;
-	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_Y_ABOVE_BLOCKS = 1;
-	public static int      TRANSPORTER_RANGE_BASE_BLOCKS = 256;
-	public static int      TRANSPORTER_RANGE_UPGRADE_BLOCKS = 64;
-	public static int      TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY = 8;
-	public static double[] TRANSPORTER_LOCKING_ENERGY_FACTORS = { 20.0, 3.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
-	public static double   TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK = Math.pow(0.01D, 1.0D / 300.0D); // natural decay down to 1% over 300 ticks
-	public static double   TRANSPORTER_LOCKING_STRENGTH_IN_WILDERNESS = 0.25D;
-	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_BEACON = 0.50D;
-	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER = 1.00D;
-	public static double   TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR = 0.5D;
-	public static double   TRANSPORTER_LOCKING_STRENGTH_UPGRADE = 0.15D;
-	public static double   TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS = 0.25D;
-	public static double   TRANSPORTER_LOCKING_SPEED_AT_BEACON = 0.75D;
-	public static double   TRANSPORTER_LOCKING_SPEED_AT_TRANSPORTER = 1.0D;
-	public static double   TRANSPORTER_LOCKING_SPEED_UPGRADE = 0.25D;
-	public static int      TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS = 5 * 20;
-	public static int      TRANSPORTER_LOCKING_UPGRADE_MAX_QUANTITY = 2;
-	public static int      TRANSPORTER_JAMMED_COOLDOWN_TICKS = 2 * 20;
-	public static double[] TRANSPORTER_ENERGIZING_ENERGY_FACTORS = { 10000.0, 1500.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
-	public static double   TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR = 10.0D;
-	public static int      TRANSPORTER_ENERGIZING_FAILURE_MAX_DAMAGE = 5;
-	public static double   TRANSPORTER_ENERGIZING_SUCCESS_LOCK_BONUS = 0.20D;
-	public static int      TRANSPORTER_ENERGIZING_SUCCESS_MAX_DAMAGE = 100;
-	public static double   TRANSPORTER_ENERGIZING_LOCKING_LOST = 0.5D;
-	public static int      TRANSPORTER_ENERGIZING_CHARGING_TICKS = 3 * 20;
-	public static int      TRANSPORTER_ENERGIZING_COOLDOWN_TICKS = 10 * 20;
-	public static double   TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS = 1.0D;
-	public static int      TRANSPORTER_ENTITY_GRAB_RADIUS_BLOCKS = 2;
-	public static int      TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS = 2;
-	public static int      TRANSPORTER_BEACON_MAX_ENERGY_STORED = 60000;
-	public static int      TRANSPORTER_BEACON_ENERGY_PER_TICK = 60000 / (300 * 20);  // 10 EU/t over 5 minutes
-	public static int      TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS = 20;
+	public static int              TRANSPORTER_MAX_ENERGY_STORED = 1000000;
+	public static int              TRANSPORTER_ENERGY_STORED_UPGRADE_BONUS = TRANSPORTER_MAX_ENERGY_STORED / 2;
+	public static int              TRANSPORTER_ENERGY_STORED_UPGRADE_MAX_QUANTITY = 8;
+	public static int              TRANSPORTER_SETUP_UPDATE_PARAMETERS_TICKS = 1 * 20;
+	public static int              TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS = 8;
+	public static int              TRANSPORTER_SETUP_SCANNER_RANGE_Y_BELOW_BLOCKS = 3;
+	public static int              TRANSPORTER_SETUP_SCANNER_RANGE_Y_ABOVE_BLOCKS = 1;
+	public static int              TRANSPORTER_RANGE_BASE_BLOCKS = 256;
+	public static int              TRANSPORTER_RANGE_UPGRADE_BLOCKS = 64;
+	public static int              TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY = 8;
+	public static double[]         TRANSPORTER_LOCKING_ENERGY_FACTORS = { 20.0, 3.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
+	public static double           TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK = Math.pow(0.01D, 1.0D / 300.0D); // natural decay down to 1% over 300 ticks
+	public static double           TRANSPORTER_LOCKING_STRENGTH_IN_WILDERNESS = 0.25D;
+	public static double           TRANSPORTER_LOCKING_STRENGTH_AT_BEACON = 0.50D;
+	public static double           TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER = 1.00D;
+	public static double           TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR = 0.5D;
+	public static double           TRANSPORTER_LOCKING_STRENGTH_UPGRADE = 0.15D;
+	public static double           TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS = 0.25D;
+	public static double           TRANSPORTER_LOCKING_SPEED_AT_BEACON = 0.75D;
+	public static double           TRANSPORTER_LOCKING_SPEED_AT_TRANSPORTER = 1.0D;
+	public static double           TRANSPORTER_LOCKING_SPEED_UPGRADE = 0.25D;
+	public static int              TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS = 5 * 20;
+	public static int              TRANSPORTER_LOCKING_UPGRADE_MAX_QUANTITY = 2;
+	public static int              TRANSPORTER_JAMMED_COOLDOWN_TICKS = 2 * 20;
+	public static double[]         TRANSPORTER_ENERGIZING_ENERGY_FACTORS = { 10000.0, 1500.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
+	public static double           TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR = 10.0D;
+	public static int              TRANSPORTER_ENERGIZING_FAILURE_MAX_DAMAGE = 5;
+	public static double           TRANSPORTER_ENERGIZING_SUCCESS_LOCK_BONUS = 0.20D;
+	public static int              TRANSPORTER_ENERGIZING_SUCCESS_MAX_DAMAGE = 100;
+	public static double           TRANSPORTER_ENERGIZING_LOCKING_LOST = 0.5D;
+	public static int              TRANSPORTER_ENERGIZING_CHARGING_TICKS = 3 * 20;
+	public static int              TRANSPORTER_ENERGIZING_COOLDOWN_TICKS = 10 * 20;
+	public static double           TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS = 1.0D;
+	public static int              TRANSPORTER_ENTITY_GRAB_RADIUS_BLOCKS = 2;
+	public static int              TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS = 2;
+	public static int              TRANSPORTER_BEACON_MAX_ENERGY_STORED = 60000;
+	public static int              TRANSPORTER_BEACON_ENERGY_PER_TICK = 60000 / (300 * 20);  // 10 EU/t over 5 minutes
+	public static int              TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS = 20;
 	
 	// Enantiomorphic power reactor
-	public static int[]    ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER = { 100000000, 100000000, 500000000, 2000000000 };
-	public static final int ENAN_REACTOR_UPDATE_INTERVAL_TICKS = 5; // hardcoded in the equations,
-	public static int      ENAN_REACTOR_MAX_LASERS_PER_SECOND = 6;
-	public static int[]    ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER = { 4, 4, 4, 4 };
-	public static int[]    ENAN_REACTOR_GENERATION_MAX_RF_BY_TIER = { 64000, 64000, 192000, 576000 };
-	public static int[]    ENAN_REACTOR_EXPLOSION_MAX_RADIUS_BY_TIER = { 6, 6, 8, 10 };
-	public static double[] ENAN_REACTOR_EXPLOSION_MAX_REMOVAL_CHANCE_BY_TIER = { 0.1D, 0.1D, 0.1D, 0.1D };
-	public static int[]    ENAN_REACTOR_EXPLOSION_COUNT_BY_TIER = { 3, 3, 3, 3 };
-	public static float[]  ENAN_REACTOR_EXPLOSION_STRENGTH_MIN_BY_TIER = { 4.0F, 4.0F, 5.0F, 6.0F };
-	public static float[]  ENAN_REACTOR_EXPLOSION_STRENGTH_MAX_BY_TIER = { 7.0F, 7.0F, 9.0F, 11.0F };
+	public static int[]            ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER = { 100000000, 100000000, 500000000, 2000000000 };
+	public static final int        ENAN_REACTOR_UPDATE_INTERVAL_TICKS = 5; // hardcoded in the equations,
+	public static int              ENAN_REACTOR_MAX_LASERS_PER_SECOND = 6;
+	public static int[]            ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER = { 4, 4, 4, 4 };
+	public static int[]            ENAN_REACTOR_GENERATION_MAX_RF_BY_TIER = { 64000, 64000, 192000, 576000 };
+	public static int[]            ENAN_REACTOR_EXPLOSION_MAX_RADIUS_BY_TIER = { 6, 6, 8, 10 };
+	public static double[]         ENAN_REACTOR_EXPLOSION_MAX_REMOVAL_CHANCE_BY_TIER = { 0.1D, 0.1D, 0.1D, 0.1D };
+	public static int[]            ENAN_REACTOR_EXPLOSION_COUNT_BY_TIER = { 3, 3, 3, 3 };
+	public static float[]          ENAN_REACTOR_EXPLOSION_STRENGTH_MIN_BY_TIER = { 4.0F, 4.0F, 5.0F, 6.0F };
+	public static float[]          ENAN_REACTOR_EXPLOSION_STRENGTH_MAX_BY_TIER = { 7.0F, 7.0F, 9.0F, 11.0F };
 	
 	// Subspace capacitor
-	public static int[]    CAPACITOR_MAX_ENERGY_STORED_BY_TIER = { 20000000, 800000, 4000000, 20000000 };
-	public static int[]    CAPACITOR_IC2_SINK_TIER_BY_TIER = { Integer.MAX_VALUE, 2, 3, 4 };
-	public static int[]    CAPACITOR_IC2_SOURCE_TIER_BY_TIER = { 20, 2, 3, 4 };
-	public static int[]    CAPACITOR_TRANSFER_PER_TICK_BY_TIER = { Integer.MAX_VALUE / 2, 200, 1000, 5000 };
-	public static double[] CAPACITOR_EFFICIENCY_PER_UPGRADE = { 0.95D, 0.98D, 1.0D };
+	public static int[]            CAPACITOR_MAX_ENERGY_STORED_BY_TIER = { 20000000, 800000, 4000000, 20000000 };
+	public static int[]            CAPACITOR_IC2_SINK_TIER_BY_TIER = { Integer.MAX_VALUE, 2, 3, 4 };
+	public static int[]            CAPACITOR_IC2_SOURCE_TIER_BY_TIER = { 20, 2, 3, 4 };
+	public static int[]            CAPACITOR_TRANSFER_PER_TICK_BY_TIER = { Integer.MAX_VALUE / 2, 200, 1000, 5000 };
+	public static double[]         CAPACITOR_EFFICIENCY_PER_UPGRADE = { 0.95D, 0.98D, 1.0D };
 	
 	// Laser lift
-	public static int      LIFT_MAX_ENERGY_STORED = 900;
-	public static int      LIFT_ENERGY_PER_ENTITY = 150;
-	public static int      LIFT_UPDATE_INTERVAL_TICKS = 10;
-	public static int      LIFT_ENTITY_COOLDOWN_TICKS = 40;
+	public static int              LIFT_MAX_ENERGY_STORED = 900;
+	public static int              LIFT_ENERGY_PER_ENTITY = 150;
+	public static int              LIFT_UPDATE_INTERVAL_TICKS = 10;
+	public static int              LIFT_ENTITY_COOLDOWN_TICKS = 40;
 	
 	// Chunk loader
-	public static int      CHUNK_LOADER_MAX_ENERGY_STORED = 1000000;
-	public static int      CHUNK_LOADER_MAX_RADIUS = 2;
-	public static int      CHUNK_LOADER_ENERGY_PER_CHUNK = 8;
+	public static int              CHUNK_LOADER_MAX_ENERGY_STORED = 1000000;
+	public static int              CHUNK_LOADER_MAX_RADIUS = 2;
+	public static int              CHUNK_LOADER_ENERGY_PER_CHUNK = 8;
 	
 	// Hull
-	public static float[]  HULL_HARDNESS = { 666666.0F, 25.0F, 50.0F, 80.0F };
-	public static float[]  HULL_BLAST_RESISTANCE = { 666666.0F, 60.0F, 90.0F, 120.0F };
+	public static float[]          HULL_HARDNESS = { 666666.0F, 25.0F, 50.0F, 80.0F };
+	public static float[]          HULL_BLAST_RESISTANCE = { 666666.0F, 60.0F, 90.0F, 120.0F };
 	
 	// Block transformers library
 	public static HashMap<String, IBlockTransformer> blockTransformers = new HashMap<>(30);
 	
 	// Particles accelerator
-	public static boolean ACCELERATOR_ENABLE = false;
-	public static final double[] ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
-	public static final double ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
-	public static int ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
+	public static boolean          ACCELERATOR_ENABLE = false;
+	public static final double[]   ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
+	public static final double     ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
+	public static int              ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
 	@Nonnull
 	public static Block getBlockOrFire(@Nonnull final String registryName) {

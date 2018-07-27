@@ -33,9 +33,10 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		setTranslationKey("warpdrive.detection.cloaking_coil");
 		
 		setDefaultState(getDefaultState()
-		                .withProperty(BlockProperties.ACTIVE, false)
-		                .withProperty(OUTER, false)
-		                .withProperty(BlockProperties.FACING, EnumFacing.UP));
+				                .withProperty(BlockProperties.ACTIVE, false)
+				                .withProperty(OUTER, false)
+				                .withProperty(BlockProperties.FACING, EnumFacing.UP)
+		               );
 	}
 	
 	@Nonnull
@@ -53,12 +54,12 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		// 7 = not used
 		// 1-6 = outer facing
 		// 0 = inner
-		final boolean isActive = (metadata & 8) != 0;
-		final boolean isOuter = (metadata & 7) > 0;
+		final boolean isActive = (metadata & 0x8) != 0;
+		final boolean isOuter = (metadata & 0x7) > 0;
 		return getDefaultState()
 				.withProperty(BlockProperties.ACTIVE, isActive)
 				.withProperty(OUTER, isOuter)
-				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.byIndex((metadata & 7) - 1) : EnumFacing.UP);
+				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.byIndex((metadata & 0x7) - 1) : EnumFacing.UP);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -69,7 +70,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	}
 	
 	public static void setBlockState(@Nonnull final World world, @Nonnull final BlockPos blockPos, final boolean isActive, final boolean isOuter, final EnumFacing enumFacing) {
-		IBlockState blockStateActual = world.getBlockState(blockPos);
+		final IBlockState blockStateActual = world.getBlockState(blockPos);
 		IBlockState blockStateNew = blockStateActual.withProperty(BlockProperties.ACTIVE, isActive).withProperty(OUTER, isOuter);
 		if (enumFacing != null) {
 			blockStateNew = blockStateNew.withProperty(BlockProperties.FACING, enumFacing);

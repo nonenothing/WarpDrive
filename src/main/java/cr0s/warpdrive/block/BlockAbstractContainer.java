@@ -62,8 +62,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		setCreativeTab(WarpDrive.creativeTabMain);
 		setRegistryName(registryName);
 		WarpDrive.register(this);
-		
-		setDefaultState(blockState.getBaseState());
 	}
 	
 	@Nullable
@@ -82,13 +80,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumBlockRenderType getRenderType(final IBlockState state) {
+	public EnumBlockRenderType getRenderType(final IBlockState blockState) {
 		return EnumBlockRenderType.MODEL;
 	}
 	
 	@Override
-	public void onBlockAdded(final World world, final BlockPos pos, final IBlockState state) {
-		super.onBlockAdded(world, pos, state);
+	public void onBlockAdded(final World world, final BlockPos pos, final IBlockState blockState) {
+		super.onBlockAdded(world, pos, blockState);
 		final TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
@@ -143,8 +141,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Nonnull
 	@Override
-	public ItemStack getPickBlock(@Nonnull final IBlockState state, final RayTraceResult target, @Nonnull final World world, @Nonnull final BlockPos blockPos, final EntityPlayer entityPlayer) {
-		final ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
+	public ItemStack getPickBlock(@Nonnull final IBlockState blockState, final RayTraceResult target, @Nonnull final World world, @Nonnull final BlockPos blockPos, final EntityPlayer entityPlayer) {
+		final ItemStack itemStack = super.getPickBlock(blockState, target, world, blockPos, entityPlayer);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {

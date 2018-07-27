@@ -22,8 +22,6 @@ public class BlockSecurityStation extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setTranslationKey("warpdrive.machines.security_station");
-		
-		setDefaultState(getDefaultState());
 	}
 	
 	@Nonnull
