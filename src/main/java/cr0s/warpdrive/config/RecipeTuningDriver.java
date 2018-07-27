@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +30,7 @@ public class RecipeTuningDriver implements IRecipe {
 	private final int size;
 	private ResourceLocation group;
 	
-	public RecipeTuningDriver(@Nonnull final ResourceLocation group, final ItemStack itemStackTool, final ItemStack itemStackConsumable, final int countDyes) {
+	public RecipeTuningDriver(@Nonnull final ResourceLocation group, final ItemStack itemStackTool, final ItemStack itemStackConsumable, final int countDyes, final String suffix) {
 		this.group = group;
 		this.itemStackTool = itemStackTool.copy();
 		this.itemStackConsumable = itemStackConsumable.copy();
@@ -43,7 +44,7 @@ public class RecipeTuningDriver implements IRecipe {
 		for (int index = 0; index < countDyes; index++) {
 			recipe[2 + index] = "dye";
 		}
-		WarpDrive.register(new ShapelessOreRecipe(group, itemStackTool, recipe));
+		WarpDrive.register(new ShapelessOreRecipe(group, itemStackTool, recipe), suffix);
 	}
 	
 	@Override
@@ -117,14 +118,14 @@ public class RecipeTuningDriver implements IRecipe {
 			} else {
 				// find a matching dye from ore dictionary
 				boolean matched = false;
-				for (int indexDye = 0; indexDye < Recipes.oreDyes.length; indexDye++) {
-					final List<ItemStack> itemStackDyes = OreDictionary.getOres(Recipes.oreDyes[indexDye]);
+				for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+					final List<ItemStack> itemStackDyes = OreDictionary.getOres("dye" + enumDyeColor.getUnlocalizedName());
 					for (final ItemStack itemStackDye : itemStackDyes) {
 						if (OreDictionary.itemMatches(itemStackSlot, itemStackDye, true)) {
 							// match found, update dye combination
 							matched = true;
 							countDyesFound++;
-							dye = dye * 16 + indexDye;
+							dye = dye * 16 + enumDyeColor.getDyeDamage();
 						}
 					}
 				}

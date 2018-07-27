@@ -3,6 +3,7 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.block.decoration.BlockDecorative;
+import cr0s.warpdrive.data.EnumAirTankTier;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumDecorativeType;
 import cr0s.warpdrive.data.EnumForceFieldShape;
@@ -14,9 +15,11 @@ import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemTuningDriver;
 
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumDyeColor;
 
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -27,6 +30,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.oredict.OreDictionary;
@@ -48,24 +52,25 @@ public class Recipes {
 	private static ResourceLocation groupHulls        = new ResourceLocation("hulls");
 	private static ResourceLocation groupTaintedHulls = new ResourceLocation("tainted_hulls");
 	
-	public static final String[] oreDyes = {
-		"dyeBlack",
-		"dyeRed",
-		"dyeGreen",
-		"dyeBrown",
-		"dyeBlue",
-		"dyePurple",
-		"dyeCyan",
-		"dyeLightGray",
-		"dyeGray",
-		"dyePink",
-		"dyeLime",
-		"dyeYellow",
-		"dyeLightBlue",
-		"dyeMagenta",
-		"dyeOrange",
-		"dyeWhite"
-	};
+	public static final HashMap<EnumDyeColor, String> oreDyes = new HashMap<>(16);
+	static {
+		oreDyes.put(EnumDyeColor.WHITE     , "dyeWhite");
+		oreDyes.put(EnumDyeColor.ORANGE    , "dyeOrange");
+		oreDyes.put(EnumDyeColor.MAGENTA   , "dyeMagenta");
+		oreDyes.put(EnumDyeColor.LIGHT_BLUE, "dyeLightBlue");
+		oreDyes.put(EnumDyeColor.YELLOW    , "dyeYellow");
+		oreDyes.put(EnumDyeColor.LIME      , "dyeLime");
+		oreDyes.put(EnumDyeColor.PINK      , "dyePink");
+		oreDyes.put(EnumDyeColor.GRAY      , "dyeGray");
+		oreDyes.put(EnumDyeColor.SILVER    , "dyeLightGray");
+		oreDyes.put(EnumDyeColor.CYAN      , "dyeCyan");
+		oreDyes.put(EnumDyeColor.PURPLE    , "dyePurple");
+		oreDyes.put(EnumDyeColor.BLUE      , "dyeBlue");
+		oreDyes.put(EnumDyeColor.BROWN     , "dyeBrown");
+		oreDyes.put(EnumDyeColor.GREEN     , "dyeGreen");
+		oreDyes.put(EnumDyeColor.RED       , "dyeRed");
+		oreDyes.put(EnumDyeColor.BLACK     , "dyeBlack");
+	}
 	
 	public static Ingredient getIngredient(final Object object) {
 		if (object instanceof ItemStack) {
@@ -87,7 +92,7 @@ public class Recipes {
 	public static void initOreDictionary() {
 		// air shields
 		for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-			registerOreDictionary("blockAirShield", new ItemStack(WarpDrive.blockAirShield, 1, enumDyeColor.getDyeDamage()));
+			registerOreDictionary("blockAirShield", new ItemStack(WarpDrive.blockAirShield, 1, enumDyeColor.getMetadata()));
 		}
 		
 		// decoration
@@ -110,6 +115,34 @@ public class Recipes {
 				registerOreDictionary("blockElectromagnet" + tier, new ItemStack(WarpDrive.blockElectromagnetGlass[index], 1));
 			}
 		}
+		
+		// hull
+		for (final EnumTier enumTier : EnumTier.nonCreative()) {
+			final int index = enumTier.getIndex();
+			for (int woolColor = 0; woolColor < 16; woolColor++) {
+				registerOreDictionary("blockHull" + index + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor));
+				registerOreDictionary("blockHull" + index + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
+				registerOreDictionary("blockHull" + index + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
+				registerOreDictionary("blockHull" + index + "_tiled", new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor));
+				registerOreDictionary("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0));
+				registerOreDictionary("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2));
+				registerOreDictionary("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6));
+				registerOreDictionary("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8));
+				registerOreDictionary("blockHull" + index + "_omnipanel", new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor));
+			}
+		}
+		
+		// Add Reinforced iridium plate to ore registry as applicable (it's missing in IC2 without GregTech)
+		if (!OreDictionary.doesOreNameExist("plateAlloyIridium") || OreDictionary.getOres("plateAlloyIridium").isEmpty()) {
+			if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+				final ItemStack iridiumAlloy = WarpDriveConfig.getItemStackOrFire("ic2:crafting", 4); // IC2 Experimental Iridium alloy plate
+				OreDictionary.registerOre("plateAlloyIridium", iridiumAlloy);
+			}
+			if (WarpDriveConfig.isThermalFoundationLoaded) {
+				final ItemStack iridiumAlloy = WarpDriveConfig.getItemStackOrFire("thermalfoundation:material", 327);   // Thermal Foundation Iridium Plate
+				OreDictionary.registerOre("plateAlloyIridium", iridiumAlloy);
+			}
+		}
 	}
 	
 	private static void registerOreDictionary(final String name, final ItemStack itemStack) {
@@ -124,18 +157,6 @@ public class Recipes {
 		Object ironBars = Blocks.IRON_BARS;
 		if (OreDictionary.doesOreNameExist("barsIron") && !OreDictionary.getOres("barsIron").isEmpty()) {
 			ironBars = "barsIron";
-		}
-		
-		// Add Reinforced iridium plate to ore registry as applicable (it's missing in IC2 without GregTech)
-		if (!OreDictionary.doesOreNameExist("plateAlloyIridium") || OreDictionary.getOres("plateAlloyIridium").isEmpty()) {
-			if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-				final ItemStack iridiumAlloy = WarpDriveConfig.getItemStackOrFire("ic2:crafting", 4); // IC2 Experimental Iridium alloy plate
-				OreDictionary.registerOre("plateAlloyIridium", iridiumAlloy);
-			}
-			if (WarpDriveConfig.isThermalFoundationLoaded) {
-				final ItemStack iridiumAlloy = WarpDriveConfig.getItemStackOrFire("thermalfoundation:material", 327);   // Thermal Foundation Iridium Plate
-				OreDictionary.registerOre("plateAlloyIridium", iridiumAlloy);
-			}
 		}
 		
 		// Get the machine casing to use
@@ -306,9 +327,13 @@ public class Recipes {
 		} else if (OreDictionary.doesOreNameExist("ingotElectricalSteel") && !OreDictionary.getOres("ingotElectricalSteel").isEmpty()) {// comes with EnderIO
 			lithiumOrElectrum = "ingotElectricalSteel";
 		}
+		// Regeneration II (ghast tear + glowstone)
+		final ItemStack itemStackStrongRegeneration = new ItemStack(Items.POTIONITEM, 1, 0);
+		itemStackStrongRegeneration.setTagCompound(new NBTTagCompound());
+		itemStackStrongRegeneration.getTagCompound().setString("Potion", "minecraft:strong_regeneration");
 		WarpDrive.register(new ShapedOreRecipe(groupComponents,
 		                                       ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "lRl", "prp",
-		                                       'R', new ItemStack(Items.POTIONITEM, 1, 8225),  // Regeneration II (ghast tear + glowstone)
+		                                       'R', itemStackStrongRegeneration,
 		                                       'r', "blockRedstone",
 		                                       'l', lithiumOrElectrum,
 		                                       'p', Items.PAPER));
@@ -424,7 +449,7 @@ public class Recipes {
 			goldNuggetOrBasicCircuit = "circuitBasic";
 		}
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemAirTanks[1], false, "rnr", "tpt", "rcr",
+		                                       WarpDrive.itemAirTanks[EnumAirTankTier.BASIC.getIndex()], false, "rnr", "tpt", "rcr",
 		                                       'r', rubberOrLeather,
 		                                       'p', itemStackMotors[0],
 		                                       't', ItemComponent.getItemStack(EnumComponentType.AIR_CANISTER),
@@ -437,10 +462,10 @@ public class Recipes {
 			goldIngotOrAdvancedCircuit = "circuitAdvanced";
 		}
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemAirTanks[2], false, "rnr", "tpt", "rcr",
+		                                       WarpDrive.itemAirTanks[EnumAirTankTier.ADVANCED.getIndex()], false, "rnr", "tpt", "rcr",
 		                                       'r', rubberOrLeather,
 		                                       'p', itemStackMotors[1],
-		                                       't', WarpDrive.itemAirTanks[1],
+		                                       't', WarpDrive.itemAirTanks[EnumAirTankTier.BASIC.getIndex()],
 		                                       'c', goldIngotOrAdvancedCircuit,
 		                                       'n', "nuggetGold"));
 		
@@ -450,22 +475,29 @@ public class Recipes {
 			emeraldOrSuperiorCircuit = "circuitElite";
 		}
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemAirTanks[3], false, "rnr", "tpt", "rcr",
+		                                       WarpDrive.itemAirTanks[EnumAirTankTier.SUPERIOR.getIndex()], false, "rnr", "tpt", "rcr",
 		                                       'r', rubberOrLeather,
 		                                       'p', itemStackMotors[2],
-		                                       't', WarpDrive.itemAirTanks[2],
+		                                       't', WarpDrive.itemAirTanks[EnumAirTankTier.ADVANCED.getIndex()],
 		                                       'c', emeraldOrSuperiorCircuit,
 		                                       'n', "nuggetGold"));
 		
 		// Uncrafting air tanks and canister
 		WarpDrive.register(new ShapelessOreRecipe(groupComponents,
-				                                  ItemComponent.getItemStackNoCache(EnumComponentType.GLASS_TANK, 1), WarpDrive.itemAirTanks[0], WarpDrive.itemAirTanks[0], WarpDrive.itemAirTanks[0], WarpDrive.itemAirTanks[0]));
+		                                          ItemComponent.getItemStackNoCache(EnumComponentType.GLASS_TANK, 1),
+		                                          WarpDrive.itemAirTanks[EnumAirTankTier.CANISTER.getIndex()],
+		                                          WarpDrive.itemAirTanks[EnumAirTankTier.CANISTER.getIndex()],
+		                                          WarpDrive.itemAirTanks[EnumAirTankTier.CANISTER.getIndex()],
+		                                          WarpDrive.itemAirTanks[EnumAirTankTier.CANISTER.getIndex()] ), "_uncrafting");
 		WarpDrive.register(new ShapelessOreRecipe(groupComponents,
-				                                  ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 2), WarpDrive.itemAirTanks[1]));
+				                                  ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 2),
+				                                  WarpDrive.itemAirTanks[EnumAirTankTier.BASIC.getIndex()]), "_uncrafting");
 		WarpDrive.register(new ShapelessOreRecipe(groupComponents,
-				                                  ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 4), WarpDrive.itemAirTanks[2]));
+				                                  ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 4),
+				                                  WarpDrive.itemAirTanks[EnumAirTankTier.ADVANCED.getIndex()]), "_uncrafting");
 		WarpDrive.register(new ShapelessOreRecipe(groupComponents,
-				                                  ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 8), WarpDrive.itemAirTanks[3]));
+				                                  ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 8),
+				                                  WarpDrive.itemAirTanks[EnumAirTankTier.SUPERIOR.getIndex()]), "_uncrafting");
 		
 		// Bone charcoal is smelting 1 bone
 		GameRegistry.addSmelting(Items.BONE, ItemComponent.getItemStackNoCache(EnumComponentType.BONE_CHARCOAL, 1), 1);
@@ -675,44 +707,44 @@ public class Recipes {
 		// advanced (corvette) is 1 Ghast tear , 4 Capacitive crystal, 2 Ender crystal, 1 Power interface, 1 advanced Ship controller
 		// superior (capital)  is 1 Nether star, 4 Capacitive block  , 2 Ender block  , 1 Power interface, 1 superior Ship controller
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockShipCore[1]),"c c", "eme", "cpc",
+		                                       new ItemStack(WarpDrive.blockShipCore[EnumTier.BASIC.getIndex()]),"c c", "eme", "cpc",
 		                                       'c', Items.REDSTONE,
 		                                       'e', Items.ENDER_PEARL,
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                       'm', new ItemStack(WarpDrive.blockShipController[1])));
+		                                       'm', new ItemStack(WarpDrive.blockShipController[EnumTier.BASIC.getIndex()])));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockShipCore[2]),"csc", "eme", "cpc",
+		                                       new ItemStack(WarpDrive.blockShipCore[EnumTier.ADVANCED.getIndex()]),"csc", "eme", "cpc",
 		                                       's', Items.GHAST_TEAR,
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                       'm', new ItemStack(WarpDrive.blockShipController[2])));
+		                                       'm', new ItemStack(WarpDrive.blockShipController[EnumTier.ADVANCED.getIndex()])));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockShipCore[3]),"csc", "eme", "cpc",
+		                                       new ItemStack(WarpDrive.blockShipCore[EnumTier.SUPERIOR.getIndex()]),"csc", "eme", "cpc",
 		                                       's', Items.NETHER_STAR,
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                       'm', new ItemStack(WarpDrive.blockShipController[3])));
+		                                       'm', new ItemStack(WarpDrive.blockShipController[EnumTier.SUPERIOR.getIndex()])));
 		
 		// Ship controller
 		// basic    is 1 Computer interface, 1 Tuning emerald, 1 LV Machine casing, 2 Memory crystal
 		// advanced is 1 Computer interface, 1 Tuning emerald, 1 MV Machine casing, 4 Memory crystal
 		// superior is 1 Computer interface, 1 Tuning emerald, 1 HV Machine casing, 6 Memory crystal
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockShipController[1]), false, " e ", "bmb", " c ",
+		                                       new ItemStack(WarpDrive.blockShipController[EnumTier.BASIC.getIndex()]), false, " e ", "bmb", " c ",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
 		                                       'm', itemStackMachineCasings[0],
 		                                       'b', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockShipController[2]), false, "beb", " m ", "bcb",
+		                                       new ItemStack(WarpDrive.blockShipController[EnumTier.ADVANCED.getIndex()]), false, "beb", " m ", "bcb",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
 		                                       'm', itemStackMachineCasings[1],
 		                                       'b', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockShipController[3]), false, "beb", "bmb", "bcb",
+		                                       new ItemStack(WarpDrive.blockShipController[EnumTier.SUPERIOR.getIndex()]), false, "beb", "bmb", "bcb",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
 		                                       'm', itemStackMachineCasings[2],
@@ -740,8 +772,8 @@ public class Recipes {
 		// Warp isolation is 1 EV Machine casing (Ti), 4 Titanium plate/Enderium ingot/Vibrant alloy/Iridium plate/quartz
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
 		                                       new ItemStack(WarpDrive.blockWarpIsolation), false, "i i", " m ", "i i",
-				'i', oreCloakingPlate,
-				'm', itemStackMachineCasings[3]));
+		                                       'i', oreCloakingPlate,
+		                                       'm', itemStackMachineCasings[3]));
 		
 		// Air generator is 1 power interface, 4 activated carbon, 1 motor, 1 MV Machine casing, 2 tanks
 		final Object compressorOrTank = WarpDriveConfig.getOreOrItemStack("gregtech:meta_item_2", 18095,   // GregTech CE Bronze rotor, ore:rotorBronze
@@ -750,7 +782,7 @@ public class Recipes {
 		                                                                  "enderio:block_reservoir", 0,    // EnderIO Reservoir
 		                                                                  "warpdrive:component", EnumComponentType.GLASS_TANK.ordinal()); // WarpDrive Glass tank
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[1]), false, "aca", "ata", "gmp",
+		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[EnumTier.BASIC.getIndex()]), false, "aca", "ata", "gmp",
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 		                                       'a', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
 		                                       't', itemStackMotors[1],
@@ -758,33 +790,34 @@ public class Recipes {
 		                                       'm', itemStackMachineCasings[1],
 		                                       'c', compressorOrTank));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[2]), false, "aaa", "ata", "ama",
-		                                       'a', WarpDrive.blockAirGeneratorTiered[1],
+		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[EnumTier.ADVANCED.getIndex()]), false, "aaa", "ata", "ama",
+		                                       'a', WarpDrive.blockAirGeneratorTiered[EnumTier.BASIC.getIndex()],
 		                                       't', itemStackMotors[2],
 		                                       'm', itemStackMachineCasings[2]));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[3]), false, "aaa", "ata", "ama",
-		                                       'a', WarpDrive.blockAirGeneratorTiered[2],
+		                                       new ItemStack(WarpDrive.blockAirGeneratorTiered[EnumTier.SUPERIOR.getIndex()]), false, "aaa", "ata", "ama",
+		                                       'a', WarpDrive.blockAirGeneratorTiered[EnumTier.ADVANCED.getIndex()],
 		                                       't', itemStackMotors[3],
 		                                       'm', itemStackMachineCasings[3]));
 		
 		// Air shield is 4 glowstones, 4 omnipanels and 1 coil crystal 
 		for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-			final int woolColor = enumDyeColor.getDyeDamage();  // @TODO sounds about wrong
+			final int metadataColor = enumDyeColor.getMetadata();
+			
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockAirShield, 4, woolColor), false, "gog", "oco", "gog",
+			                                       new ItemStack(WarpDrive.blockAirShield, 4, metadataColor), false, "gog", "oco", "gog",
 			                                       'g', Items.GLOWSTONE_DUST,
-			                                       'o', new ItemStack(WarpDrive.blockHulls_omnipanel[0], 1, woolColor),
+			                                       'o', new ItemStack(WarpDrive.blockHulls_omnipanel[EnumTier.BASIC.getIndex()], 1, metadataColor),
 			                                       'c', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL) ));
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockAirShield, 6, enumDyeColor.getDyeDamage()), false, "###", "gXg", "###",
+			                                       new ItemStack(WarpDrive.blockAirShield, 6, metadataColor), false, "###", "gXg", "###",
 			                                       '#', "blockAirShield",
 			                                       'g', Items.GOLD_NUGGET,
-			                                       'X', oreDyes[woolColor] ));
+			                                       'X', oreDyes.get(enumDyeColor) ));
 			WarpDrive.register(new ShapelessOreRecipe(groupMachines,
-			                                          new ItemStack(WarpDrive.blockAirShield, 1, enumDyeColor.getDyeDamage()),
+			                                          new ItemStack(WarpDrive.blockAirShield, 1, metadataColor),
 			                                          "blockAirShield",
-			                                          oreDyes[woolColor] ));
+			                                          oreDyes.get(enumDyeColor) ));
 		}
 		
 		// Laser cannon is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 HV Machine casing, 1 redstone dust, 2 glass pane
@@ -814,30 +847,29 @@ public class Recipes {
 		                                       'g', "paneGlassColorless"));
 		
 		// Laser medium
-		// basic    is 1 laser medium (empty), 4 redstone blocks, 4 lapis blocks
-		// advanced is 1 laser medium (empty), 4 redstone blocks, 4 lapis blocks
+		// basic    is 1 red dye, 1 green dye, 1 yellow dye, 3 glass bottles, 1 power interface, 1 LV casing, 1 computer interface
+		// advanced is 2 redstone dust, 1 nether wart, 2 lapis, 1 potion (any),  1 power interface, 1 LV casing, 1 computer interface
 		// superior is 1 laser medium (empty), 4 redstone blocks, 4 lapis blocks
-		// TODO: add fluid transposer/canning support
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockLaserMedium[1]), false, "rgy", "ggg", "pmc",
+		                                       new ItemStack(WarpDrive.blockLaserMedium[EnumTier.BASIC.getIndex()]), false, "rgy", "BBB", "pmc",
 		                                       'r', "dyeRed",
 		                                       'g', "dyeGreen",
 		                                       'y', "dyeYellow",
-		                                       'g', Items.GLASS_BOTTLE,
+		                                       'B', Items.GLASS_BOTTLE,
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 		                                       'm', itemStackMachineCasings[0],
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockLaserMedium[2]), false, "rnr", "lgl", "pmc",
+		                                       new ItemStack(WarpDrive.blockLaserMedium[EnumTier.ADVANCED.getIndex()]), false, "rnr", "lBl", "pmc",
 		                                       'r', "dustRedstone",
 		                                       'n', "cropNetherWart",
 		                                       'l', "gemLapis",
-		                                       'g', Items.POTIONITEM,
+		                                       'B', Items.POTIONITEM,
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 		                                       'm', itemStackMachineCasings[1],
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockLaserMedium[3]), false, "lrl", "rmr", "lrl",
+		                                       new ItemStack(WarpDrive.blockLaserMedium[EnumTier.SUPERIOR.getIndex()]), false, "lrl", "rmr", "lrl",
 		                                       'm', ItemComponent.getItemStack(EnumComponentType.LASER_MEDIUM_EMPTY),
 		                                       'r', "blockRedstone",
 		                                       'l', "blockLapis"));
@@ -931,7 +963,7 @@ public class Recipes {
 		                                       'r', rubberOrLeather,
 		                                       's', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
 		                                       'w', Items.DIAMOND_SWORD,
-		                                       'c', WarpDrive.blockShipController[1]));
+		                                       'c', WarpDrive.blockShipController[EnumTier.ADVANCED.getIndex()]));
 		
 		// Camera is 1 daylight sensor, 2 motors, 1 computer interface, 2 glass panel, 1 Tuning diamond, 1 LV Machine casing
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
@@ -1049,7 +1081,7 @@ public class Recipes {
 		                                       new ItemStack(WarpDrive.blockCloakingCore), false, "ici", "csc", "ipi",
 		                                       'i', WarpDrive.blockIridium,
 		                                       'c', WarpDrive.blockCloakingCoil,
-		                                       's', WarpDrive.blockShipController[1],
+		                                       's', WarpDrive.blockShipController[EnumTier.SUPERIOR.getIndex()],
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
 		
 		// Cloaking coil is 1 Titanium plate, 4 reinforced iridium plate, 1 EV Machine casing (Ti) or 1 Beacon, 4 emerald, 4 diamond
@@ -1080,7 +1112,7 @@ public class Recipes {
 		// Enantiomorphic reactor core is 1 EV Machine casing, 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
 		if (!WarpDriveConfig.ACCELERATOR_ENABLE) {
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       WarpDrive.blockEnanReactorCore[1], false, "CpC", "lml", "CcC",
+			                                       WarpDrive.blockEnanReactorCore[EnumTier.BASIC.getIndex()], false, "CpC", "lml", "CcC",
 			                                       'm', ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE),
 			                                       'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 			                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
@@ -1088,7 +1120,7 @@ public class Recipes {
 			                                       'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
 		} else {
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       WarpDrive.blockEnanReactorCore[1], false, " p ", "lCl", "cpm",
+			                                       WarpDrive.blockEnanReactorCore[EnumTier.BASIC.getIndex()], false, " p ", "lCl", "cpm",
 			                                       'C', ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE),
 			                                       'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 			                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
@@ -1096,39 +1128,39 @@ public class Recipes {
 			                                       'm', itemStackMachineCasings[2]));
 		}
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockEnanReactorCore[2], false, " c ", "lRl", " c ",
-		                                       'R', WarpDrive.blockEnanReactorCore[1],
+		                                       WarpDrive.blockEnanReactorCore[EnumTier.ADVANCED.getIndex()], false, " c ", "lRl", " c ",
+		                                       'R', WarpDrive.blockEnanReactorCore[EnumTier.BASIC.getIndex()],
 		                                       'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL) ));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockEnanReactorCore[3], false, "lSl", " R ", "lSl",
-		                                       'R', WarpDrive.blockEnanReactorCore[2],
+		                                       WarpDrive.blockEnanReactorCore[EnumTier.SUPERIOR.getIndex()], false, "lSl", " R ", "lSl",
+		                                       'R', WarpDrive.blockEnanReactorCore[EnumTier.ADVANCED.getIndex()],
 		                                       'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 		                                       'S', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR) ));
 		
 		// Enantiomorphic reactor frame is 1 Hull block, 4 Iron bars, gives 4
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[1], 4, 0), false, " b ", "bhb", " b ",
+		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[EnumTier.BASIC.getIndex()], 4, 0), false, " b ", "bhb", " b ",
 		                                       'h', "blockHull1_plain",
 		                                       'b', ironBars ));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[2], 4, 0), false, " b ", "bhb", " b ",
+		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[EnumTier.ADVANCED.getIndex()], 4, 0), false, " b ", "bhb", " b ",
 		                                       'h', "blockHull2_plain",
 		                                       'b', ironBars ));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[3], 4, 0), false, " b ", "bhb", " b ",
+		                                       new ItemStack(WarpDrive.blockEnanReactorFramePlain[EnumTier.SUPERIOR.getIndex()], 4, 0), false, " b ", "bhb", " b ",
 		                                       'h', "blockHull3_plain",
 		                                       'b', ironBars ));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[1], 4, 0), false, " b ", "bhb", " b ",
+		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[EnumTier.BASIC.getIndex()], 4, 0), false, " b ", "bhb", " b ",
 		                                       'h', "blockHull1_glass",
 		                                       'b', ironBars ));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[2], 4, 0), false, " b ", "bhb", " b ",
+		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[EnumTier.ADVANCED.getIndex()], 4, 0), false, " b ", "bhb", " b ",
 		                                       'h', "blockHull2_glass",
 		                                       'b', ironBars ));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[3], 4, 0), false, " b ", "bhb", " b ",
+		                                       new ItemStack(WarpDrive.blockEnanReactorFrameGlass[EnumTier.SUPERIOR.getIndex()], 4, 0), false, " b ", "bhb", " b ",
 		                                       'h', "blockHull3_glass",
 		                                       'b', ironBars ));
 		
@@ -1158,7 +1190,7 @@ public class Recipes {
 		
 		// Basic subspace capacitor is 1 Capacitive crystal + 1 Power interface + 3 paper + 4 iron bars
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockCapacitor[1]), false, "iPi", "pcp", "ipi",
+		                                       WarpDrive.blockCapacitor[EnumTier.BASIC.getIndex()], false, "iPi", "pcp", "ipi",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 		                                       'i', ironBars,
 		                                       'p', Items.PAPER,
@@ -1166,25 +1198,25 @@ public class Recipes {
 		
 		// Advanced subspace capacitor is 4 Basic subspace capacitor + 1 Power interface
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockCapacitor[2]), false, " c ", "cpc", " c ",
-		                                       'c', new ItemStack(WarpDrive.blockCapacitor[1]),
-		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
+		                                       WarpDrive.blockCapacitor[EnumTier.ADVANCED.getIndex()], false, " c ", "cpc", " c ",
+		                                       'c', new ItemStack(WarpDrive.blockCapacitor[EnumTier.BASIC.getIndex()]),
+		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ), "_upgrade");
 		// or 4 Capacitive crystal + 1 Gold ingot + 4 Power interface
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockCapacitor[2]), false, "pcp", "cgc", "pcp",
+		                                       WarpDrive.blockCapacitor[EnumTier.ADVANCED.getIndex()], false, "pcp", "cgc", "pcp",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 		                                       'g', "ingotGold",
-		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
+		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ), "_direct");
 		
 		// Superior subspace capacitor is 4 Advanced subspace capacitor + 1 Ender tuned crystal + 4 Iron ingot
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockCapacitor[3]), false, "ici", "cec", "ici",
-		                                       'c', new ItemStack(WarpDrive.blockCapacitor[2]),
+		                                       WarpDrive.blockCapacitor[EnumTier.SUPERIOR.getIndex()], false, "ici", "cec", "ici",
+		                                       'c', new ItemStack(WarpDrive.blockCapacitor[EnumTier.ADVANCED.getIndex()]),
 		                                       'i', "ingotIron",
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL) ));
 		// or 4 Capacitive crystal block + 1 Superconductor + 4 Iron ingot
 		/*
-		WarpDrive.register(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCapacitor, 1, 3), false, "ici", "csc", "ici",
+		WarpDrive.register(new ShapedOreRecipe(WarpDrive.blockCapacitor[EnumTier.SUPERIOR.getIndex()], false, "ici", "csc", "ici",
 		                                       'c', @TODO MC1.10 Capacitive crystal block,
 		                                       'i', "ingotIron",
 		                                       's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR) ));
@@ -1198,13 +1230,13 @@ public class Recipes {
 			                                       'p', ItemComponent.getItemStack(EnumComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                       'm', itemStackMachineCasings[index],
 			                                       'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
-			                                       'r', Items.REDSTONE));
+			                                       'r', Items.REDSTONE), "_left");
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
 			                                       new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1, 0), false, " e ", " mp", " r ",
 			                                       'p', ItemComponent.getItemStack(EnumComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                       'm', itemStackMachineCasings[index],
 			                                       'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
-			                                       'r', Items.REDSTONE));
+			                                       'r', Items.REDSTONE), "_right");
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
 			                                       new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1, 1), false, " e ", "pmp", " r ",
 			                                       'p', ItemComponent.getItemStack(EnumComponentType.ELECTROMAGNETIC_PROJECTOR),
@@ -1232,18 +1264,17 @@ public class Recipes {
 		WarpDrive.register(new ShapedOreRecipe(groupDecorations,
 		                                       BlockDecorative.getItemStackNoCache(EnumDecorativeType.PLAIN, 8), false, "sss", "scs", "sss",
 		                                       's', "warpDecorative",
-		                                       'c', "dyeWhite"));
+		                                       'c', "dyeWhite"), "_dye");
 		WarpDrive.register(new ShapedOreRecipe(groupDecorations,
 		                                       BlockDecorative.getItemStackNoCache(EnumDecorativeType.ENERGIZED, 8), false, "sss", "scs", "sss",
 		                                       's', "warpDecorative",
-		                                       'c', "dyeRed"));
+		                                       'c', "dyeRed"), "_dye");
 		WarpDrive.register(new ShapedOreRecipe(groupDecorations,
 		                                       BlockDecorative.getItemStackNoCache(EnumDecorativeType.NETWORK, 8), false, "sss", "scs", "sss",
 		                                       's', "warpDecorative",
-		                                       'c', "dyeBlue"));
+		                                       'c', "dyeBlue"), "_dye");
 		
 		// Lamp
-		// @TODO: add 16 color variations
 		WarpDrive.register(new ShapedOreRecipe(groupDecorations,
 		                                       WarpDrive.blockLamp_bubble, false, " g ", "glg", "h  ",
 		                                       'g', "blockGlass",
@@ -1260,20 +1291,9 @@ public class Recipes {
 		                                       'l', Blocks.REDSTONE_LAMP,
 		                                       'h', "blockHull1_plain"));
 		
-		// Plasma cutter
-		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.blockLamp_bubble, false, "tcr", "mgb", "i  ",
-		                                       't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
-		                                       'c', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
-		                                       'r', Items.BLAZE_ROD,
-		                                       'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
-		                                       'g', "ingotGold",
-		                                       'b', Blocks.STONE_BUTTON,
-		                                       'i', Items.IRON_INGOT));
-        
 		// Warp helmet
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemWarpArmor[3], false, "ggg", "gig", "wcw",
+		                                       WarpDrive.itemWarpArmor[EntityEquipmentSlot.HEAD.getIndex()], false, "ggg", "gig", "wcw",
 		                                       'i', Items.IRON_HELMET,
 		                                       'w', Blocks.WOOL,
 		                                       'g', "blockGlass",
@@ -1281,7 +1301,7 @@ public class Recipes {
 		
 		// Warp chestplate
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemWarpArmor[2], false, "gcg", "wiw", "GmG",
+		                                       WarpDrive.itemWarpArmor[EntityEquipmentSlot.CHEST.getIndex()], false, "gcg", "wiw", "GmG",
 		                                       'i', Items.IRON_CHESTPLATE,
 		                                       'w', Blocks.WOOL,
 		                                       'g', "blockHull3_glass",
@@ -1291,7 +1311,7 @@ public class Recipes {
 		
 		// Warp Leggings
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemWarpArmor[1], false, "gig", "m m", "w w",
+		                                       WarpDrive.itemWarpArmor[EntityEquipmentSlot.LEGS.getIndex()], false, "gig", "m m", "w w",
 		                                       'i', Items.IRON_LEGGINGS,
 		                                       'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
 		                                       'w', Blocks.WOOL,
@@ -1299,26 +1319,27 @@ public class Recipes {
 		
 		// Warp boots
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       WarpDrive.itemWarpArmor[0], false, "wiw", "r r", "   ",
+		                                       WarpDrive.itemWarpArmor[EntityEquipmentSlot.FEET.getIndex()], false, "wiw", "r r", "   ",
 		                                       'i', Items.IRON_BOOTS,
 		                                       'w', Blocks.WOOL,
 		                                       'r', rubberOrLeather));
 		
 		// Tuning fork variations
-		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
+		for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+			final int damageColor = enumDyeColor.getDyeDamage();
 			
 			// crafting tuning fork
 			WarpDrive.register(new ShapedOreRecipe(groupTools,
-			                                       new ItemStack(WarpDrive.itemTuningFork, 1, dyeColor), false, "  q", "iX ", " i ",
+			                                       new ItemStack(WarpDrive.itemTuningFork, 1, damageColor), false, "  q", "iX ", " i ",
 			                                       'q', "gemQuartz",
 			                                       'i', "ingotIron",
-			                                       'X', oreDyes[dyeColor] ));
+			                                       'X', oreDyes.get(enumDyeColor) ));
 			
 			// changing colors
 			WarpDrive.register(new ShapelessOreRecipe(groupTools,
-			                                          new ItemStack(WarpDrive.itemTuningFork, 1, dyeColor),
-			                                          oreDyes[dyeColor],
-			                                          "itemTuningFork"));
+			                                          new ItemStack(WarpDrive.itemTuningFork, 1, damageColor),
+			                                          oreDyes.get(enumDyeColor),
+			                                          "itemTuningFork"), "_dye");
 		}
 		
 		// Tuning driver crafting
@@ -1332,47 +1353,47 @@ public class Recipes {
 		// Tuning driver configuration
 		WarpDrive.register(new RecipeTuningDriver(groupTools,
 		                                          new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_VIDEO_CHANNEL),
-		                                          new ItemStack(Items.REDSTONE), 7));
+		                                          new ItemStack(Items.REDSTONE), 7, "_video1"), "_video2");
 		WarpDrive.register(new RecipeTuningDriver(groupTools,
 		                                          new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_BEAM_FREQUENCY),
-		                                          new ItemStack(Items.REDSTONE), 4));
+		                                          new ItemStack(Items.REDSTONE), 4, "_bream_frequency1"), "_bream_frequency2");
 		WarpDrive.register(new RecipeTuningDriver(groupTools,
 		                                          new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_CONTROL_CHANNEL),
-		                                          new ItemStack(Items.REDSTONE), 7));
+		                                          new ItemStack(Items.REDSTONE), 7, "_control_channel1"), "_control_channel2");
 		
 		// HULL blocks and variations
 		initDynamicHull();
 		
 		// Sirens
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockSirenIndustrial[1], "pip", "pip", "NcN",
+		                                       WarpDrive.blockSirenIndustrial[EnumTier.BASIC.getIndex()], "pip", "pip", "NcN",
 		                                       'p', "plankWood",
 		                                       'i', "ingotIron",
 		                                       'N', new ItemStack(Blocks.NOTEBLOCK, 1),
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockSirenIndustrial[2], " I ", "ISI", " I ",
+		                                       WarpDrive.blockSirenIndustrial[EnumTier.ADVANCED.getIndex()], " I ", "ISI", " I ",
 		                                       'I', "ingotGold",
-		                                       'S', WarpDrive.blockSirenIndustrial[1]));
+		                                       'S', WarpDrive.blockSirenIndustrial[EnumTier.BASIC.getIndex()]));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockSirenIndustrial[3], " I ", "ISI", " I ",
+		                                       WarpDrive.blockSirenIndustrial[EnumTier.SUPERIOR.getIndex()], " I ", "ISI", " I ",
 		                                       'I', "gemDiamond",
-		                                       'S', WarpDrive.blockSirenIndustrial[2]));
+		                                       'S', WarpDrive.blockSirenIndustrial[EnumTier.ADVANCED.getIndex()]));
 		
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockSirenMilitary[1], "ipi", "ipi", "NcN",
+		                                       WarpDrive.blockSirenMilitary[EnumTier.BASIC.getIndex()], "ipi", "ipi", "NcN",
 		                                       'p', "plankWood",
 		                                       'i', "ingotIron",
 		                                       'N', new ItemStack(Blocks.NOTEBLOCK, 1),
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockSirenMilitary[2], " I ", "ISI", " I ",
+		                                       WarpDrive.blockSirenMilitary[EnumTier.ADVANCED.getIndex()], " I ", "ISI", " I ",
 		                                       'I', "ingotGold",
-		                                       'S', WarpDrive.blockSirenMilitary[1]));
+		                                       'S', WarpDrive.blockSirenMilitary[EnumTier.BASIC.getIndex()]));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       WarpDrive.blockSirenMilitary[3], " I ", "ISI", " I ",
+		                                       WarpDrive.blockSirenMilitary[EnumTier.SUPERIOR.getIndex()], " I ", "ISI", " I ",
 		                                       'I', "gemDiamond",
-		                                       'S', WarpDrive.blockSirenMilitary[2]));
+		                                       'S', WarpDrive.blockSirenMilitary[EnumTier.ADVANCED.getIndex()]));
 		
 		// iron or steel
 		Object ingotIronOrSteel = "ingotIron";
@@ -1438,7 +1459,7 @@ public class Recipes {
 				snowOrIce = Blocks.ICE;
 			}
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockChillers[1]), "wgw", "sms", "bMb",
+			                                       new ItemStack(WarpDrive.blockChillers[EnumTier.BASIC.getIndex()]), "wgw", "sms", "bMb",
 			                                       'w', snowOrIce,
 			                                       'g', Items.GHAST_TEAR,
 			                                       's', ingotIronOrSteel,
@@ -1451,7 +1472,7 @@ public class Recipes {
 				nitrogen = Blocks.PACKED_ICE;
 			}
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockChillers[2]), "ngn", "dmd", "bMb",
+			                                       new ItemStack(WarpDrive.blockChillers[EnumTier.ADVANCED.getIndex()]), "ngn", "dmd", "bMb",
 			                                       'n', nitrogen,
 			                                       'g', Items.GHAST_TEAR,
 			                                       'd', Items.DIAMOND,
@@ -1464,7 +1485,7 @@ public class Recipes {
 				helium = "dustCryotheum";
 			}
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockChillers[3]), "hgh", "eme", "bMb",
+			                                       new ItemStack(WarpDrive.blockChillers[EnumTier.SUPERIOR.getIndex()]), "hgh", "eme", "bMb",
 			                                       'h', helium,
 			                                       'g', Items.GHAST_TEAR,
 			                                       'e', Items.EMERALD,
@@ -1483,43 +1504,43 @@ public class Recipes {
 			
 			// Normal electromagnets
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockElectromagnetPlain[1], 4), "   ", "ccc", "Cmt",
+			                                       new ItemStack(WarpDrive.blockElectromagnetPlain[EnumTier.BASIC.getIndex()], 4), "   ", "ccc", "Cmt",
 			                                       'c', ironIngotOrCopperIngotOrCoil,
 			                                       't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			                                       'm', itemStackMotorLV,
 			                                       'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockElectromagnetGlass[1], 4), "mgm", "g g", "mgm",
+			                                       new ItemStack(WarpDrive.blockElectromagnetGlass[EnumTier.BASIC.getIndex()], 4), "mgm", "g g", "mgm",
 			                                       'g', Blocks.GLASS,
-			                                       'm', WarpDrive.blockElectromagnetPlain[1]));
+			                                       'm', WarpDrive.blockElectromagnetPlain[EnumTier.BASIC.getIndex()]));
 			
 			// Advanced electromagnets
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mpm", "pip", "mpm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[EnumTier.ADVANCED.getIndex()], 6), "mpm", "pip", "mpm",
 			                                               'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
 			                                               'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-			                                               'm', WarpDrive.blockElectromagnetPlain[1]));
+			                                               'm', WarpDrive.blockElectromagnetPlain[EnumTier.BASIC.getIndex()]));
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mpm", "pip", "mpm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[EnumTier.ADVANCED.getIndex()], 6), "mpm", "pip", "mpm",
 			                                               'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
 			                                               'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-			                                               'm', WarpDrive.blockElectromagnetGlass[1]));
+			                                               'm', WarpDrive.blockElectromagnetGlass[EnumTier.BASIC.getIndex()]));
 			
 			// Superior electromagnets
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[3], 6), "mtm", "sps", "mMm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetPlain[EnumTier.SUPERIOR.getIndex()], 6), "mtm", "sps", "mMm",
 			                                               't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			                                               's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
 			                                               'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
 			                                               'M', itemStackMotorHV,
-			                                               'm', WarpDrive.blockElectromagnetPlain[2]));
+			                                               'm', WarpDrive.blockElectromagnetPlain[EnumTier.ADVANCED.getIndex()]));
 			WarpDrive.register(new RecipeParticleShapedOre(groupMachines,
-			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[3], 6), "mtm", "sps", "mMm",
+			                                               new ItemStack(WarpDrive.blockElectromagnetGlass[EnumTier.SUPERIOR.getIndex()], 6), "mtm", "sps", "mMm",
 			                                               't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			                                               's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
 			                                               'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
 			                                               'M', itemStackMotorHV,
-			                                               'm', WarpDrive.blockElectromagnetGlass[2]));
+			                                               'm', WarpDrive.blockElectromagnetGlass[EnumTier.ADVANCED.getIndex()]));
 			
 			// ICBM classic
 			if (WarpDriveConfig.isICBMClassicLoaded) {
@@ -1543,22 +1564,6 @@ public class Recipes {
 	}
 	
 	private static void initDynamicHull() {
-		// Hull ore dictionary
-		for (final EnumTier enumTier : EnumTier.nonCreative()) {
-			final int index = enumTier.getIndex();
-			for (int woolColor = 0; woolColor < 1; woolColor++) {
-				OreDictionary.registerOre("blockHull" + index + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor));
-				OreDictionary.registerOre("blockHull" + index + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
-				OreDictionary.registerOre("blockHull" + index + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
-				OreDictionary.registerOre("blockHull" + index + "_tiled", new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor));
-				OreDictionary.registerOre("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0));
-				OreDictionary.registerOre("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2));
-				OreDictionary.registerOre("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6));
-				OreDictionary.registerOre("blockHull" + index + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8));
-				OreDictionary.registerOre("blockHull" + index + "_omnipanel", new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor));
-			}
-		}
-		
 		// Hull blocks plain
 		// (BlockColored.func_150031_c is converting wool metadata into dye metadata)
 		// Tier 1 = 5 obsidian + 4 reinforced stone gives 10
@@ -1569,34 +1574,34 @@ public class Recipes {
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			final ItemStack reinforcedStone = WarpDriveConfig.getItemStackOrFire("ic2:resource", 11); // IC2 reinforced stone
 			WarpDrive.register(new ShapedOreRecipe(groupHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[1][0], 10, 0), false, "cbc", "bcb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 10, 0), false, "cbc", "bcb", "cbc",
 			                                       'b', reinforcedStone,
 			                                       'c', Blocks.OBSIDIAN ));
 		} else if (OreDictionary.doesOreNameExist("ingotSteel") && !OreDictionary.getOres("ingotSteel").isEmpty()) {
 			WarpDrive.register(new ShapedOreRecipe(groupHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[1][0], 10, 0), false, "cbc", "bcb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 10, 0), false, "cbc", "bcb", "cbc",
 			                                       'b', "ingotSteel",
 			                                       'c', "stone" ));
 		} else {
 			WarpDrive.register(new ShapedOreRecipe(groupHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[1][0], 10, 0), false, "cbc", "bcb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 10, 0), false, "cbc", "bcb", "cbc",
 			                                       'b', "ingotIron",
 			                                       'c', "stone" ));
 		}
 		if (OreDictionary.doesOreNameExist("ingotBronze") && !OreDictionary.getOres("ingotBronze").isEmpty()) {
 			WarpDrive.register(new ShapedOreRecipe(groupHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[1][0], 5, 0), false, "cbc", "bcb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 5, 0), false, "cbc", "bcb", "cbc",
 			                                       'b', "ingotBronze",
 			                                       'c', "stone" ));
 		}
 		if (OreDictionary.doesOreNameExist("ingotAluminium") && !OreDictionary.getOres("ingotAluminium").isEmpty()) {
 			WarpDrive.register(new ShapedOreRecipe(groupHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[1][0], 3, 0), false, "cbc", "bcb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 3, 0), false, "cbc", "bcb", "cbc",
 			                                       'b', "ingotAluminium",
 			                                       'c', "stone" ));
 		} else if (OreDictionary.doesOreNameExist("ingotAluminum") && !OreDictionary.getOres("ingotAluminum").isEmpty()) {
 			WarpDrive.register(new ShapedOreRecipe(groupHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[1][0], 3, 0), false, "cbc", "bcb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 3, 0), false, "cbc", "bcb", "cbc",
 			                                       'b', "ingotAluminum",
 			                                       'c', "stone" ));
 		}
@@ -1608,15 +1613,16 @@ public class Recipes {
 		                                                                               "ore:ingotDarkSteel", 0,                         // EnderIO DarkSteel ingot
 		                                                                               "minecraft:obsidian", 0);
 		for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+			final int metadataColor = enumDyeColor.getMetadata();
 			WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-			                                       'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()),
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.ADVANCED.getIndex()][0], 4, metadataColor), false, "cbc", "b b", "cbc",
+			                                       'b', new ItemStack(WarpDrive.blockHulls_plain[EnumTier.BASIC.getIndex()][0], 1, metadataColor),
 			                                       'c', oreObsidianTungstenSteelPlate ));
 			WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.ADVANCED.getIndex()][0], 4, metadataColor), false, "cbc", "bXb", "cbc",
 			                                       'b', "blockHull1_plain",
 			                                       'c', oreObsidianTungstenSteelPlate,
-			                                       'X', oreDyes[enumDyeColor.getMetadata()] ));
+			                                       'X', oreDyes.get(enumDyeColor) ), "_dye");
 		}
 		
 		// Tier 3 = 4 Tier 2 + 1 GregTech naquadah plate, IC2 iridium plate, EnderIO pulsating crystal or diamond gives 4
@@ -1625,136 +1631,137 @@ public class Recipes {
 		                                                                           "ore:itemPulsatingCrystal", 0,                  // EnderIO Pulsating crystal
 		                                                                           "ore:gemDiamond", 0);
 		for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+			final int metadataColor = enumDyeColor.getMetadata();
 			WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[3][0], 4, enumDyeColor.getDyeDamage()), false, " b ", "bcb", " b ",
-			                                       'b', new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()),
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.SUPERIOR.getIndex()][0], 4, metadataColor), false, " b ", "bcb", " b ",
+			                                       'b', new ItemStack(WarpDrive.blockHulls_plain[EnumTier.ADVANCED.getIndex()][0], 1, metadataColor),
 			                                       'c', oreDiamondOrNaquadahPlate ));
 			WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-			                                       new ItemStack(WarpDrive.blockHulls_plain[3][0], 4, enumDyeColor.getDyeDamage()), false, "Xb ", "bcb", " b ",
+			                                       new ItemStack(WarpDrive.blockHulls_plain[EnumTier.SUPERIOR.getIndex()][0], 4, metadataColor), false, "Xb ", "bcb", " b ",
 			                                       'b', "blockHull2_plain",
 			                                       'c', oreDiamondOrNaquadahPlate,
-			                                       'X', oreDyes[enumDyeColor.getMetadata()] ));
+			                                       'X', oreDyes.get(enumDyeColor) ), "_dye");
 		}
 		
 		// Hull blocks variation
 		for (final EnumTier enumTier : EnumTier.nonCreative()) {
 			int index = enumTier.getIndex();
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-				final int woolColor = enumDyeColor.getDyeDamage();  // @TODO sounds about wrong
+				final int metadataColor = enumDyeColor.getMetadata();
 				
 				// crafting glass
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_glass[index], 4, woolColor), false, "gpg", "pFp", "gpg",
-						'g', "blockGlass",
-						'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, woolColor),
-						'F', "dustGlowstone" ));
+				                                       new ItemStack(WarpDrive.blockHulls_glass[index], 4, metadataColor), false, "gpg", "pFp", "gpg",
+				                                       'g', "blockGlass",
+				                                       'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor),
+				                                       'F', "dustGlowstone" ));
 				
 				// crafting stairs
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 4), false, "p  ", "pp ", "ppp",
-				        'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 8,woolColor) ));
+				                                       new ItemStack(WarpDrive.blockHulls_stairs[index][metadataColor], 4), false, "p  ", "pp ", "ppp",
+				                                       'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor) ));
 				
 				// uncrafting
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_plain[index][0], 6, woolColor),
-				        WarpDrive.blockHulls_stairs[index][woolColor],
-				        WarpDrive.blockHulls_stairs[index][woolColor],
-				        WarpDrive.blockHulls_stairs[index][woolColor],
-				        WarpDrive.blockHulls_stairs[index][woolColor] ));
+				                                          new ItemStack(WarpDrive.blockHulls_plain[index][0], 6, metadataColor),
+				                                          WarpDrive.blockHulls_stairs[index][metadataColor],
+				                                          WarpDrive.blockHulls_stairs[index][metadataColor],
+				                                          WarpDrive.blockHulls_stairs[index][metadataColor],
+				                                          WarpDrive.blockHulls_stairs[index][metadataColor] ));
 				
 				// smelting tiled
 				GameRegistry.addSmelting(
-						new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
-						new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor),
+						new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor),
+						new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, metadataColor),
 						0);
 				
 				// uncrafting tiled
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				                                          new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor),
+				        new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, metadataColor)));
 				/*
 				// crafting omnipanel
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_omnipanel[index], 16, woolColor), false, "ggg", "ggg",
-						'g', new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor)));
+				                                       new ItemStack(WarpDrive.blockHulls_omnipanel[index], 16, metadataColor), false, "ggg", "ggg",
+						'g', new ItemStack(WarpDrive.blockHulls_glass[index], 1, metadataColor)));
 				
 				// uncrafting omnipanel
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_glass[index], 3, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
-				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor) ));
+				                                          new ItemStack(WarpDrive.blockHulls_glass[index], 3, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor),
+				                                          new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, metadataColor) ));
 				/**/
 				// crafting slab
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 0), false, "bbb",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor)));
+				                                       new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 6, 0), false, "bbb",
+				                                       'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor)));
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 2), false, "b", "b", "b",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor)));
+				                                       new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 6, 2), false, "b", "b", "b",
+				                                       'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor)));
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 6), false, "bbb",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				                                       new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 6, 6), false, "bbb",
+				                                       'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, metadataColor)));
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 8), false, "b", "b", "b",
-				        'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				                                       new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 6, 8), false, "b", "b", "b",
+				                                       'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, metadataColor)));
 				
 				// uncrafting slab
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor), false, "s", "s",
-						's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0)));
+				                                       new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor), false, "s", "s",
+				                                       's', new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 0)), "_uncrafting");
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor), false, "ss",
-				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2)));
+				                                       new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor), false, "ss",
+				                                       's', new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 2)), "_uncrafting_A");
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor), false, "s", "s",
-				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6)));
+				                                       new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, metadataColor), false, "s", "s",
+				                                       's', new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 6)), "_uncrafting_B");
 				WarpDrive.register(new ShapedOreRecipe(groupHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor), false, "ss",
-				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8)));
+				                                       new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, metadataColor), false, "ss",
+				                                       's', new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 8)), "_uncrafting_C");
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 0),
-				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 12)));
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 2, 0),
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 12)), "_uncrafting");
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 6),
-				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 13)));
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 2, 6),
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 13)), "_uncrafting_A");
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 8),
-				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 14)));
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 2, 8),
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 14)), "_uncrafting_B");
 				WarpDrive.register(new ShapelessOreRecipe(groupHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 8),
-				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 15)));
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 2, 8),
+				                                          new ItemStack(WarpDrive.blockHulls_slab[index][metadataColor], 1, 15)), "_uncrafting_C");
 				
 				// changing colors
 				WarpDrive.register(new ShapelessOreRecipe(groupTaintedHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, enumDyeColor.getDyeDamage()),
-						oreDyes[woolColor],
-						"blockHull" + index + "_plain"));
+				                                          new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, metadataColor),
+				                                          oreDyes.get(enumDyeColor),
+				                                          "blockHull" + index + "_plain"), "_dye" );
 				WarpDrive.register(new ShapelessOreRecipe(groupTaintedHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_glass[index], 1, enumDyeColor.getDyeDamage()),
-						"dye" + enumDyeColor.getUnlocalizedName(),
-						"blockHull" + index + "_glass"));
+				                                          new ItemStack(WarpDrive.blockHulls_glass[index], 1, metadataColor),
+				                                          oreDyes.get(enumDyeColor),
+				                                          "blockHull" + index + "_glass"), "_dye" );
 				WarpDrive.register(new ShapelessOreRecipe(groupTaintedHulls,
-				                                          new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 1),
-						"dye" + enumDyeColor.getUnlocalizedName(),
-						"blockHull" + index + "_stairs"));
+				                                          new ItemStack(WarpDrive.blockHulls_stairs[index][metadataColor], 1),
+				                                          oreDyes.get(enumDyeColor),
+				                                          "blockHull" + index + "_stairs"), "_dye" );
 				WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
-						'#', "blockHull" + index + "_plain",
-						'X', oreDyes[enumDyeColor.getMetadata()] ));
+				                                       new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, metadataColor), false, "###", "#X#", "###",
+				                                       '#', "blockHull" + index + "_plain",
+				                                       'X', oreDyes.get(enumDyeColor) ), "_dye");
 				WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_glass[index], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
-						'#', "blockHull" + index + "_glass",
-						'X', oreDyes[enumDyeColor.getMetadata()] ));
+				                                       new ItemStack(WarpDrive.blockHulls_glass[index], 8, metadataColor), false, "###", "#X#", "###",
+				                                       '#', "blockHull" + index + "_glass",
+				                                       'X', oreDyes.get(enumDyeColor) ), "_dye");
 				WarpDrive.register(new ShapedOreRecipe(groupTaintedHulls,
-				                                       new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 8), false, "###", "#X#", "###",
-						'#', "blockHull" + index + "_stairs",
-						'X', oreDyes[enumDyeColor.getMetadata()] ));
+				                                       new ItemStack(WarpDrive.blockHulls_stairs[index][metadataColor], 8), false, "###", "#X#", "###",
+				                                       '#', "blockHull" + index + "_stairs",
+				                                       'X', oreDyes.get(enumDyeColor) ), "_dye");
 			}
 		}
 	}

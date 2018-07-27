@@ -771,7 +771,7 @@ public class WarpDrive {
 	final static public ArrayList<Potion> potions = new ArrayList<>(10);
 	final static public ArrayList<PotionType> potionTypes = new ArrayList<>(10);
 	final static public ArrayList<SoundEvent> soundEvents = new ArrayList<>(100);
-	final static public ArrayList<IRecipe> recipes = new ArrayList<>(100);
+	final static public HashMap<ResourceLocation, IRecipe> recipes = new HashMap<>(100);
 	final static public ArrayList<VillagerProfession> villagerProfessions = new ArrayList<>(10);
 	
 	// Register a Biome.
@@ -793,7 +793,8 @@ public class WarpDrive {
 	public static <BLOCK extends Block> BLOCK register(final BLOCK block, @Nullable final ItemBlock itemBlock) {
 		final ResourceLocation resourceLocation = block.getRegistryName();
 		if (resourceLocation == null) {
-			WarpDrive.logger.error(String.format("Missing registry name for block %s, ignoring registration...", block));
+			WarpDrive.logger.error(String.format("Missing registry name for block %s, ignoring registration...",
+			                                     block));
 			return block;
 		}
 		
@@ -833,6 +834,9 @@ public class WarpDrive {
 	
 	// Register a recipe.
 	public static <RECIPE extends IRecipe> RECIPE register(final RECIPE recipe) {
+		return register(recipe, "");
+	}
+	public static <RECIPE extends IRecipe> RECIPE register(final RECIPE recipe, final String suffix) {
 		ResourceLocation registryName = recipe.getRegistryName();
 		if (registryName == null) {
 			final String path;
@@ -840,20 +844,33 @@ public class WarpDrive {
 			if (itemStackOutput.isEmpty()) {
 				path = recipe.toString();
 			} else if (itemStackOutput.getCount() == 1) {
-				path = String.format("%s@%d",
-				                     itemStackOutput.getItem().getUnlocalizedName(),
-				                     itemStackOutput.getItemDamage() );
-			} else {
-				path = String.format("%s@%dx%d",
-				                     itemStackOutput.getItem().getUnlocalizedName(),
+				path = String.format("%s@%d%s",
+				                     itemStackOutput.getItem().getRegistryName(),
 				                     itemStackOutput.getItemDamage(),
-				                     itemStackOutput.getCount() );
+				                     suffix );
+			} else {
+				path = String.format("%s@%dx%d%s",
+				                     itemStackOutput.getItem().getRegistryName(),
+				                     itemStackOutput.getItemDamage(),
+				                     itemStackOutput.getCount(),
+				                     suffix );
 			}
 			registryName = new ResourceLocation(MODID, path);
+			if (recipes.containsKey(registryName)) {
+				logger.error(String.format("Overlapping recipe detected, please report this to the mod author %s",
+				                           registryName));
+				registryName = new ResourceLocation(MODID, path + "!" + System.nanoTime());
+				try {
+					Thread.sleep(10000);
+				} catch (final Exception exception) {
+					// ignored
+				}
+				assert false;
+			}
 			recipe.setRegistryName(registryName);
 		}
 		
-		recipes.add(recipe);
+		recipes.put(registryName, recipe);
 		return recipe;
 	}
 	
@@ -998,7 +1015,7 @@ public class WarpDrive {
 		
 		Recipes.initDynamic();
 		
-		for (final IRecipe recipe : recipes) {
+		for (final IRecipe recipe : recipes.values()) {
 			event.getRegistry().register(recipe);
 		}
 	}
