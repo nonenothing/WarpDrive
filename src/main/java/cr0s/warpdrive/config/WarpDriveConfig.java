@@ -446,6 +446,12 @@ public class WarpDriveConfig {
 	public static final double     ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
 	public static int              ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
+	// Electromagnetic cell
+	public static int[]            ELECTROMAGNETIC_CELL_CAPACITY_BY_TIER = { 16000, 500, 1000, 2000 };
+	
+	// Plasma torch
+	public static int[]            PLASMA_TORCH_CAPACITY_BY_TIER = { 16000, 200, 400, 800 };
+	
 	@Nonnull
 	public static Block getBlockOrFire(@Nonnull final String registryName) {
 		try {

@@ -7,6 +7,7 @@ import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.energy.BlockCapacitor;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 
 import javax.annotation.Nonnull;
@@ -44,8 +45,8 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	public static final int MODE_BEAM_FREQUENCY = 1;
 	public static final int MODE_CONTROL_CHANNEL = 2;
 	
-	public ItemTuningDriver(final String registryName) {
-		super(registryName);
+	public ItemTuningDriver(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setMaxDamage(0);
 		setCreativeTab(WarpDrive.creativeTabMain);

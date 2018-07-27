@@ -5,7 +5,6 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumAirTankTier;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -16,7 +15,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 	protected EnumAirTankTier enumAirTankTier;
 	
 	public ItemAirTank(final String registryName, final EnumAirTankTier enumAirTankTier) {
-		super(registryName);
+		super(registryName, enumAirTankTier.getTier());
 		
 		this.enumAirTankTier = enumAirTankTier;
 		setMaxDamage(WarpDriveConfig.BREATHING_AIR_TANK_CAPACITY_BY_TIER[enumAirTankTier.getIndex()]);
@@ -30,12 +29,6 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 			return;
 		}
 		list.add(new ItemStack(this, 1, 0));
-	}
-	
-	@Nonnull
-	@Override
-	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
-		return enumAirTankTier.getRarity();
 		list.add(new ItemStack(this, 1, getMaxDamage(null)));
 	}
 	

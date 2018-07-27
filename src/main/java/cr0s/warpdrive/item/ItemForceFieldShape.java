@@ -6,6 +6,7 @@ import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumForceFieldShape;
+import cr0s.warpdrive.data.EnumTier;
 
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	
 	private static ItemStack[] itemStackCache;
 	
-	public ItemForceFieldShape(final String registryName) {
-		super(registryName);
+	public ItemForceFieldShape(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setHasSubtypes(true);
 		setTranslationKey("warpdrive.force_field.shape");

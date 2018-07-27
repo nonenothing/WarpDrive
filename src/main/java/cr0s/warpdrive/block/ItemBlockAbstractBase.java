@@ -66,6 +66,15 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	@Nonnull
 	@Override
+	public EnumTier getTier(@Nonnull final ItemStack itemStack) {
+		if ( !(block instanceof IBlockBase) ) {
+			return EnumTier.BASIC;
+		}
+		return ((IBlockBase) block).getTier(itemStack);
+	}
+	
+	@Nonnull
+	@Override
 	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
 		final EnumRarity enumRarityDefault = super.getRarity(itemStack);
 		if ( !(block instanceof IBlockBase) ) {

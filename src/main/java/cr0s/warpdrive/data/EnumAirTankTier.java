@@ -8,14 +8,14 @@ import net.minecraft.util.IStringSerializable;
 
 public enum EnumAirTankTier implements IStringSerializable {
 	
-	CANISTER ("canister", 0, EnumRarity.COMMON  ),
-	BASIC    ("basic"   , 1, EnumRarity.COMMON  ),
-	ADVANCED ("advanced", 2, EnumRarity.UNCOMMON),
-	SUPERIOR ("superior", 3, EnumRarity.RARE    );
+	CANISTER ("canister", 0, EnumTier.BASIC   ),
+	BASIC    ("basic"   , 1, EnumTier.BASIC   ),
+	ADVANCED ("advanced", 2, EnumTier.ADVANCED),
+	SUPERIOR ("superior", 3, EnumTier.SUPERIOR);
 	
 	private final String name;
 	private final int index;
-	private final EnumRarity enumRarity;
+	private final EnumTier enumTier;
 	
 	// cached values
 	public static final int length;
@@ -29,10 +29,10 @@ public enum EnumAirTankTier implements IStringSerializable {
 		}
 	}
 	
-	EnumAirTankTier(final String name, final int index, final EnumRarity enumRarity) {
+	EnumAirTankTier(final String name, final int index, final EnumTier enumTier) {
 		this.name = name;
 		this.index = index;
-		this.enumRarity = enumRarity;
+		this.enumTier = enumTier;
 	}
 	
 	@Nonnull
@@ -49,7 +49,11 @@ public enum EnumAirTankTier implements IStringSerializable {
 		return index;
 	}
 	
+	public EnumTier getTier(){
+		return enumTier;
+	}
+	
 	public EnumRarity getRarity() {
-		return enumRarity;
+		return enumTier.getRarity();
 	}
 }

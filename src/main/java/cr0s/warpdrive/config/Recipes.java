@@ -1417,10 +1417,32 @@ public class Recipes {
 			
 			// Electromagnetic cell
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.itemElectromagneticCell, 2), "iri", "i i", "ici",
+			                                       new ItemStack(WarpDrive.itemElectromagneticCell[EnumTier.BASIC.getIndex()], 2), "iri", "i i", "ici",
 			                                       'i', ironBars,
 			                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 			                                       'r', Items.REDSTONE));
+			WarpDrive.register(new ShapedOreRecipe(groupMachines,
+			                                       new ItemStack(WarpDrive.itemElectromagneticCell[EnumTier.ADVANCED.getIndex()], 2), "iei", "iei", "gcg",
+			                                       'e', WarpDrive.itemElectromagneticCell[EnumTier.BASIC.getIndex()],
+			                                       'i', ironBars,
+			                                       'g', Items.GOLD_NUGGET,
+			                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+			WarpDrive.register(new ShapedOreRecipe(groupMachines,
+			                                       new ItemStack(WarpDrive.itemElectromagneticCell[EnumTier.SUPERIOR.getIndex()], 2), "geg", "geg", "gcg",
+			                                       'e', WarpDrive.itemElectromagneticCell[EnumTier.ADVANCED.getIndex()],
+			                                       'g', Items.GOLD_NUGGET,
+			                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+			
+			// Plasma torch
+			WarpDrive.register(new ShapedOreRecipe(groupTools,
+			                                       WarpDrive.itemPlasmaTorch[EnumTier.BASIC.getIndex()], false, "tcr", "mgb", "i  ",
+			                                       't', WarpDrive.itemElectromagneticCell[EnumTier.BASIC.getIndex()],
+			                                       'c', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
+			                                       'r', Items.BLAZE_ROD,
+			                                       'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
+			                                       'g', "ingotGold",
+			                                       'b', Blocks.STONE_BUTTON,
+			                                       'i', Items.IRON_INGOT));
 			
 			// Accelerator control point
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,

@@ -2,6 +2,7 @@ package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.EnumTier;
 
 import java.util.List;
 import java.util.Random;
@@ -25,8 +26,8 @@ public class ItemShipToken extends ItemAbstractBase {
 	private static ItemStack[] itemStackCache;
 	private static final int[] VALID_METADATAS = { 0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24, 25, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43, 44, 45 };
 	
-	public ItemShipToken(final String registryName) {
-		super(registryName);
+	public ItemShipToken(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setHasSubtypes(true);
 		setTranslationKey("warpdrive.tool.ship_token");

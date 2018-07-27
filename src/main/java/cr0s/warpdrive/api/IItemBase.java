@@ -1,5 +1,7 @@
 package cr0s.warpdrive.api;
 
+import cr0s.warpdrive.data.EnumTier;
+
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -12,6 +14,11 @@ public interface IItemBase {
 	
 	// wrapper for Forge ItemExpireEvent
 	void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack);
+	
+	@Nonnull
+	EnumTier getTier(final ItemStack itemStack);
+	
+	// getRarity is defined in Item
 	
 	@SideOnly(Side.CLIENT)
 	void modelInitialisation();

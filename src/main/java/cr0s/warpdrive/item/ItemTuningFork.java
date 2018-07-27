@@ -6,6 +6,7 @@ import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.energy.BlockCapacitor;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 
 import javax.annotation.Nonnull;
@@ -37,8 +38,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
-	public ItemTuningFork(final String registryName) {
-		super(registryName);
+	public ItemTuningFork(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setMaxDamage(0);
 		setMaxStackSize(1);

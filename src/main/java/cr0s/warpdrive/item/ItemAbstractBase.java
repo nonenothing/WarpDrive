@@ -4,11 +4,13 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IItemBase;
 import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.data.EnumTier;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -23,11 +25,14 @@ import java.util.List;
 
 public class ItemAbstractBase extends Item implements IItemBase {
 	
-	public ItemAbstractBase(final String registryName) {
+	protected final EnumTier enumTier;
+	
+	public ItemAbstractBase(final String registryName, final EnumTier enumTier) {
 		super();
 		
-		setRegistryName(registryName);
+		this.enumTier = enumTier;
 		setCreativeTab(WarpDrive.creativeTabMain);
+		setRegistryName(registryName);
 		WarpDrive.register(this);
 	}
 	
@@ -46,6 +51,17 @@ public class ItemAbstractBase extends Item implements IItemBase {
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		return ClientProxy.getModelResourceLocation(itemStack);
+	}
+	
+	@Nonnull
+	@Override
+	public EnumTier getTier(final ItemStack itemStack) {
+		return enumTier;
+	}
+	
+	@Nonnull
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		return getTier(itemStack).getRarity();
 	}
 	
 	@Override

@@ -8,17 +8,16 @@ import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.api.ParticleStack;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumTier;
-import cr0s.warpdrive.data.Vector3;
 
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.List;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
@@ -26,21 +25,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemElectromagneticCell extends ItemAbstractBase implements IParticleContainerItem {
+public class ItemPlasmaTorch extends ItemAbstractBase implements IParticleContainerItem {
 	
-	public ItemElectromagneticCell(final String registryName, final EnumTier enumTier) {
+	public ItemPlasmaTorch(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
 		setMaxDamage(0);
 		setMaxStackSize(1);
-		setTranslationKey("warpdrive.atomic.electromagnetic_cell." + enumTier.getName());
-		setHasSubtypes(true);
+		setTranslationKey("warpdrive.tool.plasma_torch." + enumTier.getName());
 		
 		addPropertyOverride(new ResourceLocation(WarpDrive.MODID, "fill"), new IItemPropertyGetter() {
 			@SideOnly(Side.CLIENT)
@@ -142,17 +140,17 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	private static int getDamageLevel(@Nonnull final ItemStack itemStack, final ParticleStack particleStack) {
-		if (!(itemStack.getItem() instanceof ItemElectromagneticCell)) {
-			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s",
+		if (!(itemStack.getItem() instanceof ItemPlasmaTorch)) {
+			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemPlasmaTorch: %s",
 			                                     itemStack));
 			return itemStack.getItemDamage();
 		}
 		if (particleStack == null || particleStack.getParticle() == null) {
 			return 0;
 		}
-		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
+		final ItemPlasmaTorch itemPlasmaTorch = (ItemPlasmaTorch) itemStack.getItem();
 		final int type = particleStack.getParticle().getColorIndex() % 5;
-		final double ratio = particleStack.getAmount() / (double) itemElectromagneticCell.getCapacity(itemStack);
+		final double ratio = particleStack.getAmount() / (double) itemPlasmaTorch.getCapacity(itemStack);
 		final int offset = (ratio < 0.2) ? 0 : (ratio < 0.4) ? 1 : (ratio < 0.6) ? 2 : (ratio < 0.8) ? 3 : (ratio < 1.0) ? 4 : 5;
 		return (1 + type * 6 + offset);
 	}
@@ -177,8 +175,8 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public int getCapacity(final ItemStack container) {
-		return WarpDriveConfig.ELECTROMAGNETIC_CELL_CAPACITY_BY_TIER[enumTier.getIndex()];
+	public int getCapacity(ItemStack container) {
+		return WarpDriveConfig.PLASMA_TORCH_CAPACITY_BY_TIER[enumTier.getIndex()];
 	}
 	
 	@Override
@@ -235,54 +233,28 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public int getEntityLifespan(final ItemStack itemStack, final World world) {
-		final ParticleStack particleStack = getParticleStack(itemStack);
-		if ( particleStack == null
-		  || particleStack.isEmpty() ) {
-			return super.getEntityLifespan(itemStack, world);
-		}
-		final int lifespan = particleStack.getEntityLifespan();
-		if (lifespan < 0) {
-			return super.getEntityLifespan(itemStack, world);
-		}
-		// less content means more stable, so we scale lifespan with emptiness, up to doubling it
-		return (2 - particleStack.getAmount() / getCapacity(itemStack)) * lifespan;
-	}
-	
-	@Override
-	public void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack) {
-		final ParticleStack particleStack = getParticleStack(itemStack);
-		if ( particleStack == null
-		  || particleStack.isEmpty() ) {
-			super.onEntityExpireEvent(entityItem, itemStack);
-			return;
-		}
-		particleStack.onWorldEffect(entityItem.world, new Vector3(entityItem));
-	}
-	
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
-			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s",
+		if (!(itemStack.getItem() instanceof  ItemPlasmaTorch)) {
+			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemPlasmaTorch: %s",
 			                                     itemStack));
 			return;
 		}
-		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
-		final ParticleStack particleStack = itemElectromagneticCell.getParticleStack(itemStack);
+		final ItemPlasmaTorch itemPlasmaTorch = (ItemPlasmaTorch) itemStack.getItem();
+		final ParticleStack particleStack = itemPlasmaTorch.getParticleStack(itemStack);
 		final String tooltip;
 		if (particleStack == null || particleStack.getParticle() == null) {
-			tooltip = new TextComponentTranslation("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty").getFormattedText();
+			tooltip = new TextComponentTranslation("item.warpdrive.tool.plasma_torch.tooltip.empty").getFormattedText();
 			Commons.addTooltip(list, tooltip);
 			
 		} else {
 			final Particle particle = particleStack.getParticle();
 			
-			tooltip = new TextComponentTranslation("item.warpdrive.atomic.electromagnetic_cell.tooltip.filled",
-				particleStack.getAmount(), particle.getLocalizedName()).getFormattedText();
+			tooltip = new TextComponentTranslation("item.warpdrive.tool.plasma_torch.tooltip.filled",
+			                                       particleStack.getAmount(), particle.getLocalizedName()).getFormattedText();
 			Commons.addTooltip(list, tooltip);
 			
 			final String particleTooltip = particle.getLocalizedTooltip();

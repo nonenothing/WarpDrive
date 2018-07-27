@@ -2,6 +2,8 @@ package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
+
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
 
@@ -18,8 +20,8 @@ public class ItemIC2reactorLaserFocus extends ItemAbstractBase implements IReact
 	private static final int[] xOffset = { -1,  0, 0, 1 };
 	private static final int[] yOffset = {  0, -1, 1, 0 };
 	
-	public ItemIC2reactorLaserFocus(final String registryName) {
-		super(registryName);
+	public ItemIC2reactorLaserFocus(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setMaxDamage(WarpDriveConfig.IC2_REACTOR_MAX_HEAT_STORED);
 		setTranslationKey("warpdrive.energy.IC2reactorLaserFocus");

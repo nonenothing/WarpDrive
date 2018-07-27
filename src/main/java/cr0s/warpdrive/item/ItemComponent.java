@@ -4,6 +4,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.energy.BlockCapacitor;
 import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -23,8 +24,8 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	private static ItemStack[] itemStackCache;
 	
-	public ItemComponent(final String registryName) {
-		super(registryName);
+	public ItemComponent(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setHasSubtypes(true);
 		setTranslationKey("warpdrive.component.malformed");
