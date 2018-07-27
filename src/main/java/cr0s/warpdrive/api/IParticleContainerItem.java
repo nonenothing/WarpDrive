@@ -4,18 +4,21 @@ import net.minecraft.item.ItemStack;
 
 public interface IParticleContainerItem {
 	
-	ParticleStack getParticleStack(ItemStack container);
+	String TAG_PARTICLE = "particle";
+	String TAG_AMOUNT_TO_CONSUME = "amountToConsume";
 	
-	int getCapacity(ItemStack container);
+	ParticleStack getParticleStack(final ItemStack container);
 	
-	boolean isEmpty(ItemStack container);
+	int getCapacity(final ItemStack container);
+	
+	boolean isEmpty(final ItemStack container);
 	
 	// fills the container and return how much could be transferred or 0 if container is empty or contains different particles
-	int fill(ItemStack container, ParticleStack resource, boolean doFill);
+	int fill(final ItemStack container, final ParticleStack resource, final boolean doFill);
 	
 	// drains the container and return how much could be transferred or null if container is empty or contains different particles
-	ParticleStack drain(ItemStack container, ParticleStack resource, boolean doDrain);
+	ParticleStack drain(final ItemStack container, final ParticleStack resource, final boolean doDrain);
 	
 	// called during recipe match to set amount to consume in next call to getContainerItem
-	void setAmountToConsume(ItemStack container, int amount);
+	void setAmountToConsume(final ItemStack container, final int amount);
 }

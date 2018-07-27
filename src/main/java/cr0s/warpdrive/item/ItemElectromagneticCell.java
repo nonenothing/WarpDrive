@@ -32,8 +32,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemElectromagneticCell extends ItemAbstractBase implements IParticleContainerItem {
 	
-	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
-	
 	public ItemElectromagneticCell(final String registryName) {
 		super(registryName);
 		
@@ -75,7 +73,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		if (particle != null && amount != 0) {
 			particleStack = new ParticleStack(particle, amount);
 			final NBTTagCompound tagCompound = new NBTTagCompound();
-			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			tagCompound.setTag(IParticleContainerItem.TAG_PARTICLE, particleStack.writeToNBT(new NBTTagCompound()));
 			itemStack.setTagCompound(tagCompound);
 		}
 		updateDamageLevel(itemStack, particleStack);
@@ -130,13 +128,13 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		if (tagCompound == null) {
 			tagCompound = new NBTTagCompound();
 		}
-		tagCompound.setInteger(AMOUNT_TO_CONSUME_TAG, amountToConsume);
+		tagCompound.setInteger(IParticleContainerItem.TAG_AMOUNT_TO_CONSUME, amountToConsume);
 	}
 	
 	private int getAmountToConsume(@Nonnull final ItemStack itemStack) {
 		final NBTTagCompound tagCompound = itemStack.getTagCompound();
 		if (tagCompound != null) {
-			return tagCompound.getInteger(AMOUNT_TO_CONSUME_TAG);
+			return tagCompound.getInteger(IParticleContainerItem.TAG_AMOUNT_TO_CONSUME);
 		}
 		return 0;
 	}
@@ -170,10 +168,10 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		if (tagCompound == null) {
 			return null;
 		}
-		if (!tagCompound.hasKey("particle")) {
+		if (!tagCompound.hasKey(IParticleContainerItem.TAG_PARTICLE)) {
 			return null;
 		}
-		return ParticleStack.loadFromNBT(tagCompound.getCompoundTag("particle"));
+		return ParticleStack.loadFromNBT(tagCompound.getCompoundTag(IParticleContainerItem.TAG_PARTICLE));
 	}
 	
 	@Override
@@ -201,7 +199,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			
 			final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
 			assert tagCompound != null;
-			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			tagCompound.setTag(IParticleContainerItem.TAG_PARTICLE, particleStack.writeToNBT(new NBTTagCompound()));
 			if (!itemStack.hasTagCompound()) {
 				itemStack.setTagCompound(tagCompound);
 			}
@@ -225,7 +223,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			
 			final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
 			assert tagCompound != null;
-			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			tagCompound.setTag(IParticleContainerItem.TAG_PARTICLE, particleStack.writeToNBT(new NBTTagCompound()));
 			if (!itemStack.hasTagCompound()) {
 				itemStack.setTagCompound(tagCompound);
 			}
