@@ -45,6 +45,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	// (none)
 	
 	// computed properties
+	private boolean isConstructed = false;
 	private boolean isFirstTick = true;
 	private boolean isDirty = false;
 	
@@ -57,6 +58,16 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	@Override
 	public void onLoad() {
 		super.onLoad();
+		assert hasWorld() && pos != BlockPos.ORIGIN;
+		if (!isConstructed) {
+			onConstructed();
+		}
+	}
+	
+	protected void onConstructed() {
+		// warning: we can't use Block.CreateNewTileEntity() as world loading calls the TileEntity constructor directly
+		// warning: we can't use setPos(), setWorld() or validate() as getBlockType() will cause a stack overflow
+		// warning: we can't use onLoad() to trigger this method as onLoad() isn't always called, see https://github.com/MinecraftForge/MinecraftForge/issues/5061
 		
 		// immediately retrieve tier, we need it to connect energy conduits and save the world before the first tick
 		final Block block = getBlockType();
@@ -67,10 +78,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			                                     this, Commons.format(world, pos), block));
 			enumTier = EnumTier.BASIC;
 		}
+		
+		isConstructed = true;
 	}
 	
 	protected void onFirstUpdateTick() {
 		// No operation
+		assert isConstructed;
 		assert enumTier != null;
 	}
 	
@@ -93,6 +107,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	@Override
 	public void onBlockUpdateDetected() {
 		assert Commons.isSafeThread();
+		if (!isConstructed) {
+			onConstructed();
+		}
 	}
 	
 	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, final IProperty<T> property, final V value) {

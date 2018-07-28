@@ -1,0 +1,162 @@
+@startuml
+actor "Forge or\na Mod" as anyMod
+participant Forge #cyan
+participant World #cyan
+participant Chunk #cyan
+participant Entity #cyan
+participant TileEntity #cyan
+'participant WarpDrive
+
+anyMod -> World: addTileEntity(tileEntity)
+activate World
+World -[#blue]> TileEntity: setWorld
+World <-[#blue]- TileEntity
+alt processingLoadedTiles
+    World -[#blue]> World: addedTileEntityList.add()
+else
+    World -[#blue]> World: loadedTileEntityList.add()
+    alt instanceof ITickable
+    World -[#blue]> World: tickableTileEntities.add()
+    end
+    World -[#blue]> TileEntity: onLoad
+    World <-[#blue]- TileEntity
+    alt isRemote
+        World -[#blue]> World: notifyBlockUpdate
+    end
+end
+anyMod <-- World
+deactivate World
+
+anyMod -> World: addTileEntities(tileEntities)
+activate World
+alt processingLoadedTiles
+    loop tileEntities with no world set
+        World -[#blue]> TileEntity: setWorld
+        World <-[#blue]- TileEntity
+    end
+    World -[#blue]> World: addedTileEntityList.addAll
+else
+    loop tileEntities
+        World -[#blue]> World: <b>addTileEntity(tileEntity)
+    end
+end
+anyMod <-- World
+deactivate World
+
+anyMod -> World: setTileEntity(pos, tileEntity)
+activate World
+alt processingLoadedTiles
+    World -[#blue]> TileEntity: setPos
+    World <-[#blue]- TileEntity
+    World -[#blue]> TileEntity: setWorld
+    World <-[#blue]- TileEntity
+    loop addedTileEntityList with same position
+        World -[#blue]> TileEntity: invalidate
+        World <-[#blue]- TileEntity
+        World -[#blue]> World: remove
+    end
+    World -[#blue]> World: addedTileEntityList.add
+else
+    World -[#blue]> Chunk: <b>addTileEntity(pos, tileEntity)
+    activate Chunk
+        alt tileEntity.world == null
+            Chunk -[#blue]> TileEntity: setWorld(...)
+            Chunk <-[#blue]- TileEntity
+        end
+        Chunk -[#blue]> TileEntity: setPos(...)
+        Chunk <-[#blue]- TileEntity
+
+        alt block.hasTileEntity(blockState)
+            alt tileEntities.contains(tileEntity)
+                Chunk -[#blue]> TileEntity: invalidate()
+                Chunk <-[#blue]- TileEntity
+            end
+            Chunk -[#blue]> TileEntity: validate()
+            Chunk <-[#blue]- TileEntity
+            Chunk -[#blue]> Chunk: tileEntities.put
+        end
+    World <-[#blue]- Chunk
+    deactivate Chunk
+end
+anyMod <-- World
+deactivate World
+
+anyMod -> Chunk: addTileEntity(tileEntity)
+activate Chunk
+Chunk -[#blue]> Chunk: addTileEntity(getPos, tileEntity)
+alt loaded
+    Chunk -[#blue]> World: <b>addTileEntity(tileEntity)
+    Chunk <-[#blue]- World
+end
+anyMod <-- Chunk
+deactivate Chunk
+
+Forge -[#blue]> World: updateEntities()
+activate World
+
+loop weather entities, not blocked
+    World -[#blue]> Entity: ticksExisted++
+    World -[#blue]> Entity: onUpdate()
+    World <-[#blue]- Entity
+    alt entity.isDead
+        World -[#blue]> World: remove
+    end
+end
+
+World -[#blue]> World: <I>remove unloaded entities
+World -[#blue]> World: tickPlayers()
+loop entities
+    World -[#blue]> World: <I>dismount dead riders
+    World -[#blue]> World: updateEntity(entity)
+    activate World
+    World -[#blue]> World: updateEntityWithOptionalForce()
+    activate World
+    ...canEntityUpdate(entity)...
+    World -> Entity: updateRidden() or onUpdate()
+    World <-- Entity
+    ...update holding chunk, etc....
+    World <-- World
+    deactivate World
+    World <-- World
+    deactivate World
+
+    World -[#blue]> World: <I>remove dead entity
+end
+
+World -[#blue]> World: processingLoadedTiles = true
+loop tileEntitiesToBeRemoved
+    World -[#blue]> TileEntity: onChunkUnload()
+    World <-[#blue]- TileEntity
+end
+loop tickableTileEntities
+    alt ! tileEntity.isInvalid()
+        World -[#blue]> TileEntity: update()
+        World <-[#blue]- TileEntity
+    end
+    alt tileEntity.isInvalid()
+        World -[#blue]> World: loadedTileEntityList.remove
+        alt isBlockLoaded, ...
+            World -[#blue]> Chunk: removeTileEntity(pos)
+            World <-[#blue]- Chunk
+        end
+    end
+end
+World -[#blue]> World: processingLoadedTiles = false
+loop addedTileEntityList
+    alt ! tileEntity.isInvalid()
+        alt ! loadedTileEntityList.contains(tileEntity)
+            World -[#blue]> World: <b>addTileEntity(tileEntity)
+        end
+        alt isBlockLoaded
+            World -[#blue]> Chunk: <b>addTileEntity(pos, tileEntity)
+            World <-[#blue]- Chunk
+            World -[#blue]> World: notifyBlockUpdate(...)
+        end
+    end
+end
+World -[#blue]> Chunk: addedTileEntityList.clear
+
+Forge <-[#blue]- World
+deactivate World
+
+@enduml

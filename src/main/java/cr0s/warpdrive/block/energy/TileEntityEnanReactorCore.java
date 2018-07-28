@@ -67,8 +67,8 @@ public class TileEntityEnanReactorCore extends TileEntityEnanReactorController {
 	}
 	
 	@Override
-	public void onLoad() {
-		super.onLoad();
+	public void onConstructed() {
+		super.onConstructed();
 		
 		energyStored_max  = WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()];
 		generation_offset = WarpDriveConfig.ENAN_REACTOR_GENERATION_MIN_RF_BY_TIER[enumTier.getIndex()];
@@ -538,7 +538,7 @@ public class TileEntityEnanReactorCore extends TileEntityEnanReactorController {
 	
 	@Override
 	public int energy_getMaxStorage() {
-		return (int) convertRFtoInternal_floor(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()]);
+		return (int) convertRFtoInternal_floor(energyStored_max);
 	}
 	
 	// Forge overrides
@@ -565,7 +565,15 @@ public class TileEntityEnanReactorCore extends TileEntityEnanReactorController {
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		
+		// skip empty NBT on placement to use defaults values
+		if (!tagCompound.hasKey("outputMode")) {
+			return;
+		}
+		
 		enumReactorOutputMode = EnumReactorOutputMode.byName(tagCompound.getString("outputMode"));
+		if (enumReactorOutputMode == null) {
+			enumReactorOutputMode = EnumReactorOutputMode.OFF;
+		}
 		outputThreshold = tagCompound.getInteger("outputThreshold");
 		instabilityTarget = tagCompound.getDouble("instabilityTarget");
 		stabilizerEnergy = tagCompound.getInteger("stabilizerEnergy");
