@@ -39,10 +39,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		return currentState != STATE_IDLE;
 	}
 	
+	// persistent properties
 	private int layerOffset = 1;
 	private boolean mineAllBlocks = true;
-	
-	private int delayTicks = 0;
 	
 	private static final int STATE_IDLE = 0;
 	private static final int STATE_WARMUP = 1;
@@ -50,9 +49,12 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private static final int STATE_MINING = 3;
 	private int currentState = 0;
 	
-	private boolean enoughPower = false;
 	private int currentLayer;
 	
+	// computed properties
+	private float explosionResistanceMax = 10000;
+	private int delayTicks = 0;
+	private boolean enoughPower = false;
 	private int radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_NO_LASER_MEDIUM;
 	private final ArrayList<BlockPos> valuablesInLayer = new ArrayList<>();
 	private int valuableIndex = 0;
@@ -72,6 +74,12 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		});
 		CC_scripts = Arrays.asList("mine", "stop");
 		laserMedium_maxCount = WarpDriveConfig.MINING_LASER_MAX_MEDIUMS_COUNT;
+	}
+	
+	@Override
+	protected void onFirstUpdateTick() {
+		super.onFirstUpdateTick();
+		explosionResistanceMax = Blocks.OBSIDIAN.getExplosionResistance(world, pos, null, null);
 	}
 	
 	@SuppressWarnings("UnnecessaryReturnStatement")
@@ -273,7 +281,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return false;
 		}
 		// check default (explosion resistance is used to test for force fields and reinforced blocks, basically preventing mining a base or ship) 
-		if (blockState.getBlock().getExplosionResistance(null) <= Blocks.OBSIDIAN.getExplosionResistance(null)) {
+		if (blockState.getBlock().getExplosionResistance(world, blockPos, null, null) <= explosionResistanceMax) {
 			return true;
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
@@ -388,6 +396,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	@Override
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
+		
 		layerOffset = tagCompound.getInteger("layerOffset");
 		mineAllBlocks = tagCompound.getBoolean("mineAllBlocks");
 		currentState = tagCompound.getInteger("currentState");
@@ -398,6 +407,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
+		
 		tagCompound.setInteger("layerOffset", layerOffset);
 		tagCompound.setBoolean("mineAllBlocks", mineAllBlocks);
 		tagCompound.setInteger("currentState", currentState);

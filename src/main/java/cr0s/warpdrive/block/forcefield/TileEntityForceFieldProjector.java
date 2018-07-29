@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -391,10 +392,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		carryPlaceSpeed = floatPlaceSpeed - countMaxPlaced;
 		
 		// evaluate force field block metadata
-		IBlockState blockStateForceField = WarpDrive.blockForceFields[enumTier.getIndex()].getStateFromMeta(Math.min(15, (beamFrequency * 16) / IBeamFrequency.BEAM_FREQUENCY_MAX));
-		if (forceFieldSetup.getCamouflageBlockState() != null) {
+		IBlockState blockStateForceField;
+		if (forceFieldSetup.getCamouflageBlockState() == null) {
 			blockStateForceField = WarpDrive.blockForceFields[enumTier.getIndex()].getStateFromMeta(
-					forceFieldSetup.getCamouflageBlockState().getBlock().getMetaFromState(forceFieldSetup.getCamouflageBlockState()) );
+					Math.min(15, (beamFrequency * 16) / IBeamFrequency.BEAM_FREQUENCY_MAX));
+		} else {
+			blockStateForceField = WarpDrive.blockForceFields[enumTier.getIndex()].getStateFromMeta(
+					forceFieldSetup.getCamouflageBlockState().getBlock().getMetaFromState(forceFieldSetup.getCamouflageBlockState()));
 		}
 		
 		VectorI vector;
@@ -649,6 +653,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		Block blockToPlace = null;
 		int metadataToPlace = -1;
 		IInventory inventory = null;
+		final BlockPos blockPos = vector.getBlockPos();
 		for (final IInventory inventoryLoop : forceFieldSetup.inventories) {
 			if (!found) {
 				slotIndex = 0;
@@ -674,7 +679,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					                                    slotIndex, itemStack, blockToPlace, metadataToPlace));
 				}
 				
-				if (!blockToPlace.canPlaceBlockAt(world, vector.getBlockPos())) {
+				if (!blockToPlace.canPlaceBlockAt(world, blockPos)) {
 					slotIndex++;
 					continue;
 				}
@@ -702,10 +707,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		assert found;
 		
 		// check area protection
-		if (isBlockPlaceCanceled(null, world, vector.getBlockPos(), blockToPlace.getStateFromMeta(metadataToPlace))) {
+		final IBlockState blockStateToPlace = blockToPlace.getStateFromMeta(metadataToPlace);
+		if (isBlockPlaceCanceled(null, world, blockPos, blockStateToPlace)) {
 			if (WarpDriveConfig.LOGGING_FORCE_FIELD) {
 				WarpDrive.logger.info(String.format("%s Placing cancelled %s",
-				                                    this, Commons.format(world, vector.getBlockPos())));
+				                                    this, Commons.format(world, blockPos)));
 			}
 			// skip the next scans...
 			return true;
@@ -720,10 +726,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		// world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4.0F, 1.0F);
 		
 		// standard place sound effect
-		world.playSound(null, vector.getBlockPos(), blockToPlace.getSoundType().getPlaceSound(), SoundCategory.BLOCKS,
-				(blockToPlace.getSoundType().getVolume() + 1.0F) / 2.0F, blockToPlace.getSoundType().getPitch() * 0.8F);
+		final SoundType soundType = blockStateToPlace.getBlock().getSoundType(blockStateToPlace, world, blockPos, null);
+		world.playSound(null, blockPos, soundType.getPlaceSound(), SoundCategory.BLOCKS,
+				(soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
 		
-		world.setBlockState(vector.getBlockPos(), blockToPlace.getStateFromMeta(metadataToPlace), 3);
+		world.setBlockState(blockPos, blockStateToPlace, 3);
 		return false;
 	}
 	
