@@ -40,9 +40,9 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20180605"
+    mappings = "${config.mappings_version}"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-	
+    
     // replacing
     replace "@version@", project.version
     replaceIn "WarpDrive.java"
@@ -53,6 +53,10 @@ repositories {
     maven { // JEI & Tinkers
         name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
+    }
+    maven { // CCC/NEI (for WAILA)
+        name 'CB Repo'
+        url "http://chickenbones.net/maven/"
     }
     maven { // WAILA
         name "ProfMobius Maven FS"
@@ -78,10 +82,10 @@ repositories {
         name = "CoFH Maven"
         url = "http://maven.covers1624.net"
     }
-	maven {
-		name = "dmod's BuildBroken maven"
-		url = "http://api.dmodoomsirius.me"
-	}
+    maven {
+        name = "dmod's BuildBroken maven"
+        url = "http://api.dmodoomsirius.me"
+    }
 }
 
 dependencies {
@@ -97,19 +101,22 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
-	// using deobfCompile will include in run environment
-    compileOnly "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
-    compileOnly "blusunrize:ImmersiveEngineering:0.12-+:deobf"
+    
+    // using deobfCompile will include in run environment
+    compileOnly "blusunrize:ImmersiveEngineering:${config.ImmersiveEngineering_version}:deobf"
+    compileOnly "cofh:CoFHCore:${config.CoFHCore_version}:universal"
+    compileOnly "cofh:RedstoneFlux:${config.RedstoneFlux_version}:universal"
+    compileOnly "codechicken:CodeChickenLib:${config.CodeChickenLib_version}:universal"
+    compileOnly "com.builtbroken.icbm-classic:ICBM-classic:${config.ICBMclassic_version}"
+    compileOnly "li.cil.oc:OpenComputers:${config.OpenComputers_version}"
+	
 //  compileOnly "mezz.jei:jei_1.10.2:3.13.+"
 //  compileOnly "mcp.mobius.waila:Waila:1.7.0-B3_1.9.4"
-//  compileOnly "slimeknights.mantle:Mantle:1.10.2-1.+"
-//  compileOnly "slimeknights:TConstruct:1.10.2-2.5.6.+"
-    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+"
 //  compileOnly "mcjty.theoneprobe:TheOneProbe:1.10-1.0.13-26"
 //  compileOnly "MineTweaker3:MineTweaker3-API:3.0.14.59"
-    compileOnly "MCMultiPart2:MCMultiPart-exp:2.5.1+"
-	compileOnly "com.builtbroken.icbm-classic:ICBM-classic:1.12.2-3.0.+"
+//  compileOnly "MCMultiPart2:MCMultiPart-exp:2.5.1+"
+//  compileOnly "slimeknights.mantle:Mantle:1.10.2-1.+"
+//  compileOnly "slimeknights:TConstruct:1.10.2-2.5.6.+"
 }
 
 processResources {
@@ -135,30 +142,29 @@ processResources {
     }
 }
 
-//copies the commons folder to all instances
-task copyOpenComputersCommons1(type: Copy) {
+// build the storage space for each computer scripts
+task copyShipControllerCommons1(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.ComputerCraft/warpdriveShipController'
+    into('build/resources/main/assets/warpdrive/lua.ComputerCraft/warpdriveShipCore')
+}
+task copyShipControllerCommons2(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/warpdriveShipController'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipCore')
+}
+
+task copyOpenComputersCommons(type: Copy) {
     from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
     into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveAccelerator')
-}
-task copyOpenComputersCommons2(type: Copy) {
-    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
     into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveEnanReactorCore')
-}
-task copyOpenComputersCommons3(type: Copy) {
-    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
     into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipController')
-}
-task copyOpenComputersCommons4(type: Copy) {
-    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipCore')
     into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveTransporterCore')
-}
-task copyOpenComputersCommons5(type: Copy) {
-    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
     into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveWeaponController')
 }
 
 jar {
-    dependsOn copyOpenComputersCommons1, copyOpenComputersCommons2, copyOpenComputersCommons3, copyOpenComputersCommons4, copyOpenComputersCommons5
+    dependsOn copyShipControllerCommons1, copyShipControllerCommons2
+    dependsOn copyOpenComputersCommons
     
     manifest {
         attributes FMLAT: "warpdrive_at.cfg"
