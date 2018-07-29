@@ -472,7 +472,7 @@ public class ChunkData {
 		AirSpreader.clearCache();
 		if (isModified) {
 			isModified = false;
-			world.getChunkFromChunkCoords(chunkCoordIntPair.x, chunkCoordIntPair.z).markDirty();
+			world.getChunk(chunkCoordIntPair.x, chunkCoordIntPair.z).markDirty();
 		}
 		if ( WarpDriveConfig.LOGGING_CHUNK_HANDLER
 		  && ChunkHandler.delayLogging == 0

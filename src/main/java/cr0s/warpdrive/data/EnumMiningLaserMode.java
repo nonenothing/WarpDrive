@@ -34,7 +34,7 @@ public enum EnumMiningLaserMode implements IStringSerializable {
 		return ID_MAP.get(damage);
 	}
 
-	public String getUnlocalizedName() {
+	public String getTranslationKey() {
 		return unlocalizedName;
 	}
 	

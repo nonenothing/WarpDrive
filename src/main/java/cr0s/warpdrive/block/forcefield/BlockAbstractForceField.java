@@ -24,7 +24,7 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	

@@ -22,7 +22,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setResistance(60.0F * 5 / 3);
-		setUnlocalizedName("warpdrive.energy.enan_reactor_laser");
+		setTranslationKey("warpdrive.energy.enan_reactor_laser");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
@@ -42,7 +42,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
-				       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 0x7));
+				       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override

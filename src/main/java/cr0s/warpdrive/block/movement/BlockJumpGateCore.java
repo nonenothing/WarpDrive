@@ -14,7 +14,7 @@ public class BlockJumpGateCore extends BlockAbstractContainer {
 	public BlockJumpGateCore(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.jump_gate_core." + enumTier.getName());
+		setTranslationKey("warpdrive.movement.jump_gate_core." + enumTier.getName());
 	}
 	
 	@Nonnull

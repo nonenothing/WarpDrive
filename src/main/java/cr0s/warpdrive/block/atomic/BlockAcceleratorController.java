@@ -17,7 +17,7 @@ public class BlockAcceleratorController extends BlockAbstractContainer {
 	public BlockAcceleratorController(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.atomic.accelerator_controller");
+		setTranslationKey("warpdrive.atomic.accelerator_controller");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false));

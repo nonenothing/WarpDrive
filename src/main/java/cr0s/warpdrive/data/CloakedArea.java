@@ -193,7 +193,7 @@ public class CloakedArea {
 		
 		for (int x = minX >> 4; x <= maxX >> 4; x++) {
 			for (int z = minZ >> 4; z <= maxZ >> 4; z++) {
-				chunksToSend.add(p.world.getChunkFromChunkCoords(x, z));
+				chunksToSend.add(p.world.getChunk(x, z));
 			}
 		}
 		

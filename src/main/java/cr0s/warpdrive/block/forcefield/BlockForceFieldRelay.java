@@ -31,7 +31,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	public BlockForceFieldRelay(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.force_field.relay." + enumTier.getName());
+		setTranslationKey("warpdrive.force_field.relay." + enumTier.getName());
 		
 		setDefaultState(getDefaultState().withProperty(UPGRADE, EnumForceFieldUpgrade.NONE));
 	}

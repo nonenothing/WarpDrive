@@ -19,7 +19,7 @@ public class CreativeTabHull extends CreativeTabAbstractBase {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ItemStack getTabIconItem() {
+	public ItemStack createIcon() {
 		final int tier = random.nextInt(3);
 		final int metadata = random.nextInt(16);
 		switch (random.nextInt(6)) {

@@ -37,7 +37,7 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 		this.blockStateHull = blockStateHull;
 		this.enumTier = enumTier;
 		setCreativeTab(WarpDrive.creativeTabHull);
-		setUnlocalizedName("warpdrive.hull." + enumTier.getName() + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
+		setTranslationKey("warpdrive.hull." + enumTier.getName() + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getTranslationKey());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));
 	}
@@ -45,7 +45,7 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	

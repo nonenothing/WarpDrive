@@ -356,7 +356,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				scanResult_type = ScanResultType.BLOCK;
 				scanResult_position = mopResult.getBlockPos();
 				final IBlockState blockState = world.getBlockState(scanResult_position);
-				scanResult_blockUnlocalizedName = blockState.getBlock().getUnlocalizedName();
+				scanResult_blockUnlocalizedName = blockState.getBlock().getTranslationKey();
 				scanResult_blockMetadata = blockState.getBlock().getMetaFromState(blockState);
 				scanResult_blockResistance = blockState.getBlock().getExplosionResistance(null);
 				PacketHandler.sendBeamPacket(world, vSource, new Vector3(mopResult.hitVec), r, g, b, 50, energy, 200);

@@ -16,7 +16,7 @@ public class BlockChunkLoader extends BlockAbstractContainer {
 	public BlockChunkLoader(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.machines.chunk_loader." + enumTier.getName());
+		setTranslationKey("warpdrive.machines.chunk_loader." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false));

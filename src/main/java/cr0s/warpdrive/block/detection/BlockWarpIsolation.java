@@ -25,7 +25,7 @@ public class BlockWarpIsolation extends BlockAbstractBase {
 		super(registryName, enumTier, Material.IRON);
 		
 		setHardness(3.5F);
-		setUnlocalizedName("warpdrive.detection.warp_isolation");
+		setTranslationKey("warpdrive.detection.warp_isolation");
 	}
 	
 	@Override
@@ -34,7 +34,7 @@ public class BlockWarpIsolation extends BlockAbstractBase {
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		Commons.addTooltip(list, new TextComponentTranslation(getUnlocalizedName() + ".tooltip.usage",
+		Commons.addTooltip(list, new TextComponentTranslation(getTranslationKey() + ".tooltip.usage",
 		                                                      WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS,
 		                                                      Math.round(WarpDriveConfig.RADAR_MIN_ISOLATION_EFFECT * 100.0D),
 		                                                      WarpDriveConfig.RADAR_MAX_ISOLATION_BLOCKS,

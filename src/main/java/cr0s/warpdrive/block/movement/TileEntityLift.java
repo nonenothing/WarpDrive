@@ -69,7 +69,7 @@ public class TileEntityLift extends TileEntityAbstractEnergyConsumer implements 
 			
 			// Switching mode
 			if (  computerMode == EnumLiftMode.DOWN
-			  || (computerMode == EnumLiftMode.REDSTONE && world.isBlockIndirectlyGettingPowered(pos) > 0)) {
+			  || (computerMode == EnumLiftMode.REDSTONE && world.getRedstonePowerFromNeighbors(pos) > 0)) {
 				mode = EnumLiftMode.DOWN;
 			} else {
 				mode = EnumLiftMode.UP;

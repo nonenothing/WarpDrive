@@ -64,9 +64,9 @@ public class VectorI implements Cloneable {
 	}
 	
 	public VectorI(final EnumFacing direction) {
-		x = direction.getFrontOffsetX();
-		y = direction.getFrontOffsetY();
-		z = direction.getFrontOffsetZ();
+		x = direction.getXOffset();
+		y = direction.getYOffset();
+		z = direction.getZOffset();
 	}
 	
 	
@@ -86,7 +86,7 @@ public class VectorI implements Cloneable {
 	
 	// clone in a given direction
 	public VectorI clone(final EnumFacing side) {
-		return new VectorI(x + side.getFrontOffsetX(), y + side.getFrontOffsetY(), z + side.getFrontOffsetZ());
+		return new VectorI(x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset());
 	}
 	
 	public Block getBlock(final IBlockAccess blockAccess) {
@@ -122,7 +122,7 @@ public class VectorI implements Cloneable {
 	}
 	
 	public IBlockState getBlockState_noChunkLoading(final IBlockAccess world, final EnumFacing side) {
-		return getBlockState_noChunkLoading(world, x + side.getFrontOffsetX(), y + side.getFrontOffsetY(), z + side.getFrontOffsetZ());
+		return getBlockState_noChunkLoading(world, x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset());
 	}
 	
 	public IBlockState getBlockState_noChunkLoading(final IBlockAccess world) {
@@ -196,9 +196,9 @@ public class VectorI implements Cloneable {
 	
 	// modify current vector by translation of 1 block in side direction
 	public VectorI translate(final EnumFacing side) {
-		x += side.getFrontOffsetX();
-		y += side.getFrontOffsetY();
-		z += side.getFrontOffsetZ();
+		x += side.getXOffset();
+		y += side.getYOffset();
+		z += side.getZOffset();
 		return this;
 	}
 	

@@ -65,9 +65,9 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 				// ignore if we're right next to the reactor
 				// ignore if we're not aligned with the reactor
 				final BlockPos blockPos = reactor.getCoreTe().getPos();
-				if ( blockPos.getX() != pos.getX() + 3 * facing.getFrontOffsetX()
-				  || blockPos.getY() != pos.getY() + 3 * facing.getFrontOffsetY()
-				  || blockPos.getZ() != pos.getZ() + 3 * facing.getFrontOffsetZ() ) {
+				if ( blockPos.getX() != pos.getX() + 3 * facing.getXOffset()
+				  || blockPos.getY() != pos.getY() + 3 * facing.getYOffset()
+				  || blockPos.getZ() != pos.getZ() + 3 * facing.getZOffset() ) {
 					continue;
 				}
 				

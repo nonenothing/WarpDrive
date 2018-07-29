@@ -37,7 +37,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		super(registryName, enumTier, Material.FIRE);
 		
 		setHardness(0.0F);
-		setUnlocalizedName("warpdrive.breathing.air");
+		setTranslationKey("warpdrive.breathing.air");
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -99,7 +99,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.DESTROY;
 	}
 	
@@ -117,7 +117,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.TRANSLUCENT;
 	}
 	

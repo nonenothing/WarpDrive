@@ -17,7 +17,7 @@ public class BlockEnanReactorController extends BlockAbstractContainer {
 	public BlockEnanReactorController(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.energy.enan_reactor_controller." + enumTier.getName());
+		setTranslationKey("warpdrive.energy.enan_reactor_controller." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)

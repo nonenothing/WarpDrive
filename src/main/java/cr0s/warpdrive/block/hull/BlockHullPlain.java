@@ -40,7 +40,7 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 		this.enumHullPlainType = enumHullPlainType;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
-		setUnlocalizedName("warpdrive.hull." + enumTier.getName() + ".plain.");
+		setTranslationKey("warpdrive.hull." + enumTier.getName() + ".plain.");
 		setDefaultState(blockState.getBaseState().withProperty(BlockColored.COLOR, EnumDyeColor.WHITE));
 		setCreativeTab(WarpDrive.creativeTabHull);
 	}
@@ -54,7 +54,7 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	

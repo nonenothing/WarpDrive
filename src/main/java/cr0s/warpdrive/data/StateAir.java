@@ -85,9 +85,9 @@ public class StateAir {
 	
 	public void refresh(final World world, final StateAir stateAir, final EnumFacing forgeDirection) throws ExceptionChunkNotLoaded {
 		blockPos.setPos(
-			stateAir.blockPos.getX() + forgeDirection.getFrontOffsetX(),
-			stateAir.blockPos.getY() + forgeDirection.getFrontOffsetY(),
-			stateAir.blockPos.getZ() + forgeDirection.getFrontOffsetZ() );
+			stateAir.blockPos.getX() + forgeDirection.getXOffset(),
+			stateAir.blockPos.getY() + forgeDirection.getYOffset(),
+			stateAir.blockPos.getZ() + forgeDirection.getZOffset() );
 		refresh(world);
 	}
 	
@@ -103,7 +103,7 @@ public class StateAir {
 			chunk = null;
 		}
 		if (chunk == null) {
-			chunk = world.getChunkFromBlockCoords(blockPos);
+			chunk = world.getChunk(blockPos);
 		}
 		
 		// get actual data
@@ -467,8 +467,8 @@ public class StateAir {
 			case BLOCK_AIR_PLACEABLE       : return true;
 			case BLOCK_AIR_FLOW            : return true;
 			case BLOCK_AIR_SOURCE          : return true;
-			case BLOCK_AIR_NON_PLACEABLE_V : return forgeDirection.getFrontOffsetY() != 0;
-			case BLOCK_AIR_NON_PLACEABLE_H : return forgeDirection.getFrontOffsetY() == 0;
+			case BLOCK_AIR_NON_PLACEABLE_V : return forgeDirection.getYOffset() != 0;
+			case BLOCK_AIR_NON_PLACEABLE_H : return forgeDirection.getYOffset() == 0;
 			case BLOCK_AIR_NON_PLACEABLE   : return true;
 			default: return false;
 		}

@@ -22,7 +22,7 @@ public class ItemIC2reactorLaserFocus extends ItemAbstractBase implements IReact
 		super(registryName);
 		
 		setMaxDamage(WarpDriveConfig.IC2_REACTOR_MAX_HEAT_STORED);
-		setUnlocalizedName("warpdrive.energy.IC2reactorLaserFocus");
+		setTranslationKey("warpdrive.energy.IC2reactorLaserFocus");
 	}
 	
 	public static int getCurrentHeat(final ItemStack itemStackFocus) {

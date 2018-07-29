@@ -34,10 +34,10 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		if (itemStack == null || block instanceof BlockHullStairs) {
-			return getUnlocalizedName();
+			return getTranslationKey();
 		}
-		return getUnlocalizedName() + EnumDyeColor.byMetadata( itemStack.getItemDamage() ).getUnlocalizedName();
+		return getTranslationKey() + EnumDyeColor.byMetadata( itemStack.getItemDamage() ).getTranslationKey();
 	}
 }

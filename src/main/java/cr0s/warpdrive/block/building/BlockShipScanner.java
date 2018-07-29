@@ -22,7 +22,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	public BlockShipScanner(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.building.ship_scanner");
+		setTranslationKey("warpdrive.building.ship_scanner");
 	}
 	
 /* @TODO camouflage	

@@ -136,11 +136,11 @@ public class JumpShip {
 							if (WarpDriveConfig.LOGGING_BUILDING) {
 								if (tileEntities[index] == null) {
 									WarpDrive.logger.info("Adding block to deploy: "
-										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
+										                      + jumpBlock.block.getTranslationKey() + ":" + jumpBlock.blockMeta
 										                      + " (no tile entity)");
 								} else {
 									WarpDrive.logger.info("Adding block to deploy: "
-										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
+										                      + jumpBlock.block.getTranslationKey() + ":" + jumpBlock.blockMeta
 										                      + " with tile entity " + tileEntities[index].getString("id"));
 								}
 							}

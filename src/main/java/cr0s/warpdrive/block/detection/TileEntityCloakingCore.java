@@ -243,13 +243,13 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 			  && distanceOuterCoils_blocks[direction.ordinal()] > 0) {
 				PacketHandler.sendBeamPacketToPlayersInArea(world,
 				        new Vector3(
-				                   pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getFrontOffsetX(),
-				                   pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getFrontOffsetY(),
-				                   pos.getZ() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getFrontOffsetZ()),
+				                   pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getXOffset(),
+				                   pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getYOffset(),
+				                   pos.getZ() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getZOffset()),
 				        new Vector3(
-				                   pos.getX() + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.getFrontOffsetX(),
-				                   pos.getY() + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.getFrontOffsetY(),
-				                   pos.getZ() + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.getFrontOffsetZ()),
+				                   pos.getX() + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.getXOffset(),
+				                   pos.getY() + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.getYOffset(),
+				                   pos.getZ() + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.getZOffset()),
 				        r, g, b,
 				        LASER_DURATION_TICKS,
 				    		new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
@@ -274,13 +274,13 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 				
 				PacketHandler.sendBeamPacketToPlayersInArea(world,
 					new Vector3(
-						pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getFrontOffsetX() + 0.2D * stop .getFrontOffsetX(),
-						pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getFrontOffsetY() + 0.2D * stop .getFrontOffsetY(),
-						pos.getZ() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getFrontOffsetZ() + 0.2D * stop .getFrontOffsetZ()),
+							pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getXOffset() + 0.2D * stop .getXOffset(),
+							pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getYOffset() + 0.2D * stop .getYOffset(),
+							pos.getZ() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getZOffset() + 0.2D * stop .getZOffset()),
 					new Vector3(
-						pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .getFrontOffsetX() + 0.2D * start.getFrontOffsetX(),
-						pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .getFrontOffsetY() + 0.2D * start.getFrontOffsetY(),
-						pos.getZ() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .getFrontOffsetZ() + 0.2D * start.getFrontOffsetZ()),
+							pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .getXOffset() + 0.2D * start.getXOffset(),
+							pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .getYOffset() + 0.2D * start.getYOffset(),
+							pos.getZ() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .getZOffset() + 0.2D * start.getZOffset()),
 					r, g, b,
 					LASER_DURATION_TICKS,
 					new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));

@@ -21,7 +21,7 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	public BlockMiningLaser(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.collection.mining_laser");
+		setTranslationKey("warpdrive.collection.mining_laser");
 
 		setDefaultState(getDefaultState().withProperty(MODE, EnumMiningLaserMode.INACTIVE));
 	}

@@ -107,8 +107,8 @@ public class JumpSequencer extends AbstractSequencer {
 		this.ship = new JumpShip();
 		this.ship.world = sourceWorld;
 		this.ship.core = shipCore.getPos();
-		this.ship.dx = shipCore.facing.getFrontOffsetX();
-		this.ship.dz = shipCore.facing.getFrontOffsetZ();
+		this.ship.dx = shipCore.facing.getXOffset();
+		this.ship.dz = shipCore.facing.getZOffset();
 		this.ship.minX = shipCore.minX;
 		this.ship.maxX = shipCore.maxX;
 		this.ship.minY = shipCore.minY;
@@ -439,7 +439,7 @@ public class JumpSequencer extends AbstractSequencer {
 			maxZ = ship.maxZ >> 4;
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					sourceWorld.getChunkFromChunkCoords(x, z).generateSkylightMap();
+					sourceWorld.getChunk(x, z).generateSkylightMap();
 					ForgeChunkManager.unforceChunk(sourceWorldTicket, new ChunkPos(x, z));
 				}
 			}
@@ -456,7 +456,7 @@ public class JumpSequencer extends AbstractSequencer {
 			maxZ = Math.max(targetMin.getZ(), targetMax.getZ()) >> 4;
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					targetWorld.getChunkFromChunkCoords(x, z).generateSkylightMap();
+					targetWorld.getChunk(x, z).generateSkylightMap();
 					ForgeChunkManager.unforceChunk(targetWorldTicket, new ChunkPos(x, z));
 				}
 			}

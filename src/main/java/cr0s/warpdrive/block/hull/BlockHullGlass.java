@@ -43,7 +43,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
 		setSoundType(SoundType.GLASS);
 		setCreativeTab(WarpDrive.creativeTabHull);
-		setUnlocalizedName("warpdrive.hull." + enumTier.getName() + ".glass.");
+		setTranslationKey("warpdrive.hull." + enumTier.getName() + ".glass.");
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));
 		
@@ -53,7 +53,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
@@ -96,7 +96,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.TRANSLUCENT;
 	}
 	

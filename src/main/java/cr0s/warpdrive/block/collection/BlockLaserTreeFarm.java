@@ -21,7 +21,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	public BlockLaserTreeFarm(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.collection.laser_tree_farm");
+		setTranslationKey("warpdrive.collection.laser_tree_farm");
 
 		setDefaultState(getDefaultState().withProperty(MODE, EnumLaserTreeFarmMode.INACTIVE));
 	}

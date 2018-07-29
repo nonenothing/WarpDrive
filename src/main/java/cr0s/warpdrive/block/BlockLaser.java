@@ -15,7 +15,7 @@ public class BlockLaser extends BlockAbstractContainer {
 		
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setUnlocalizedName("warpdrive.machines.laser");
+		setTranslationKey("warpdrive.machines.laser");
 	}
 	
 	@Nonnull

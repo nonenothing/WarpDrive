@@ -21,7 +21,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	public BlockRadar(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.detection.radar");
+		setTranslationKey("warpdrive.detection.radar");
 		
 		setDefaultState(getDefaultState().withProperty(MODE, EnumRadarMode.INACTIVE));
 	}

@@ -360,9 +360,9 @@ public class AcceleratorSetup extends GlobalPosition {
 		final EnumFacing directionRight = forgeDirection.rotateYCCW();
 		for (int indexCorner = 0; indexCorner < 4; indexCorner++) {
 			final VectorI vector = new VectorI(
-				vCenter.x + ((indexCorner & 1) != 0 ? directionLeft.getFrontOffsetX() : directionRight.getFrontOffsetX()),
+				vCenter.x + ((indexCorner & 1) != 0 ? directionLeft.getXOffset() : directionRight.getXOffset()),
 				vCenter.y + ((indexCorner & 2) != 0 ? 1 : -1),
-			    vCenter.z + ((indexCorner & 1) != 0 ? directionLeft.getFrontOffsetZ() : directionRight.getFrontOffsetZ()));
+			    vCenter.z + ((indexCorner & 1) != 0 ? directionLeft.getZOffset() : directionRight.getZOffset()));
 			final Block block = vector.getBlock(world);
 			if (block instanceof BlockChiller) {
 				final EnumTier enumTier = ((BlockChiller) block).getTier(ItemStack.EMPTY);

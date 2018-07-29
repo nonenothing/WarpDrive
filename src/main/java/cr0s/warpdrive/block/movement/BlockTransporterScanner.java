@@ -28,7 +28,7 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 	public BlockTransporterScanner(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.transporter_scanner");
+		setTranslationKey("warpdrive.movement.transporter_scanner");
 		setLightOpacity(255);
 		
 		setDefaultState(getDefaultState()

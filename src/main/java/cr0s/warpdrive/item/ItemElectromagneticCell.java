@@ -37,7 +37,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		
 		setMaxDamage(0);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.atomic.electromagnetic_cell");
+		setTranslationKey("warpdrive.atomic.electromagnetic_cell");
 		setHasSubtypes(true);
 		
 		addPropertyOverride(new ResourceLocation(WarpDrive.MODID, "fill"), new IItemPropertyGetter() {
@@ -59,11 +59,11 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		String variant = "empty";
 		final ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack != null) {
-			variant = particleStack.getUnlocalizedName().replace("warpdrive.particle.", "");
+			variant = particleStack.getTranslationKey().replace("warpdrive.particle.", "");
 		}
 		ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
-		resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + variant);
+		resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-" + variant);
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
 	

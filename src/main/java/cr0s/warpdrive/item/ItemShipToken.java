@@ -29,7 +29,7 @@ public class ItemShipToken extends ItemAbstractBase {
 		super(registryName);
 		
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.tool.ship_token");
+		setTranslationKey("warpdrive.tool.ship_token");
 		setCreativeTab(WarpDrive.creativeTabMain);
 		
 		itemStackCache = new ItemStack[VALID_METADATAS.length];
@@ -62,14 +62,14 @@ public class ItemShipToken extends ItemAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		final int metadata = itemStack.getItemDamage();
 		for (final int metadataValid : VALID_METADATAS) {
 			if (metadata == metadataValid) {
 				return "item.warpdrive.tool.ship_token" + metadata;
 			}
 		}
-		return getUnlocalizedName();
+		return getTranslationKey();
 	}
 	
 	@Override

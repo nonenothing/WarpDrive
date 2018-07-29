@@ -20,7 +20,7 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 			return;
 		}
 		
-		setUnlocalizedName("warpdrive.atomic.accelerator_control_point");
+		setTranslationKey("warpdrive.atomic.accelerator_control_point");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false));

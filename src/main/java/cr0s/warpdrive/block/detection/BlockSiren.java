@@ -32,7 +32,7 @@ public class BlockSiren extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		this.isIndustrial = isIndustrial;
-		setUnlocalizedName("warpdrive.detection.siren_" + (isIndustrial ? "industrial" : "military") + "." + enumTier.getName());
+		setTranslationKey("warpdrive.detection.siren_" + (isIndustrial ? "industrial" : "military") + "." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
@@ -51,7 +51,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
-				       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 0x7));
+				       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override
@@ -82,7 +82,7 @@ public class BlockSiren extends BlockAbstractContainer {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		final int range = MathHelper.floor(WarpDriveConfig.SIREN_RANGE_BLOCKS_BY_TIER[enumTier.getIndex()]);
-		final String unlocalizedName_withoutTier = getUnlocalizedName().replace("." + enumTier.getName(), "");
+		final String unlocalizedName_withoutTier = getTranslationKey().replace("." + enumTier.getName(), "");
 		Commons.addTooltip(list, new TextComponentTranslation(unlocalizedName_withoutTier + ".tooltip.usage",
 		                                                      range).getFormattedText());
 	}

@@ -14,7 +14,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	public BlockCamera(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.detection.camera");
+		setTranslationKey("warpdrive.detection.camera");
 	}
 	
 	@Nonnull

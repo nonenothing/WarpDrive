@@ -105,7 +105,7 @@ public class ClientProxy extends CommonProxy {
 		
 		// use damage value as suffix for pure items
 		if (item.getHasSubtypes()) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + itemStack.getItemDamage());
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-" + itemStack.getItemDamage());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

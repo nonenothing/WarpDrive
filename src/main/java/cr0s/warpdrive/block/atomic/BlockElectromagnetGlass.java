@@ -17,7 +17,7 @@ public class BlockElectromagnetGlass extends BlockElectromagnetPlain {
 	public BlockElectromagnetGlass(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.electromagnet." + enumTier.getName() + ".glass");
+		setTranslationKey("warpdrive.atomic.electromagnet." + enumTier.getName() + ".glass");
 	}
 	
 	@SuppressWarnings("deprecation")

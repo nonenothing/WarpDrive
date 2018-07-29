@@ -50,7 +50,7 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 		setMaxDamage(0);
 		setCreativeTab(WarpDrive.creativeTabMain);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.tool.tuning_driver");
+		setTranslationKey("warpdrive.tool.tuning_driver");
 		setFull3D();
 		setHasSubtypes(true);
 	}
@@ -74,16 +74,16 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 		assert resourceLocation != null;
 		switch (damage) {
 		case MODE_VIDEO_CHANNEL:
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-video_channel");
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-video_channel");
 			break;
 		case MODE_BEAM_FREQUENCY:
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-beam_frequency");
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-beam_frequency");
 			break;
 		case MODE_CONTROL_CHANNEL:
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-control_channel");
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-control_channel");
 			break;
 		default:
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-invalid");
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-invalid");
 			break;
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
@@ -91,13 +91,13 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		switch (damage) {
-		case MODE_VIDEO_CHANNEL  : return getUnlocalizedName() + ".video_channel";
-		case MODE_BEAM_FREQUENCY : return getUnlocalizedName() + ".beam_frequency";
-		case MODE_CONTROL_CHANNEL: return getUnlocalizedName() + ".control_channel";
-		default: return getUnlocalizedName(); 
+		case MODE_VIDEO_CHANNEL  : return getTranslationKey() + ".video_channel";
+		case MODE_BEAM_FREQUENCY : return getTranslationKey() + ".beam_frequency";
+		case MODE_CONTROL_CHANNEL: return getTranslationKey() + ".control_channel";
+		default: return getTranslationKey();
 		}
 	}
 	

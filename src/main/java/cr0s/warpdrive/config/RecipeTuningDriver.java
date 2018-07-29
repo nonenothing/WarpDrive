@@ -119,7 +119,7 @@ public class RecipeTuningDriver implements IRecipe {
 				// find a matching dye from ore dictionary
 				boolean matched = false;
 				for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-					final List<ItemStack> itemStackDyes = OreDictionary.getOres("dye" + enumDyeColor.getUnlocalizedName());
+					final List<ItemStack> itemStackDyes = OreDictionary.getOres("dye" + enumDyeColor.getTranslationKey());
 					for (final ItemStack itemStackDye : itemStackDyes) {
 						if (OreDictionary.itemMatches(itemStackSlot, itemStackDye, true)) {
 							// match found, update dye combination

@@ -73,7 +73,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		super(registryName, enumTier, Material.GLASS);
 		
 		setSoundType(SoundType.CLOTH);
-		setUnlocalizedName("warpdrive.force_field.block." + enumTier.getName());
+		setTranslationKey("warpdrive.force_field.block." + enumTier.getName());
 		setBlockUnbreakable();
 		
 		setDefaultState(getDefaultState()
@@ -282,7 +282,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(final World world, final BlockPos blockPos, final IBlockState blockState, final Entity entity) {
+	public void onEntityCollision(final World world, final BlockPos blockPos, final IBlockState blockState, final Entity entity) {
+		super.onEntityCollision(world, blockPos, blockState, entity);
+		
 		if (world.isRemote) {
 			return;
 		}
@@ -377,7 +379,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			final TileEntity tileEntity = world.getTileEntity(new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ));
 			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCE_FIELD) {
 				WarpDrive.logger.info(String.format("Block at location is %s %s with tileEntity %s",
-				                                    blockState.getBlock(), blockState.getBlock().getUnlocalizedName(), tileEntity));
+				                                    blockState.getBlock(), blockState.getBlock().getTranslationKey(), tileEntity));
 			}
 			// explosion with no entity and block removed, hence we can't compute the energy impact => boosting explosion resistance
 			return 2.0F * super.getExplosionResistance(entity, world, blockPos, explosionX, explosionY, explosionZ);
@@ -481,10 +483,10 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onBlockDestroyedByExplosion(final World world, final BlockPos blockPos, final Explosion explosion) {
+	public void onExplosionDestroy(final World world, final BlockPos blockPos, final Explosion explosion) {
 		// (block is already set to air by caller, see IC2 iTNT for example)
 		downgrade(world, blockPos);
-		super.onBlockDestroyedByExplosion(world, blockPos, explosion);
+		super.onExplosionDestroy(world, blockPos, explosion);
 	}
 	
 	@Override

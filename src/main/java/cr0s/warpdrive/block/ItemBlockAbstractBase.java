@@ -43,7 +43,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		super(block);
 		
 		setHasSubtypes(hasSubtypes);
-		setUnlocalizedName(block.getUnlocalizedName());
+		setTranslationKey(block.getTranslationKey());
 		this.hasUniqueName = hasUniqueName;
 	}
 	
@@ -54,14 +54,14 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		if ( hasUniqueName
 		  || itemStack == null
 		  || !(block instanceof BlockAbstractContainer)
 		  || !((BlockAbstractContainer) block).hasSubBlocks ) {
-			return getUnlocalizedName();
+			return getTranslationKey();
 		}
-		return getUnlocalizedName() + itemStack.getItemDamage();
+		return getTranslationKey() + itemStack.getItemDamage();
 	}
 	
 	@Nonnull
@@ -119,12 +119,12 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		final String tooltipItemStack = getUnlocalizedName(itemStack) + ".tooltip";
+		final String tooltipItemStack = getTranslationKey(itemStack) + ".tooltip";
 		if (I18n.hasKey(tooltipItemStack)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipItemStack).getFormattedText());
 		}
 		
-		final String tooltipName = getUnlocalizedName() + ".tooltip";
+		final String tooltipName = getTranslationKey() + ".tooltip";
 		if ((!tooltipItemStack.equals(tooltipName)) && I18n.hasKey(tooltipName)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName).getFormattedText());
 		}
@@ -146,6 +146,6 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		                     getClass().getSimpleName(),
 		                     Integer.toHexString(hashCode()),
 		                     REGISTRY.getNameForObject(this),
-		                     getUnlocalizedName());
+		                     getTranslationKey());
 	}
 }

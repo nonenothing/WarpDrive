@@ -28,7 +28,7 @@ public class BlockAirSource extends BlockAbstractAir {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
+		       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7));
 	}
 	
 	@Override

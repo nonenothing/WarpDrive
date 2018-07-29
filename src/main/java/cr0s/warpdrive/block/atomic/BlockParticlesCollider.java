@@ -13,7 +13,7 @@ public class BlockParticlesCollider extends BlockAbstractAccelerator {
 	public BlockParticlesCollider(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.particles_collider");
+		setTranslationKey("warpdrive.atomic.particles_collider");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false));

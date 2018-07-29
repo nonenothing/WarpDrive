@@ -17,7 +17,7 @@ public class BlockVoidShellGlass extends BlockVoidShellPlain {
 	public BlockVoidShellGlass(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.void_shell_glass");
+		setTranslationKey("warpdrive.atomic.void_shell_glass");
 	}
 	
 	@SuppressWarnings("deprecation")

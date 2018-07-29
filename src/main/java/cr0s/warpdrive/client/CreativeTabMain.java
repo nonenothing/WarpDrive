@@ -18,7 +18,7 @@ public class CreativeTabMain extends CreativeTabAbstractBase {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ItemStack getTabIconItem() {
+	public ItemStack createIcon() {
 		return ItemShipToken.getItemStack(random);
     }
 }

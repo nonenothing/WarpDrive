@@ -29,8 +29,8 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemstack) {
-		return getUnlocalizedName();
+	public String getTranslationKey(final ItemStack itemstack) {
+		return getTranslationKey();
 	}
 	
 	@Nonnull

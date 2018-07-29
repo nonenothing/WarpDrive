@@ -62,7 +62,7 @@ public class BlockCapacitor extends BlockAbstractContainer implements IExplosion
 	public BlockCapacitor(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.energy.capacitor." + enumTier.getName());
+		setTranslationKey("warpdrive.energy.capacitor." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)

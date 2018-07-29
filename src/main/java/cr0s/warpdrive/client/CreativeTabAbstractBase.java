@@ -21,11 +21,11 @@ public abstract class CreativeTabAbstractBase extends CreativeTabs {
 	
 	@Nonnull
 	@Override
-	public ItemStack getIconItemStack() {
+	public ItemStack getIcon() {
 		final long timeCurrent = System.currentTimeMillis();
 		if (timeLastChange < timeCurrent) {
 			timeLastChange = timeCurrent + period;
-			itemStack = getTabIconItem();
+			itemStack = createIcon();
 		}
 		return itemStack;
 	}

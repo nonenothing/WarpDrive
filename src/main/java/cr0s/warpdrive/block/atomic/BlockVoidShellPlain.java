@@ -7,6 +7,6 @@ public class BlockVoidShellPlain extends BlockAbstractAccelerator {
 	public BlockVoidShellPlain(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.void_shell_plain");
+		setTranslationKey("warpdrive.atomic.void_shell_plain");
 	}
 }

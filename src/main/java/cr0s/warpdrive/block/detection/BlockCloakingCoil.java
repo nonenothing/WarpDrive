@@ -30,7 +30,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		super(registryName, enumTier, Material.IRON);
 		
 		setHardness(3.5F);
-		setUnlocalizedName("warpdrive.detection.cloaking_coil");
+		setTranslationKey("warpdrive.detection.cloaking_coil");
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.ACTIVE, false)
@@ -58,7 +58,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		return getDefaultState()
 				.withProperty(BlockProperties.ACTIVE, isActive)
 				.withProperty(OUTER, isOuter)
-				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.getFront((metadata & 7) - 1) : EnumFacing.UP);
+				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.byIndex((metadata & 7) - 1) : EnumFacing.UP);
 	}
 	
 	@SuppressWarnings("deprecation")

@@ -15,7 +15,7 @@ public class BlockParticlesInjector extends BlockAcceleratorControlPoint {
 	public BlockParticlesInjector(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, true);
 		
-		setUnlocalizedName("warpdrive.atomic.particles_injector");
+		setTranslationKey("warpdrive.atomic.particles_injector");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false));

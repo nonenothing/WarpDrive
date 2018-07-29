@@ -71,17 +71,17 @@ public class Particle {
 	
 	@SideOnly(Side.CLIENT)
 	public String getLocalizedName() {
-		final String unlocalizedName = getUnlocalizedName();
+		final String unlocalizedName = getTranslationKey();
 		return unlocalizedName == null ? "" : new TextComponentTranslation(unlocalizedName + ".name").getFormattedText();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public String getLocalizedTooltip() {
-		final String unlocalizedName = getUnlocalizedName();
+		final String unlocalizedName = getTranslationKey();
 		return unlocalizedName == null ? "" : new TextComponentTranslation(unlocalizedName + ".tooltip").getFormattedText();
 	}
 	
-	public String getUnlocalizedName()
+	public String getTranslationKey()
 	{
 		return "warpdrive.particle." + this.registryName;
 	}

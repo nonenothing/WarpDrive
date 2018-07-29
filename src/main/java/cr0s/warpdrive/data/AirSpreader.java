@@ -62,9 +62,9 @@ public class AirSpreader {
 		for (final EnumFacing forgeDirection : directions) {
 			final StateAir stateAir = stateAround[forgeDirection.ordinal()];
 			stateAir.refresh(world,
-			                 x + forgeDirection.getFrontOffsetX(),
-			                 y + forgeDirection.getFrontOffsetY(),
-			                 z + forgeDirection.getFrontOffsetZ());
+			                 x + forgeDirection.getXOffset(),
+			                 y + forgeDirection.getYOffset(),
+			                 z + forgeDirection.getZOffset());
 			if (stateAir.isAir(forgeDirection)) {
 				air_count++;
 				if (stateAir.concentration > 0) {// (note1)
@@ -106,9 +106,9 @@ public class AirSpreader {
 				for (final EnumFacing direction : directions) {
 					final StateAir stateAir = stateAround[direction.ordinal()];
 					stateAir.refresh(world,
-					                 x + direction.getFrontOffsetX(),
-					                 y + direction.getFrontOffsetY(),
-					                 z + direction.getFrontOffsetZ());
+					                 x + direction.getXOffset(),
+					                 y + direction.getYOffset(),
+					                 z + direction.getZOffset());
 				}
 			}
 		}
@@ -125,9 +125,9 @@ public class AirSpreader {
 				for (final EnumFacing direction : directions) {
 					final StateAir stateAir = stateAround[direction.ordinal()];
 					stateAir.refresh(world,
-					                 x + direction.getFrontOffsetX(),
-					                 y + direction.getFrontOffsetY(),
-					                 z + direction.getFrontOffsetZ());
+					                 x + direction.getXOffset(),
+					                 y + direction.getYOffset(),
+					                 z + direction.getZOffset());
 				}
 			}
 		}
@@ -241,9 +241,9 @@ public class AirSpreader {
 				if (stateCenter.isAirSource()) {
 					final EnumFacing facingSource = blockStateSource.getValue(BlockProperties.FACING);
 					final IBlockState blockStateGenerator = world.getBlockState(mutableBlockPos.setPos(
-							x - facingSource.getFrontOffsetX(),
-							y - facingSource.getFrontOffsetY(),
-							z - facingSource.getFrontOffsetZ()));
+							x - facingSource.getXOffset(),
+							y - facingSource.getYOffset(),
+							z - facingSource.getZOffset()));
 					if (blockStateGenerator.getBlock() instanceof BlockAirGeneratorTiered) {
 						final EnumFacing facingGenerator = blockStateGenerator.getValue(BlockProperties.FACING);
 						if (facingGenerator == facingSource) {

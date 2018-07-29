@@ -26,7 +26,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	public BlockCloakingCore(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.detection.cloaking_core");
+		setTranslationKey("warpdrive.detection.cloaking_core");
 		
 		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false));
 	}

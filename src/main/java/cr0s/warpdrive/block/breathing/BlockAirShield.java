@@ -17,7 +17,7 @@ public class BlockAirShield extends BlockAbstractOmnipanel {
 	public BlockAirShield(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.CLOTH);
 		
-		setUnlocalizedName("warpdrive.breathing.air_shield");
+		setTranslationKey("warpdrive.breathing.air_shield");
 	}
 	
 	/* @TODO rendering

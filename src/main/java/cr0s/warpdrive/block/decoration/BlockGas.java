@@ -40,7 +40,7 @@ public class BlockGas extends BlockAbstractBase {
 		super(registryName, enumTier, Material.FIRE);
 		
 		setHardness(0.0F);
-		setUnlocalizedName("warpdrive.decoration.gas");
+		setTranslationKey("warpdrive.decoration.gas");
 		
 		setDefaultState(getDefaultState().withProperty(COLOR, EnumGasColor.RED));
 	}
@@ -130,7 +130,7 @@ public class BlockGas extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.DESTROY;
 	}
 	
@@ -154,7 +154,7 @@ public class BlockGas extends BlockAbstractBase {
 	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.TRANSLUCENT;
 	}
 	

@@ -426,7 +426,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractMachine
 	@Optional.Method(modid = "redstoneflux")
 	private void CoFH_outputEnergy(final EnumFacing from, final IEnergyReceiver energyReceiver) {
 		if ( energyReceiver == null
-		  || world.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null ) {
+		  || world.getTileEntity(pos.add(from.getXOffset(), from.getYOffset(), from.getZOffset())) == null ) {
 			return;
 		}
 		if (!energy_canOutput(from)) {
@@ -510,7 +510,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractMachine
 		for (final EnumFacing from : EnumFacing.VALUES) {
 			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
-				final TileEntity tileEntity = world.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));
+				final TileEntity tileEntity = world.getTileEntity(pos.add(from.getXOffset(), from.getYOffset(), from.getZOffset()));
 				if (tileEntity instanceof IEnergyReceiver) {
 					IEnergyReceiver energyReceiver = (IEnergyReceiver) tileEntity;
 					if (energyReceiver.canConnectEnergy(from.getOpposite())) {

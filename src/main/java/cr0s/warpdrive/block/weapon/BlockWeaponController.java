@@ -16,7 +16,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 		
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setUnlocalizedName("warpdrive.weapon.weapon_controller");
+		setTranslationKey("warpdrive.weapon.weapon_controller");
 	}
 
 	@Nonnull

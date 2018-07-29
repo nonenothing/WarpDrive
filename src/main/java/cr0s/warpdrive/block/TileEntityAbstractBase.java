@@ -504,9 +504,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			final Object key = entry.getKey();
 			String keyName = key.toString();
 			if (key instanceof Item) {
-				keyName = ((Item) key).getUnlocalizedName();
+				keyName = ((Item) key).getTranslationKey();
 			} else if (key instanceof Block) {
-				keyName = ((Block) key).getUnlocalizedName();
+				keyName = ((Block) key).getTranslationKey();
 			}
 			if (entry.getValue() == 1) {
 				message.append(keyName);

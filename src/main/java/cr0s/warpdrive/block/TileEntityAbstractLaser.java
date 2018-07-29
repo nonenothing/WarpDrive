@@ -190,9 +190,9 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractMachine 
 	public Object[] laserMediumDirection() {
 		return new Object[] {
 			laserMedium_direction.name(),
-			laserMedium_direction.getFrontOffsetX(),
-			laserMedium_direction.getFrontOffsetY(),
-			laserMedium_direction.getFrontOffsetZ() };
+			laserMedium_direction.getXOffset(),
+			laserMedium_direction.getYOffset(),
+			laserMedium_direction.getZOffset() };
 	}
 	
 	@Override

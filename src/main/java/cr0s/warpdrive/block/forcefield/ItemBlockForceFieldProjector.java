@@ -30,10 +30,10 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		if (itemStack == null) {
-			return getUnlocalizedName();
+			return getTranslationKey();
 		}
-		return getUnlocalizedName() + (itemStack.getItemDamage() == 1 ? ".double" : ".single");
+		return getTranslationKey() + (itemStack.getItemDamage() == 1 ? ".double" : ".single");
 	}
 }

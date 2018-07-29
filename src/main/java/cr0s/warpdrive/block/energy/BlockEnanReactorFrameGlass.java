@@ -24,7 +24,7 @@ public class BlockEnanReactorFrameGlass extends BlockAbstractBase {
 		
 		setHardness(WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()] / 3);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] / 3 * 5 / 3);
-		setUnlocalizedName("warpdrive.energy.enan_reactor_frame." + enumTier.getName());
+		setTranslationKey("warpdrive.energy.enan_reactor_frame." + enumTier.getName());
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -42,7 +42,7 @@ public class BlockEnanReactorFrameGlass extends BlockAbstractBase {
 	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.TRANSLUCENT;
 	}
 	

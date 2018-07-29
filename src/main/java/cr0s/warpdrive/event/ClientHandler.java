@@ -246,7 +246,7 @@ public class ClientHandler {
 						final ItemStack itemStackRepair = armorMaterial.getRepairItemStack();
 						if (!itemStackRepair.isEmpty()) {
 							Commons.addTooltip(event.getToolTip(), String.format("Repair with %s",
-							                                                     itemStackRepair.getUnlocalizedName()));
+							                                                     itemStackRepair.getTranslationKey()));
 						}
 					}
 				}

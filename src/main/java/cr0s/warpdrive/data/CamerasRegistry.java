@@ -63,7 +63,7 @@ public class CamerasRegistry {
 			return false;
 		}
 		
-		if (!world.getChunkFromBlockCoords(cam.position).isLoaded()) {
+		if (!world.getChunk(cam.position).isLoaded()) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(String.format("Reporting an 'unloaded' camera %s",
 				                                    Commons.format(world, cam.position)));

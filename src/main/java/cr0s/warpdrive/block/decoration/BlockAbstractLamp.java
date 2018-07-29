@@ -32,7 +32,7 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 		setHardness(WarpDriveConfig.HULL_HARDNESS[0]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0] * 5 / 3);
 		setSoundType(SoundType.METAL);
-		setUnlocalizedName(unlocalizedName);
+		setTranslationKey(unlocalizedName);
 		setDefaultState(blockState.getBaseState().withProperty(BlockProperties.FACING, EnumFacing.NORTH));
 		
 		setLightLevel(14.0F / 15.0F);
@@ -51,7 +51,7 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
+				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7));
 	}
 	
 	@Override

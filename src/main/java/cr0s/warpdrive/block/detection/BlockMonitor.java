@@ -26,7 +26,7 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 	public BlockMonitor(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.detection.monitor");
+		setTranslationKey("warpdrive.detection.monitor");
 	}
 
 	@Nonnull

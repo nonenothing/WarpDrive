@@ -39,8 +39,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		if ( chunkMin == null
 		  || chunkMax == null ) {
 			WarpDrive.logger.warn(String.format("%s No chunk coordinates defined, assuming current chunk", this));
-			chunkMin = world.getChunkFromBlockCoords(pos).getPos();
-			chunkMax = world.getChunkFromBlockCoords(pos).getPos();
+			chunkMin = world.getChunk(pos).getPos();
+			chunkMax = world.getChunk(pos).getPos();
 		}
 	}
 	
@@ -115,11 +115,11 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		tagCompound = super.writeToNBT(tagCompound);
 		
 		if (chunkMin == null) {
-			chunkMin = world.getChunkFromBlockCoords(pos).getPos();
+			chunkMin = world.getChunk(pos).getPos();
 		}
 		
 		if (chunkMax == null) {
-			chunkMax = world.getChunkFromBlockCoords(pos).getPos();
+			chunkMax = world.getChunk(pos).getPos();
 		}
 		
 		tagCompound.setInteger("minChunkX", chunkMin.x);

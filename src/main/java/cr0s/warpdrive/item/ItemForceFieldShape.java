@@ -36,7 +36,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 		super(registryName);
 		
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.force_field.shape");
+		setTranslationKey("warpdrive.force_field.shape");
 		
 		itemStackCache = new ItemStack[EnumForceFieldShape.length];
 	}
@@ -58,12 +58,12 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldShape.length) {
-			return getUnlocalizedName() + "." + EnumForceFieldShape.get(damage).getName();
+			return getTranslationKey() + "." + EnumForceFieldShape.get(damage).getName();
 		}
-		return getUnlocalizedName();
+		return getTranslationKey();
 	}
 	
 	@Override
@@ -86,7 +86,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 		ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
 		if (damage >= 0 && damage < EnumComponentType.length) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldShape.get(damage).getName());
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-" + EnumForceFieldShape.get(damage).getName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

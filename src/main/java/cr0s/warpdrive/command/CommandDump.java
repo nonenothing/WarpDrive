@@ -55,11 +55,11 @@ public class CommandDump extends AbstractCommand {
 		// validate
 		IInventory inventory = null;
 		for (final EnumFacing direction : EnumFacing.values()) {
-			inventory = getInventory(world, x + direction.getFrontOffsetX(), y + direction.getFrontOffsetY(), z + direction.getFrontOffsetZ());
+			inventory = getInventory(world, x + direction.getXOffset(), y + direction.getYOffset(), z + direction.getZOffset());
 			if (inventory != null) {
-				x += direction.getFrontOffsetX();
-				y += direction.getFrontOffsetY();
-				z += direction.getFrontOffsetZ();
+				x += direction.getXOffset();
+				y += direction.getYOffset();
+				z += direction.getZOffset();
 				break;
 			}
 		}
@@ -80,7 +80,7 @@ public class CommandDump extends AbstractCommand {
 				final String stringNBT = !itemStack.hasTagCompound() ? "" : String.format(" nbt=\"%s\"", itemStack.getTagCompound());
 				WarpDrive.logger.info(String.format("Slot %3d is <loot item=\"%s:%s\"%s minQuantity=\"%d\" minQuantity=\"%d\"%s weight=\"1\" /><!-- %s -->",
 				                                    indexSlot,
-				                                    uniqueIdentifier.getResourceDomain(), uniqueIdentifier.getResourcePath(),
+				                                    uniqueIdentifier.getNamespace(), uniqueIdentifier.getPath(),
 				                                    stringDamage,
 				                                    itemStack.getCount(), itemStack.getCount(),
 				                                    stringNBT,

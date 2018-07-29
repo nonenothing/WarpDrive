@@ -71,7 +71,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabHull);
-		setUnlocalizedName("warpdrive.hull." + enumTier.getName() + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
+		setTranslationKey("warpdrive.hull." + enumTier.getName() + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getTranslationKey());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHullSlab(this));
 		
@@ -101,7 +101,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
@@ -127,8 +127,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	// ItemSlab abstract methods
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final int metadata) {
-		return getUnlocalizedName();
+	public String getTranslationKey(final int metadata) {
+		return getTranslationKey();
 	}
 	
 	@Override

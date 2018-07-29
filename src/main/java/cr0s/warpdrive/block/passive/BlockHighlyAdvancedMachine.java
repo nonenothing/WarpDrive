@@ -11,6 +11,6 @@ public class BlockHighlyAdvancedMachine extends BlockAbstractBase {
 		super(registryName, enumTier, Material.IRON);
 		
 		setHardness(5.0F);
-		setUnlocalizedName("warpdrive.passive.highly_advanced_machine");
+		setTranslationKey("warpdrive.passive.highly_advanced_machine");
 	}
 }

@@ -41,7 +41,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		super(registryName, enumTier, Material.IRON);
 		
 		setHardness(0.5F);
-		setUnlocalizedName("warpdrive.movement.transporter_beacon");
+		setTranslationKey("warpdrive.movement.transporter_beacon");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)

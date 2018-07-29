@@ -98,8 +98,8 @@ public class ParticleStack {
 		return this.getParticle().getLocalizedName();
 	}
 	
-	public String getUnlocalizedName() {
-		return this.getParticle().getUnlocalizedName();
+	public String getTranslationKey() {
+		return this.getParticle().getTranslationKey();
 	}
 	
 	public ParticleStack copy() {

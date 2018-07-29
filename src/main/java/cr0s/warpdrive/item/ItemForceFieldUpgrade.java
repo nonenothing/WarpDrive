@@ -35,7 +35,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 		super(registryName);
 		
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.force_field.upgrade");
+		setTranslationKey("warpdrive.force_field.upgrade");
 		
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];
 	}
@@ -57,12 +57,12 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
-			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).getName();
+			return getTranslationKey() + "." + EnumForceFieldUpgrade.get(damage).getName();
 		}
-		return getUnlocalizedName();
+		return getTranslationKey();
 	}
 	
 	@Override
@@ -85,7 +85,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 		ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
 		if (damage >= 0 && damage < EnumComponentType.length) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldUpgrade.get(damage).getName());
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-" + EnumForceFieldUpgrade.get(damage).getName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

@@ -138,11 +138,11 @@ public class Commons {
 	public static Style styleWarning = new Style().setColor(TextFormatting.RED);
 	
 	public static WarpDriveText getChatPrefix(final Block block) {
-		return getChatPrefix(block.getUnlocalizedName() + ".name");
+		return getChatPrefix(block.getTranslationKey() + ".name");
 	}
 	
 	public static WarpDriveText getChatPrefix(final ItemStack itemStack) {
-		return getChatPrefix(itemStack.getUnlocalizedName() + ".name");
+		return getChatPrefix(itemStack.getTranslationKey() + ".name");
 	}
 	
 	public static WarpDriveText getChatPrefix(final String translationKey) {
@@ -837,7 +837,7 @@ public class Commons {
 	public static RayTraceResult getInteractingBlock(final World world, final EntityPlayer entityPlayer, final double distance) {
 		final Vec3d vec3Position = new Vec3d(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
 		final Vec3d vec3Look = entityPlayer.getLook(1.0F);
-		final Vec3d vec3Target = vec3Position.addVector(vec3Look.x * distance, vec3Look.y * distance, vec3Look.z * distance);
+		final Vec3d vec3Target = vec3Position.add(vec3Look.x * distance, vec3Look.y * distance, vec3Look.z * distance);
 		return world.rayTraceBlocks(vec3Position, vec3Target, false, false, true);
 	}
 	
@@ -866,20 +866,20 @@ public class Commons {
 			for (final Fluid fluid : fluidsRegistry.values()) {
 				final Block blockFluid = fluid.getBlock();
 				if (blockFluid != null) {
-					map.put(blockFluid.getUnlocalizedName(), fluid);
+					map.put(blockFluid.getTranslationKey(), fluid);
 				}
 			}
 			fluidByBlockName = map;
 		}
 		// final Fluid fluid = FluidRegistry.lookupFluidForBlock(blockState.getBlock()); @TODO MC1.10 fluid detection
-		return fluidByBlockName.get(block.getUnlocalizedName());
+		return fluidByBlockName.get(block.getTranslationKey());
 	}
 	
 	public static EnumFacing getDirection(final int index) {
 		if (index < 0 || index > 5) {
 			return null;
 		}
-		return EnumFacing.getFront(index);
+		return EnumFacing.byIndex(index);
 	}
 	
 	public static int getOrdinal(final EnumFacing direction) {

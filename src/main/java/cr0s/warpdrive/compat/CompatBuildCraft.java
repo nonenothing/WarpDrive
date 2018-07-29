@@ -49,17 +49,17 @@ public class CompatBuildCraft implements IBlockTransformer {
 	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final WarpDriveText reason) {
 		if (classTileEntityQuarry.isInstance(tileEntity)) {
 			reason.append(Commons.styleWarning, "warpdrive.compat.guide.block_detected_on_board",
-			              new TextComponentTranslation(block.getUnlocalizedName()));
+			              new TextComponentTranslation(block.getTranslationKey()));
 			return false;
 		}
 		if (classTileEntityFiller.isInstance(tileEntity)) {
 			reason.append(Commons.styleWarning, "warpdrive.compat.guide.block_detected_on_board",
-			              new TextComponentTranslation(block.getUnlocalizedName()));
+			              new TextComponentTranslation(block.getTranslationKey()));
 			return false;
 		}
 		if (classTileEntityZonePlanner.isInstance(tileEntity)) {
 			reason.append(Commons.styleWarning, "warpdrive.compat.guide.block_detected_on_board",
-			              new TextComponentTranslation(block.getUnlocalizedName()));
+			              new TextComponentTranslation(block.getTranslationKey()));
 			return false;
 		}
 		return true;

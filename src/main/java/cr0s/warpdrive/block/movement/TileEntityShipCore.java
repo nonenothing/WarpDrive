@@ -667,9 +667,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(pos);
 		for (final VectorI vOffset : SUMMON_OFFSETS) {
 			mutableBlockPos.setPos(
-				pos.getX() + facing.getFrontOffsetX() * vOffset.x + facing.getFrontOffsetZ() * vOffset.z,
+				pos.getX() + facing.getXOffset() * vOffset.x + facing.getZOffset() * vOffset.z,
 			    pos.getY(),
-				pos.getZ() + facing.getFrontOffsetZ() * vOffset.x + facing.getFrontOffsetX() * vOffset.z);
+				pos.getZ() + facing.getZOffset() * vOffset.x + facing.getXOffset() * vOffset.z);
 			if (world.isAirBlock(mutableBlockPos)) {
 				if (world.isAirBlock(mutableBlockPos.add(0, 1, 0))) {
 					summonPlayer(entityPlayer, mutableBlockPos);
@@ -709,22 +709,22 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		shipVolume = 0;
 		
 		// compute dimensions in game coordinates
-		if (facing.getFrontOffsetX() == 1) {
+		if (facing.getXOffset() == 1) {
 			minX = pos.getX() - getBack();
 			maxX = pos.getX() + getFront();
 			minZ = pos.getZ() - getLeft();
 			maxZ = pos.getZ() + getRight();
-		} else if (facing.getFrontOffsetX() == -1) {
+		} else if (facing.getXOffset() == -1) {
 			minX = pos.getX() - getFront();
 			maxX = pos.getX() + getBack();
 			minZ = pos.getZ() - getRight();
 			maxZ = pos.getZ() + getLeft();
-		} else if (facing.getFrontOffsetZ() == 1) {
+		} else if (facing.getZOffset() == 1) {
 			minZ = pos.getZ() - getBack();
 			maxZ = pos.getZ() + getFront();
 			minX = pos.getX() - getRight();
 			maxX = pos.getX() + getLeft();
-		} else if (facing.getFrontOffsetZ() == -1) {
+		} else if (facing.getZOffset() == -1) {
 			minZ = pos.getZ() - getFront();
 			maxZ = pos.getZ() + getBack();
 			minX = pos.getX() - getLeft();
@@ -1048,9 +1048,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 			if (Math.abs(movement.z) - shipSize.z > maxDistance) {
 				movement.z = (int) Math.signum(movement.z) * (shipSize.z + maxDistance);
 			}
-			moveX = facing.getFrontOffsetX() * movement.x - facing.getFrontOffsetZ() * movement.z;
+			moveX = facing.getXOffset() * movement.x - facing.getZOffset() * movement.z;
 			moveY = movement.y;
-			moveZ = facing.getFrontOffsetZ() * movement.x + facing.getFrontOffsetX() * movement.z;
+			moveZ = facing.getZOffset() * movement.x + facing.getXOffset() * movement.z;
 		}
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
@@ -1219,7 +1219,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	public Object[] getOrientation() {
-		return new Object[] { facing.getFrontOffsetX(), 0, facing.getFrontOffsetZ() };
+		return new Object[] { facing.getXOffset(), 0, facing.getZOffset() };
 	}
 	
 	@Override

@@ -512,7 +512,7 @@ public class StarMapRegistry {
 					if (world.getChunkProvider() instanceof ChunkProviderServer) {
 						final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 						try {
-							final Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.asLong(registryItem.x >> 4, registryItem.z >> 4));
+							final Chunk chunk = chunkProviderServer.loadedChunks.get(ChunkPos.asLong(registryItem.x >> 4, registryItem.z >> 4));
 							isLoaded = chunk != null && chunk.isLoaded();
 						} catch (final NoSuchFieldError exception) {
 							if (!isExceptionReported) {

@@ -217,21 +217,21 @@ public class TrajectoryPoint extends VectorI {
 			} else {
 				typeNew |= isInput ? IS_INPUT_FORWARD : IS_OUTPUT_FORWARD; // @TODO code review, probably inverted somewhere
 				final Block blockForwardLeft = world.getBlockState(new BlockPos(
-					x + directionMain.getFrontOffsetX() + directionLeft.getFrontOffsetX(),
+					x + directionMain.getXOffset() + directionLeft.getXOffset(),
 					y,
-					z + directionMain.getFrontOffsetZ() + directionLeft.getFrontOffsetZ())).getBlock();
+					z + directionMain.getZOffset() + directionLeft.getZOffset())).getBlock();
 				final Block blockForwardRight = world.getBlockState(new BlockPos(
-					x + directionMain.getFrontOffsetX() + directionRight.getFrontOffsetX(),
+					x + directionMain.getXOffset() + directionRight.getXOffset(),
 					y,
-					z + directionMain.getFrontOffsetZ() + directionRight.getFrontOffsetZ())).getBlock();
+					z + directionMain.getZOffset() + directionRight.getZOffset())).getBlock();
 				final Block blockBackwardLeft = world.getBlockState(new BlockPos(
-					x - directionMain.getFrontOffsetX() + directionLeft.getFrontOffsetX(),
+					x - directionMain.getXOffset() + directionLeft.getXOffset(),
 					y,
-					z - directionMain.getFrontOffsetZ() + directionLeft.getFrontOffsetZ())).getBlock();
+					z - directionMain.getZOffset() + directionLeft.getZOffset())).getBlock();
 				final Block blockBackwardRight = world.getBlockState(new BlockPos(
-					x - directionMain.getFrontOffsetX() + directionRight.getFrontOffsetX(),
+					x - directionMain.getXOffset() + directionRight.getXOffset(),
 					y,
-					z - directionMain.getFrontOffsetZ() + directionRight.getFrontOffsetZ())).getBlock();
+					z - directionMain.getZOffset() + directionRight.getZOffset())).getBlock();
 				if (blockForwardLeft instanceof BlockVoidShellPlain) {
 					typeNew |= isInput ? IS_INPUT_FORWARD : IS_OUTPUT_FORWARD;
 					vJunctionForward = new VectorI(directionLeft).translate(directionMain);
@@ -298,9 +298,9 @@ public class TrajectoryPoint extends VectorI {
 		}
 		
 		// check support shells
-		final boolean isStraightLine = (vJunctionForward.x == -directionBackward.getFrontOffsetX()) && (vJunctionForward.z == -directionBackward.getFrontOffsetZ());
+		final boolean isStraightLine = (vJunctionForward.x == -directionBackward.getXOffset()) && (vJunctionForward.z == -directionBackward.getZOffset());
 		final Block blockForward   = world.getBlockState(new BlockPos(x + vJunctionForward.x, y, z + vJunctionForward.z)).getBlock();
-		final Block blockBack      = world.getBlockState(new BlockPos(x + directionBackward.getFrontOffsetX(), y, z + directionBackward.getFrontOffsetZ())).getBlock();
+		final Block blockBack      = world.getBlockState(new BlockPos(x + directionBackward.getXOffset(), y, z + directionBackward.getZOffset())).getBlock();
 		final Block blockUp        = world.getBlockState(new BlockPos(x, y + 1, z)).getBlock();
 		final Block blockDown      = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
 		
@@ -336,8 +336,8 @@ public class TrajectoryPoint extends VectorI {
 				final EnumFacing directionMain  = directionBackward.getOpposite();
 				final EnumFacing directionLeft  = directionMain.rotateY();
 				final EnumFacing directionRight = directionLeft.rotateYCCW();
-				final Block blockLeft      = world.getBlockState(new BlockPos(x + directionLeft .getFrontOffsetX(), y, z + directionLeft .getFrontOffsetZ())).getBlock();
-				final Block blockRight     = world.getBlockState(new BlockPos(x + directionRight.getFrontOffsetX(), y, z + directionRight.getFrontOffsetZ())).getBlock();
+				final Block blockLeft      = world.getBlockState(new BlockPos(x + directionLeft .getXOffset(), y, z + directionLeft .getZOffset())).getBlock();
+				final Block blockRight     = world.getBlockState(new BlockPos(x + directionRight.getXOffset(), y, z + directionRight.getZOffset())).getBlock();
 				isTurning = blockLeft instanceof BlockVoidShellPlain || blockRight instanceof BlockVoidShellPlain;
 			}
 		}
@@ -636,21 +636,21 @@ public class TrajectoryPoint extends VectorI {
 			if (isShellValid && (isLeftTurn || isRightTurn)) {
 				// validate the turning magnets
 				final Block blockForwardLeft = world.getBlockState(new BlockPos(
-					x + directionMain.getFrontOffsetX() + directionLeft.getFrontOffsetX(),
+					x + directionMain.getXOffset() + directionLeft.getXOffset(),
 					y,
-					z + directionMain.getFrontOffsetZ() + directionLeft.getFrontOffsetZ())).getBlock();
+					z + directionMain.getZOffset() + directionLeft.getZOffset())).getBlock();
 				final Block blockForwardRight = world.getBlockState(new BlockPos(
-					x + directionMain.getFrontOffsetX() + directionRight.getFrontOffsetX(),
+					x + directionMain.getXOffset() + directionRight.getXOffset(),
 					y,
-					z + directionMain.getFrontOffsetZ() + directionRight.getFrontOffsetZ())).getBlock();
+					z + directionMain.getZOffset() + directionRight.getZOffset())).getBlock();
 				final Block blockBackwardLeft = world.getBlockState(new BlockPos(
-					x - directionMain.getFrontOffsetX() + directionLeft.getFrontOffsetX(),
+					x - directionMain.getXOffset() + directionLeft.getXOffset(),
 					y,
-					z - directionMain.getFrontOffsetZ() + directionLeft.getFrontOffsetZ())).getBlock();
+					z - directionMain.getZOffset() + directionLeft.getZOffset())).getBlock();
 				final Block blockBackwardRight = world.getBlockState(new BlockPos(
-					x - directionMain.getFrontOffsetX() + directionRight.getFrontOffsetX(),
+					x - directionMain.getXOffset() + directionRight.getXOffset(),
 					y,
-					z - directionMain.getFrontOffsetZ() + directionRight.getFrontOffsetZ())).getBlock();
+					z - directionMain.getZOffset() + directionRight.getZOffset())).getBlock();
 				if ( tier > 0
 				  && blockForwardLeft   instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockForwardLeft  ).enumTier.getIndex()
 				  && blockForwardRight  instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockForwardRight ).enumTier.getIndex()
@@ -684,7 +684,7 @@ public class TrajectoryPoint extends VectorI {
 			} else {
 				assert isLeftTurn && isRightTurn;
 				// it's probably an input/output, in that case, magnets are all around, just pick one side to detect the direction
-				final Block blockUpRight   = world.getBlockState(new BlockPos(x + directionRight.getFrontOffsetX(), y + 1, z + directionRight.getFrontOffsetZ())).getBlock();
+				final Block blockUpRight   = world.getBlockState(new BlockPos(x + directionRight.getXOffset(), y + 1, z + directionRight.getZOffset())).getBlock();
 				if (blockUpRight instanceof BlockElectromagnetPlain && tier != ((BlockElectromagnetPlain) blockUpRight).enumTier.getIndex()) {
 					directionForward = directionLeft;
 				} else {

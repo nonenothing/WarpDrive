@@ -27,7 +27,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 		super(registryName);
 		
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.component.malformed");
+		setTranslationKey("warpdrive.component.malformed");
 		
 		itemStackCache = new ItemStack[EnumComponentType.length];
 	}
@@ -49,12 +49,12 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			return "item.warpdrive.component." + EnumComponentType.get(damage).getName();
 		}
-		return getUnlocalizedName();
+		return getTranslationKey();
 	}
 	
 	@Override
@@ -75,7 +75,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 		ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
 		if (damage >= 0 && damage < EnumComponentType.length) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumComponentType.get(damage).getName());
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-" + EnumComponentType.get(damage).getName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

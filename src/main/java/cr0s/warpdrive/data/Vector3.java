@@ -74,9 +74,9 @@ public class Vector3 implements Cloneable {
 	}
 	
 	public Vector3(final EnumFacing direction) {
-		x = direction.getFrontOffsetX();
-		y = direction.getFrontOffsetY();
-		z = direction.getFrontOffsetZ();
+		x = direction.getXOffset();
+		y = direction.getYOffset();
+		z = direction.getZOffset();
 	}
 	
 	/**
@@ -220,9 +220,9 @@ public class Vector3 implements Cloneable {
 	
 	// modify current vector by translation of 1 block in side direction
 	public Vector3 translate(final EnumFacing side) {
-		x += side.getFrontOffsetX();
-		y += side.getFrontOffsetY();
-		z += side.getFrontOffsetZ();
+		x += side.getXOffset();
+		y += side.getYOffset();
+		z += side.getZOffset();
 		return this;
 	}
 	

@@ -58,7 +58,7 @@ public enum MyCustomModelLoader implements ICustomModelLoader {
 	
 	@Override
 	public boolean accepts(ResourceLocation modelLocation) {
-		return WarpDrive.MODID.equals(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".wobj");
+		return WarpDrive.MODID.equals(modelLocation.getNamespace()) && modelLocation.getPath().endsWith(".wobj");
 	}
 	
 	@Override

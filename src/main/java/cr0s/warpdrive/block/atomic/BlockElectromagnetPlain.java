@@ -7,6 +7,6 @@ public class BlockElectromagnetPlain extends BlockAbstractAccelerator {
 	public BlockElectromagnetPlain(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.electromagnet." + enumTier.getName() + ".plain");
+		setTranslationKey("warpdrive.atomic.electromagnet." + enumTier.getName() + ".plain");
 	}
 }

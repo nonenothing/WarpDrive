@@ -18,7 +18,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	public BlockLaserMedium(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.machines.laser_medium." + enumTier.getName());
+		setTranslationKey("warpdrive.machines.laser_medium." + enumTier.getName());
 		
 		setDefaultState(getDefaultState().withProperty(LEVEL, 0));
 	}

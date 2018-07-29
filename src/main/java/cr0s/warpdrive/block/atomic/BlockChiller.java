@@ -32,7 +32,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	public BlockChiller(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.chiller." + enumTier.getName());
+		setTranslationKey("warpdrive.atomic.chiller." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false));
@@ -67,8 +67,8 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(final World world, final BlockPos blockPos, final IBlockState blockState, final Entity entity) {
-		super.onEntityCollidedWithBlock(world, blockPos, blockState, entity);
+	public void onEntityCollision(final World world, final BlockPos blockPos, final IBlockState blockState, final Entity entity) {
+		super.onEntityCollision(world, blockPos, blockState, entity);
 		if (world.isRemote) {
 			return;
 		}

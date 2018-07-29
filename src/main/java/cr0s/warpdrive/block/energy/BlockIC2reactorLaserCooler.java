@@ -22,7 +22,7 @@ public class BlockIC2reactorLaserCooler extends BlockAbstractContainer {
 	public BlockIC2reactorLaserCooler(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.energy.ic2_reactor_laser_cooler");
+		setTranslationKey("warpdrive.energy.ic2_reactor_laser_cooler");
 		
 		setDefaultState(blockState.getBaseState()
 		                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
@@ -42,7 +42,7 @@ public class BlockIC2reactorLaserCooler extends BlockAbstractContainer {
 		final int facing = (metadata & 7) < 6 ? (metadata & 7) : 0;
 		final EnumValidPowered enumValidPowered = EnumValidPowered.get(metadata - facing);
 		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, EnumFacing.getFront(facing))
+		       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(facing))
 		       .withProperty(BlockProperties.VALID_POWERED, enumValidPowered != null ? enumValidPowered : EnumValidPowered.INVALID);
 	}
 	

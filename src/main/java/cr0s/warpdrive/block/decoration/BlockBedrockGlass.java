@@ -32,7 +32,7 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 		setResistance(6000000.0F);
 		setSoundType(SoundType.STONE);
 		disableStats();
-		setUnlocalizedName("warpdrive.decoration.bedrock_glass");
+		setTranslationKey("warpdrive.decoration.bedrock_glass");
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -71,7 +71,7 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(final IBlockState state) {
+	public EnumPushReaction getPushReaction(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
@@ -89,7 +89,7 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
 	

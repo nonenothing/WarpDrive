@@ -28,7 +28,7 @@ public class BlockEnanReactorFramePlain extends BlockAbstractBase {
 		
 		setHardness(WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()] / 3);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] / 3 * 5 / 3);
-		setUnlocalizedName("warpdrive.energy.enan_reactor_frame." + enumTier.getName());
+		setTranslationKey("warpdrive.energy.enan_reactor_frame." + enumTier.getName());
 		
 		setDefaultState(blockState.getBaseState().withProperty(BlockProperties.FRAME, EnumFrameType.PLAIN));
 	}

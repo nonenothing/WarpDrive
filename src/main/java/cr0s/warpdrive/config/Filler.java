@@ -137,7 +137,7 @@ public class Filler implements IXmlRepresentableUnit {
 	
 	@Override
 	public String toString() {
-		return "Filler(" + block.getUnlocalizedName() + "@" + metadata + ")";
+		return "Filler(" + block.getTranslationKey() + "@" + metadata + ")";
 	}
 
 	@Override

@@ -165,6 +165,6 @@ public class TileEntitySiren extends TileEntityAbstractMachine {
     
 	// Checks if the siren is being powered by redstone.
 	private boolean isPowered() {
-		return world.isBlockIndirectlyGettingPowered(pos) > 0;
+		return world.getRedstonePowerFromNeighbors(pos) > 0;
 	}
 }

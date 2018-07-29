@@ -21,7 +21,7 @@ public class BlockSecurityStation extends BlockAbstractContainer {
 	public BlockSecurityStation(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.machines.security_station");
+		setTranslationKey("warpdrive.machines.security_station");
 		
 		setDefaultState(getDefaultState());
 	}

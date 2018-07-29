@@ -28,7 +28,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	public BlockAirGeneratorTiered(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.breathing.air_generator." + enumTier.getName());
+		setTranslationKey("warpdrive.breathing.air_generator." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
@@ -46,7 +46,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7))
+		       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 7))
 		       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
 	}
 	

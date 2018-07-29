@@ -42,7 +42,7 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 		
 		setMaxDamage(0);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.tool.tuning_fork");
+		setTranslationKey("warpdrive.tool.tuning_fork");
 		setFull3D();
 		setHasSubtypes(true);
 	}
@@ -65,19 +65,19 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 		ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
 		if (damage >= 0 && damage < 16) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumDyeColor.byDyeDamage(damage).getName());
+			resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + "-" + EnumDyeColor.byDyeDamage(damage).getName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(final ItemStack itemStack) {
+	public String getTranslationKey(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < 16) {
-			return getUnlocalizedName() + "." + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName();
+			return getTranslationKey() + "." + EnumDyeColor.byDyeDamage(damage).getTranslationKey();
 		}
-		return getUnlocalizedName();
+		return getTranslationKey();
 	}
 	
 	public static int getVideoChannel(final ItemStack itemStack) {

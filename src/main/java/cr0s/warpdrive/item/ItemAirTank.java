@@ -21,7 +21,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 		this.enumAirTankTier = enumAirTankTier;
 		setMaxDamage(WarpDriveConfig.BREATHING_AIR_TANK_CAPACITY_BY_TIER[enumAirTankTier.getIndex()]);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.breathing.air_tank." + enumAirTankTier.getName());
+		setTranslationKey("warpdrive.breathing.air_tank." + enumAirTankTier.getName());
 	}
 	
 	@Override

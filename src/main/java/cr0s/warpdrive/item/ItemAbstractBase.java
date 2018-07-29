@@ -54,12 +54,12 @@ public class ItemAbstractBase extends Item implements IItemBase {
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
+		final String tooltipName1 = getTranslationKey(itemStack) + ".tooltip";
 		if (I18n.hasKey(tooltipName1)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
-		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
+		final String tooltipName2 = getTranslationKey() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
@@ -71,6 +71,6 @@ public class ItemAbstractBase extends Item implements IItemBase {
 		                     getClass().getSimpleName(),
 		                     Integer.toHexString(hashCode()),
 		                     REGISTRY.getNameForObject(this),
-		                     getUnlocalizedName());
+		                     getTranslationKey());
 	}
 }

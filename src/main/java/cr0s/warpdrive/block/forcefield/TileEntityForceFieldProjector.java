@@ -413,7 +413,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// skip non loaded chunks
 			if ( !world.isBlockLoaded(vector.getBlockPos(), false)
-			  || !world.getChunkFromBlockCoords(vector.getBlockPos()).isLoaded() ) {
+			  || !world.getChunk(vector.getBlockPos()).isLoaded() ) {
 				continue;
 			}
 
@@ -453,7 +453,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					fluid = block instanceof IFluidBlock ? ((IFluidBlock) block).getFluid() : Commons.fluid_getByBlock(block);
 					if (WarpDriveConfig.LOGGING_FORCE_FIELD) {
 						WarpDrive.logger.info(String.format("Block %s %s Fluid %s with viscosity %d, projector max is %.1f: %s %s",
-						                                    block.getUnlocalizedName(),
+						                                    block.getTranslationKey(),
 						                                    blockState,
 						                                    fluid == null ? null : fluid.getName(),
 						                                    fluid == null ? 0 : fluid.getViscosity(),
@@ -463,7 +463,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					if (fluid == null) {
 						if ((world.getWorldTime() & 0xFF) == 0) {
 							WarpDrive.logger.error(String.format("Block %s %s is not a valid fluid! %s",
-							                                     block.getUnlocalizedName(),
+							                                     block.getTranslationKey(),
 							                                     blockState,
 							                                     block));
 						}
@@ -609,6 +609,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			final FluidStack fluidStack;
 			if (isForceFluid) {
 				fluidStack = ((IFluidBlock) block).drain(world, vector.getBlockPos(), true);
+				assert fluidStack != null;
 			} else {
 				fluidStack = new FluidStack(fluid, 1000);
 			}
@@ -891,7 +892,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public float getRotationYaw() {
 		final int metadata = getBlockMetadata();
 		float totalYaw;
-		switch (EnumFacing.getFront(metadata & 7)) {
+		switch (EnumFacing.byIndex(metadata & 7)) {
 		case DOWN : totalYaw =   0.0F; break;
 		case UP   : totalYaw =   0.0F; break;
 		case NORTH: totalYaw =  90.0F; break;
@@ -909,7 +910,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public float getRotationPitch() {
 		final int metadata = getBlockMetadata();
 		float totalPitch;
-		switch (EnumFacing.getFront(metadata & 7)) {
+		switch (EnumFacing.byIndex(metadata & 7)) {
 		case DOWN : totalPitch =  180.0F; break;
 		case UP   : totalPitch =    0.0F; break;
 		case NORTH: totalPitch =  -90.0F; break;

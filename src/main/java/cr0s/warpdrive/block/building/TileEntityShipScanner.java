@@ -301,8 +301,8 @@ public class TileEntityShipScanner extends TileEntityAbstractMachine implements 
 		final JumpShip ship = new JumpShip();
 		ship.world = shipCore.getWorld();
 		ship.core = shipCore.getPos();
-		ship.dx = shipCore.facing.getFrontOffsetX();
-		ship.dz = shipCore.facing.getFrontOffsetZ();
+		ship.dx = shipCore.facing.getXOffset();
+		ship.dz = shipCore.facing.getZOffset();
 		ship.minX = shipCore.minX;
 		ship.maxX = shipCore.maxX;
 		ship.minY = shipCore.minY;

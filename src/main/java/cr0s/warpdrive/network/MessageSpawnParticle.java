@@ -171,9 +171,9 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			case "jammed":// jammed machine particle reusing vanilla angryVillager particle
 				// as of MC1.7.10, direction vector is ignored by upstream
 				final EnumFacing directionFacing = Commons.getHorizontalDirectionFromEntity(Minecraft.getMinecraft().player);
-				if (directionFacing.getFrontOffsetX() != 0) {
+				if (directionFacing.getXOffset() != 0) {
 					particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.VILLAGER_ANGRY.getParticleID(),
-					        origin.x + 0.51D * directionFacing.getFrontOffsetX(),
+					        origin.x + 0.51D * directionFacing.getXOffset(),
 					        origin.y - 0.50D + world.rand.nextDouble(),
 					        origin.z - 0.50D + world.rand.nextDouble(),
 					        directionRandomized.x, directionRandomized.y, directionRandomized.z);
@@ -181,7 +181,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 					particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.VILLAGER_ANGRY.getParticleID(),
 					        origin.x - 0.50D + world.rand.nextDouble(),
 					        origin.y - 0.50D + world.rand.nextDouble(),
-					        origin.z + 0.51D * directionFacing.getFrontOffsetZ(),
+					        origin.z + 0.51D * directionFacing.getZOffset(),
 					        directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				}
 				assert particle != null;

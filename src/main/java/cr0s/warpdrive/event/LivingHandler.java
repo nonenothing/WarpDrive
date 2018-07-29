@@ -177,7 +177,7 @@ public class LivingHandler {
 						player.fallDistance = -5.0F;
 						
 						// transfer player to new dimension
-						player.mcServer.getPlayerList().transferPlayerToDimension(
+						player.server.getPlayerList().transferPlayerToDimension(
 								player,
 								celestialObjectChild.dimensionId,
 								new SpaceTeleporter(worldTarget, 0, xTarget, yTarget, zTarget) );

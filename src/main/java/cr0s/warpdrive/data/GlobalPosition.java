@@ -52,7 +52,7 @@ public class GlobalPosition {
 		final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 		try {
 			final long i = ChunkPos.asLong(x >> 4, z >> 4);
-			final Chunk chunk = chunkProviderServer.id2ChunkMap.get(i);
+			final Chunk chunk = chunkProviderServer.loadedChunks.get(i);
 			if (chunk != null) {
 				isLoaded = !chunk.unloadQueued;
 			}

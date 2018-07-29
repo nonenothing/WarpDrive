@@ -20,7 +20,7 @@ public class BlockTransporterCore extends BlockAbstractContainer {
 	public BlockTransporterCore(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.transporter_core");
+		setTranslationKey("warpdrive.movement.transporter_core");
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(VARIANT, EnumTransporterState.DISABLED)

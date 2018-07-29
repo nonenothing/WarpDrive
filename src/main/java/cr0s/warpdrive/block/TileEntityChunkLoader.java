@@ -145,7 +145,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		if (world == null) {
 			return;
 		}
-		final ChunkPos chunkSelf = world.getChunkFromBlockCoords(pos).getPos();
+		final ChunkPos chunkSelf = world.getChunk(pos).getPos();
 		
 		chunkMin = new ChunkPos(chunkSelf.x + radiusXneg, chunkSelf.z + radiusZneg);
 		chunkMax = new ChunkPos(chunkSelf.x + radiusXpos, chunkSelf.z + radiusZpos);

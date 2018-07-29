@@ -161,9 +161,9 @@ public class TileEntityEnanReactorCore extends TileEntityEnanReactorController {
 		if (lasersReceived > 1.0F) {
 			nospamFactor = 0.5;
 			world.newExplosion(null,
-			                   pos.getX() + reactorFace.x - reactorFace.facingLaserProperty.getFrontOffsetX(),
-			                   pos.getY() + reactorFace.y - reactorFace.facingLaserProperty.getFrontOffsetY(),
-			                   pos.getZ() + reactorFace.z - reactorFace.facingLaserProperty.getFrontOffsetZ(),
+			                   pos.getX() + reactorFace.x - reactorFace.facingLaserProperty.getXOffset(),
+			                   pos.getY() + reactorFace.y - reactorFace.facingLaserProperty.getYOffset(),
+			                   pos.getZ() + reactorFace.z - reactorFace.facingLaserProperty.getZOffset(),
 			                   1, false, false);
 		}
 		final double normalisedAmount = Math.min(1.0D, Math.max(0.0D, amount / PR_MAX_LASER_ENERGY)); // 0.0 to 1.0

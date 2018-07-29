@@ -693,7 +693,7 @@ public class JumpBlock {
 			} else if (y >= 256) {
 				return false;
 			} else {
-				final Chunk chunk = w.getChunkFromChunkCoords(x >> 4, z >> 4);
+				final Chunk chunk = w.getChunk(x >> 4, z >> 4);
 				Block block1 = null;
 				// net.minecraftforge.common.util.BlockSnapshot blockSnapshot = null;
 				

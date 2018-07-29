@@ -20,7 +20,7 @@ public class BlockLift extends BlockAbstractContainer {
 	public BlockLift(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.lift");
+		setTranslationKey("warpdrive.movement.lift");
 		
 		setDefaultState(getDefaultState().withProperty(MODE, EnumLiftMode.INACTIVE));
 	}

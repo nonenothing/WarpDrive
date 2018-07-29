@@ -20,7 +20,7 @@ public class BlockTransporterContainment extends BlockAbstractBase {
 	public BlockTransporterContainment(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.transporter_containment");
+		setTranslationKey("warpdrive.movement.transporter_containment");
 	}
 	
 	@SuppressWarnings("deprecation")
