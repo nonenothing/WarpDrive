@@ -5,7 +5,6 @@ import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
-import cr0s.warpdrive.data.EnumValidPowered;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.network.PacketHandler;
@@ -145,14 +144,9 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	}
 	
 	private void updateBlockState() {
-		IBlockState blockStateNew = getBlockType().getDefaultState().withProperty(BlockProperties.FACING, facing != null ? facing : EnumFacing.NORTH);
-		if (!isValid) {
-			blockStateNew = blockStateNew.withProperty(BlockProperties.VALID_POWERED, EnumValidPowered.INVALID);
-		} else if (cache_laserMedium_energyStored < WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT) {
-			blockStateNew = blockStateNew.withProperty(BlockProperties.VALID_POWERED, EnumValidPowered.VALID);
-		} else {
-			blockStateNew = blockStateNew.withProperty(BlockProperties.VALID_POWERED, EnumValidPowered.POWERED);
-		}
+		final IBlockState blockStateNew = getBlockType().getDefaultState()
+		                                                .withProperty(BlockProperties.ACTIVE, isValid)
+		                                                .withProperty(BlockProperties.FACING, facing != null ? facing : EnumFacing.DOWN);
 		updateBlockState(blockStateNew, null, null);
 	}
 	
