@@ -247,7 +247,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=Weiterentwickeltes Luftgene
 tile.warpdrive.breathing.air_generator.superior.name=Überlegenes Luftgenerator
 tile.warpdrive.breathing.air_shield.name=Energie-Luftschild
 
-tile.warpdrive.building.ship_scanner.name=Raumschiff Scanner
+tile.warpdrive.building.ship_scanner.basic.name=Shuttle Raumschiff Scanner
+tile.warpdrive.building.ship_scanner.advanced.name=Corvette Raumschiff Scanner
+tile.warpdrive.building.ship_scanner.superior.name=Frigate Raumschiff Scanner
 
 tile.warpdrive.collection.laser_tree_farm.name=Laser Baumfarm
 tile.warpdrive.collection.mining_laser.name=Bergbau Laser

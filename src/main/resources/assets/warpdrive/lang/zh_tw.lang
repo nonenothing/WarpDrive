@@ -245,7 +245,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=Advanced Air Generator / �
 tile.warpdrive.breathing.air_generator.superior.name=Superior Air Generator / 空氣發生器
 tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
-tile.warpdrive.building.ship_scanner.name=船隻掃描儀
+tile.warpdrive.building.ship_scanner.basic.name=Shuttle 船隻掃描儀
+tile.warpdrive.building.ship_scanner.advanced.name=Corvette 船隻掃描儀
+tile.warpdrive.building.ship_scanner.superior.name=Frigate 船隻掃描儀
 
 tile.warpdrive.collection.laser_tree_farm.name=激光樹農場
 tile.warpdrive.collection.mining_laser.name=采礦鐳射

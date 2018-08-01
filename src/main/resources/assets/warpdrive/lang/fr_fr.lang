@@ -245,7 +245,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=Générateur d'air avancé
 tile.warpdrive.breathing.air_generator.superior.name=Générateur d'air supérieur
 tile.warpdrive.breathing.air_shield.name=Bouclier d'air d'énergie
 
-tile.warpdrive.building.ship_scanner.name=Scanneur de vaisseau
+tile.warpdrive.building.ship_scanner.basic.name=Scanneur de vaisseau navette
+tile.warpdrive.building.ship_scanner.advanced.name=Scanneur de vaisseau corvette
+tile.warpdrive.building.ship_scanner.superior.name=Scanneur de vaisseau frégate
 
 tile.warpdrive.collection.laser_tree_farm.name=Laser de plantation arboricole
 tile.warpdrive.collection.mining_laser.name=Laser d'exploitation minière

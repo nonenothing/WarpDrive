@@ -151,13 +151,6 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
-	@Deprecated
-	protected void updateMetadata(final int metadata) {
-		if (getBlockMetadata() != metadata) {
-			world.setBlockState(pos, getBlockType().getStateFromMeta(metadata), 2);
-		}
-	}
-	
 	@Override
 	public void markDirty() {
 		if ( hasWorld()

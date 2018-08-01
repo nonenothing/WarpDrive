@@ -245,7 +245,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=Advanced Генератор
 tile.warpdrive.breathing.air_generator.superior.name=Superior Генератор воздуха
 tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
-tile.warpdrive.building.ship_scanner.name=Сканер кораблей
+tile.warpdrive.building.ship_scanner.basic.name=Shuttle Сканер кораблей
+tile.warpdrive.building.ship_scanner.advanced.name=Corvette Сканер кораблей
+tile.warpdrive.building.ship_scanner.superior.name=Frigate Сканер кораблей
 
 tile.warpdrive.collection.laser_tree_farm.name=Лазерная ферма деревьев
 tile.warpdrive.collection.mining_laser.name=Лазерная буровая установка

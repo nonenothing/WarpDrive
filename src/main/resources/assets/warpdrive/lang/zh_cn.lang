@@ -245,7 +245,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=先进空气供给机
 tile.warpdrive.breathing.air_generator.superior.name=卓越空气供给机
 tile.warpdrive.breathing.air_shield.name=能量空气护罩
 
-tile.warpdrive.building.ship_scanner.name=船体扫描仪
+tile.warpdrive.building.ship_scanner.basic.name=Shuttle 船体扫描仪
+tile.warpdrive.building.ship_scanner.advanced.name=Corvette 船体扫描仪
+tile.warpdrive.building.ship_scanner.superior.name=Frigate 船体扫描仪
 
 tile.warpdrive.collection.laser_tree_farm.name=激光林场
 tile.warpdrive.collection.mining_laser.name=采掘激光

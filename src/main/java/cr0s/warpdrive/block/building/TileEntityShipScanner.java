@@ -9,6 +9,7 @@ import cr0s.warpdrive.block.movement.BlockShipCore;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumShipScannerState;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
@@ -215,12 +216,10 @@ public class TileEntityShipScanner extends TileEntityAbstractMachine implements 
 		}
 		enumShipScannerState = newState;
 		if (blockCamouflage == null) {
-			if (getBlockMetadata() == newState.getMetadata()) {
-				updateMetadata(newState.getMetadata());
-			}
+			updateBlockState(null, BlockProperties.ACTIVE, newState != EnumShipScannerState.IDLE);
 		} else {
 			if (getBlockMetadata() != metadataCamouflage) {
-				updateMetadata(metadataCamouflage);
+				world.setBlockState(pos, getBlockType().getStateFromMeta(metadataCamouflage), 2);
 			}
 		}
 	}

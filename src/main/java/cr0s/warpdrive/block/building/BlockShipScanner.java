@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.building;
 import cr0s.warpdrive.Commons;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
@@ -22,7 +24,30 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	public BlockShipScanner(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setTranslationKey("warpdrive.building.ship_scanner");
+		setTranslationKey("warpdrive.building.ship_scanner." + enumTier.getName());
+		
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false)
+		               );
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, BlockProperties.ACTIVE);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(final int metadata) {
+		return getDefaultState()
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0);
+	}
+	
+	@Override
+	public int getMetaFromState(final IBlockState blockState) {
+		return blockState.getValue(BlockProperties.ACTIVE) ? 0x8 : 0;
 	}
 	
 /* @TODO camouflage	

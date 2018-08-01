@@ -244,7 +244,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=Advanced Air Generator
 tile.warpdrive.breathing.air_generator.superior.name=Superior Air Generator
 tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
-tile.warpdrive.building.ship_scanner.name=Ship Scanner
+tile.warpdrive.building.ship_scanner.basic.name=Shuttle Ship Scanner
+tile.warpdrive.building.ship_scanner.advanced.name=Corvette Ship Scanner
+tile.warpdrive.building.ship_scanner.superior.name=Frigate Ship Scanner
 
 tile.warpdrive.collection.laser_tree_farm.name=Laser Tree Farm
 tile.warpdrive.collection.mining_laser.name=Mining Laser

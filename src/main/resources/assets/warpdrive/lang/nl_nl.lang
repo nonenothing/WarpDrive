@@ -245,7 +245,9 @@ tile.warpdrive.breathing.air_generator.advanced.name=Geavanceerde zuurstofgenera
 tile.warpdrive.breathing.air_generator.superior.name=Superieure zuurstof
 tile.warpdrive.breathing.air_shield.name=Energie-gebaseerd Luchtschild
 
-tile.warpdrive.building.ship_scanner.name=Schip Scanner
+tile.warpdrive.building.ship_scanner.basic.name=Shuttle Schip Scanner
+tile.warpdrive.building.ship_scanner.advanced.name=Corvette Schip Scanner
+tile.warpdrive.building.ship_scanner.superior.name=Frigate Schip Scanner
 
 tile.warpdrive.collection.laser_tree_farm.name=Laser-boomboerderij
 tile.warpdrive.collection.mining_laser.name=Mijnlaser
