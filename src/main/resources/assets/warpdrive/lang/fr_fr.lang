@@ -18,28 +18,37 @@ itemGroup.warpdrive.hull=WarpDrive (hull)
 itemGroup.warpdrive.main=WarpDrive (main)
 
 item.warpdrive.component.malformed.name=Item invalide
-item.warpdrive.component.emerald_crystal.name=Cristal d'émeraude accordé
-item.warpdrive.component.ender_crystal.name=Cristal de l'ender accordé
-item.warpdrive.component.diamond_crystal.name=Cristal de diamond accordé
-item.warpdrive.component.diffraction_grating.name=Réseau de diffraction
-item.warpdrive.component.reactor_core.name=Noyeau de réacteur
-item.warpdrive.component.computer_interface.name=Interface informatique
-item.warpdrive.component.power_interface.name=Power Interface
-item.warpdrive.component.capacitive_crystal.name=Cristal capacitif
-item.warpdrive.component.air_canister_empty.name=Cartouche d'air vide
-item.warpdrive.component.air_canister_empty.tooltip=§bClique droit sur un Générateur d'air§r pour me remplir
-item.warpdrive.component.lens.name=Lentille
-item.warpdrive.component.zoom.name=Zoom
-item.warpdrive.component.glass_tank.name=Réservoir en verre
-item.warpdrive.component.flat_screen.name=Ecran plat
 item.warpdrive.component.memory_crystal.name=Cristal de mémoire
-item.warpdrive.component.motor.name=Moteur
+item.warpdrive.component.capacitive_crystal.name=Cristal capacitif
+item.warpdrive.component.diamond_crystal.name=Cristal de diamond accordé
+item.warpdrive.component.emerald_crystal.name=Cristal d'émeraude accordé
+
+item.warpdrive.component.ender_coil.name=Cristal de l'ender accordé
+item.warpdrive.component.diamond_coil.name=Cristal bobiné
+item.warpdrive.component.computer_interface.name=Interface informatique
+
 item.warpdrive.component.bone_charcoal.name=Charbon d'ossements
 item.warpdrive.component.activated_carbon.name=Charbon actif
-item.warpdrive.component.laser_medium_empty.name=Milieu amplificateur (vide)
-item.warpdrive.component.coil_crystal.name=Cristal bobiné
-item.warpdrive.component.electromagnetic_projector.name=Projecteur électromagnétique
+item.warpdrive.component.air_canister_empty.name=Cartouche d'air vide
+item.warpdrive.component.air_canister_empty.tooltip=§bClique droit sur un Générateur d'air§r pour me remplir
+
+item.warpdrive.component.flat_screen.name=Ecran plat
+item.warpdrive.component.holographic_projector.name=Projecteur holographique
+
+item.warpdrive.component.glass_tank.name=Réservoir en verre
+item.warpdrive.component.motor.name=Moteur
+item.warpdrive.component.pump.name=Pompe
+
+item.warpdrive.component.lens.name=Lentille
+item.warpdrive.component.zoom.name=Zoom
+item.warpdrive.component.diffraction_grating.name=Réseau de diffraction
+
+item.warpdrive.component.power_interface.name=Power Interface
 item.warpdrive.component.superconductor.name=Superconducteur
+
+item.warpdrive.component.laser_medium_empty.name=Milieu amplificateur (vide)
+item.warpdrive.component.electromagnetic_projector.name=Projecteur électromagnétique
+item.warpdrive.component.reactor_core.name=Noyeau de réacteur
 
 item.warpdrive.armor.helmet.name=Casque warp
 item.warpdrive.armor.chestplate.name=Plastron warp

@@ -18,28 +18,37 @@ itemGroup.warpdrive.hull=WarpDrive (hull)
 itemGroup.warpdrive.main=WarpDrive (main)
 
 item.warpdrive.component.malformed.name=Bad Item
-item.warpdrive.component.emerald_crystal.name=Emerald Tuned Crystal
-item.warpdrive.component.ender_crystal.name=Ender Tuned Crystal
-item.warpdrive.component.diamond_crystal.name=Diamond Tuned Crystal
-item.warpdrive.component.diffraction_grating.name=Diffraction Grating
-item.warpdrive.component.reactor_core.name=Reactor Core
-item.warpdrive.component.computer_interface.name=Computer Interface
-item.warpdrive.component.power_interface.name=Power Interface
-item.warpdrive.component.capacitive_crystal.name=Capacitive Crystal
-item.warpdrive.component.air_canister_empty.name=Empty Air Canister
-item.warpdrive.component.air_canister_empty.tooltip=§bRight click an Air generator§7 to refill me
-item.warpdrive.component.lens.name=Lens
-item.warpdrive.component.zoom.name=Zoom
-item.warpdrive.component.glass_tank.name=Glass Tank
-item.warpdrive.component.flat_screen.name=Flat Screen
 item.warpdrive.component.memory_crystal.name=Memory Crystal
-item.warpdrive.component.motor.name=Motor
+item.warpdrive.component.capacitive_crystal.name=Capacitive Crystal
+item.warpdrive.component.diamond_crystal.name=Diamond Tuned Crystal
+item.warpdrive.component.emerald_crystal.name=Emerald Tuned Crystal
+
+item.warpdrive.component.ender_coil.name=Ender Tuned Crystal
+item.warpdrive.component.diamond_coil.name=Coil Crystal
+item.warpdrive.component.computer_interface.name=Computer Interface
+
 item.warpdrive.component.bone_charcoal.name=Bone Charcoal
 item.warpdrive.component.activated_carbon.name=Activated Carbon
-item.warpdrive.component.laser_medium_empty.name=Laser Medium (empty)
-item.warpdrive.component.coil_crystal.name=Coil Crystal
-item.warpdrive.component.electromagnetic_projector.name=Electromagnetic Projector
+item.warpdrive.component.air_canister_empty.name=Empty Air Canister
+item.warpdrive.component.air_canister_empty.tooltip=§bRight click an Air generator§7 to refill me
+
+item.warpdrive.component.flat_screen.name=Flat Screen
+item.warpdrive.component.holographic_projector.name=Holographic projector
+
+item.warpdrive.component.glass_tank.name=Glass Tank
+item.warpdrive.component.motor.name=Motor
+item.warpdrive.component.pump.name=Pump
+
+item.warpdrive.component.lens.name=Lens
+item.warpdrive.component.zoom.name=Zoom
+item.warpdrive.component.diffraction_grating.name=Diffraction Grating
+
+item.warpdrive.component.power_interface.name=Power Interface
 item.warpdrive.component.superconductor.name=Superconductor
+
+item.warpdrive.component.laser_medium_empty.name=Laser Medium (empty)
+item.warpdrive.component.electromagnetic_projector.name=Electromagnetic Projector
+item.warpdrive.component.reactor_core.name=Reactor Core
 
 item.warpdrive.armor.helmet.name=Warp Helmet
 item.warpdrive.armor.chestplate.name=Warp Chestplate

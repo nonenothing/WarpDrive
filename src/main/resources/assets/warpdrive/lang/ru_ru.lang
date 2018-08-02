@@ -18,28 +18,37 @@ itemGroup.warpdrive.hull=WarpDrive (hull)
 itemGroup.warpdrive.main=WarpDrive (main)
 
 item.warpdrive.component.malformed.name=Поврежденный предмет
-item.warpdrive.component.emerald_crystal.name=Изумрудный настраиваемый кристалл
-item.warpdrive.component.ender_crystal.name=Настраиваемый кристалл Края
-item.warpdrive.component.diamond_crystal.name=Алмазный настраиваемый кристалл
-item.warpdrive.component.diffraction_grating.name=Дифракционная решетка
-item.warpdrive.component.reactor_core.name=Ядро реактора
-item.warpdrive.component.computer_interface.name=Компьютерный интерфейс
-item.warpdrive.component.power_interface.name=Интерфейс питания
-item.warpdrive.component.capacitive_crystal.name=Емкостный кристалл
-item.warpdrive.component.air_canister_empty.name=Пустой баллон для воздуха
-item.warpdrive.component.air_canister_empty.tooltip=Используйте на генераторе воздуха, чтобы наполнить
-item.warpdrive.component.lens.name=Линза
-item.warpdrive.component.zoom.name=Оптика
-item.warpdrive.component.glass_tank.name=Стеклянный бак
-item.warpdrive.component.flat_screen.name=Плоский экран
 item.warpdrive.component.memory_crystal.name=Кристалл памяти
-item.warpdrive.component.motor.name=Мотор
+item.warpdrive.component.capacitive_crystal.name=Емкостный кристалл
+item.warpdrive.component.diamond_crystal.name=Алмазный настраиваемый кристалл
+item.warpdrive.component.emerald_crystal.name=Изумрудный настраиваемый кристалл
+
+item.warpdrive.component.ender_coil.name=Настраиваемый кристалл Края
+item.warpdrive.component.diamond_coil.name=Coil Crystal
+item.warpdrive.component.computer_interface.name=Компьютерный интерфейс
+
 item.warpdrive.component.bone_charcoal.name=Костяной уголь
 item.warpdrive.component.activated_carbon.name=Активированный уголь
-item.warpdrive.component.laser_medium_empty.name=Лазерный излучатель (Пустой)
-item.warpdrive.component.coil_crystal.name=Coil Crystal
-item.warpdrive.component.electromagnetic_projector.name=Electromagnetic Projector
+item.warpdrive.component.air_canister_empty.name=Пустой баллон для воздуха
+item.warpdrive.component.air_canister_empty.tooltip=Используйте на генераторе воздуха, чтобы наполнить
+
+item.warpdrive.component.flat_screen.name=Плоский экран
+item.warpdrive.component.holographic_projector.name=Holographic projector
+
+item.warpdrive.component.glass_tank.name=Стеклянный бак
+item.warpdrive.component.motor.name=Мотор
+item.warpdrive.component.pump.name=Pump
+
+item.warpdrive.component.lens.name=Линза
+item.warpdrive.component.zoom.name=Оптика
+item.warpdrive.component.diffraction_grating.name=Дифракционная решетка
+
+item.warpdrive.component.power_interface.name=Интерфейс питания
 item.warpdrive.component.superconductor.name=Superconductor
+
+item.warpdrive.component.laser_medium_empty.name=Лазерный излучатель (Пустой)
+item.warpdrive.component.electromagnetic_projector.name=Electromagnetic Projector
+item.warpdrive.component.reactor_core.name=Ядро реактора
 
 item.warpdrive.armor.helmet.name=Космический шлем
 item.warpdrive.armor.chestplate.name=Warp Chestplate

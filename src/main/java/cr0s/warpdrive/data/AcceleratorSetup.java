@@ -171,12 +171,12 @@ public class AcceleratorSetup extends GlobalPosition {
 	private void fillTrajectoryPoints(final WorldServer world) {
 		// find closest connected VoidShell
 		Set<Block> whitelist = ImmutableSet.of(
-			WarpDrive.blockElectromagnetPlain[0],
-			WarpDrive.blockElectromagnetGlass[0],
-			WarpDrive.blockElectromagnetPlain[1],
-			WarpDrive.blockElectromagnetGlass[1],
-			WarpDrive.blockElectromagnetPlain[2],
-			WarpDrive.blockElectromagnetGlass[2],
+			WarpDrive.blockElectromagnets_plain[0],
+			WarpDrive.blockElectromagnets_glass[0],
+			WarpDrive.blockElectromagnets_plain[1],
+			WarpDrive.blockElectromagnets_glass[1],
+			WarpDrive.blockElectromagnets_plain[2],
+			WarpDrive.blockElectromagnets_glass[2],
 			WarpDrive.blockVoidShellPlain,
 			WarpDrive.blockVoidShellGlass);
 		final Set<BlockPos> connections = Commons.getConnectedBlocks(world, new BlockPos(x, y, z), EnumFacing.VALUES, whitelist, 3);

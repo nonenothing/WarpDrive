@@ -454,14 +454,14 @@ public class WarpDriveConfig {
 	
 	@Nonnull
 	public static Block getBlockOrFire(@Nonnull final String registryName) {
-		try {
-			return Block.REGISTRY.getObject(new ResourceLocation(registryName));
-		} catch (final Exception exception) {
-			WarpDrive.logger.info(String.format("Failed to get mod block for %s",
-			                                    registryName));
-			exception.printStackTrace();
+		final ResourceLocation resourceLocation = new ResourceLocation(registryName);
+		final Block block = Block.REGISTRY.getObject(resourceLocation);
+		if (block == Blocks.AIR) {
+			WarpDrive.logger.error(String.format("Failed to get mod block for %s",
+			                                     registryName));
+			return Blocks.FIRE;
 		}
-		return Blocks.FIRE;
+		return block;
 	}
 	
 	@Nonnull
@@ -499,28 +499,30 @@ public class WarpDriveConfig {
 			if (OreDictionary.doesOreNameExist(ore) && !OreDictionary.getOres(ore).isEmpty()) {
 				return ore;
 			}
-			WarpDrive.logger.info(String.format("Failed to get ore dictionary entry %s",
+			WarpDrive.logger.info(String.format("Skipping missing ore dictionary entry %s",
 			                                    ore));
 			return null;
 		}
 		
-		try {
-			final Item item = Item.REGISTRY.getObject(new ResourceLocation(registryName));
-			if (item == null) {
-				WarpDrive.logger.info(String.format("Failed to get mod item for %s@%d",
-				                                    registryName, meta));
-				return null;
-			}
-			ItemStack itemStack = new ItemStack(item);
-			if (meta != -1) {
-				itemStack.setItemDamage(meta);
-			}
-			return itemStack;
-		} catch (final Exception exception) {
-			WarpDrive.logger.info(String.format("Failed to get mod item for %s@%d",
+		final ResourceLocation resourceLocation = new ResourceLocation(registryName);
+		final Item item = Item.REGISTRY.getObject(resourceLocation);
+		if (item == null) {
+			WarpDrive.logger.info(String.format("Skipping missing mod item %s@%d",
 			                                    registryName, meta));
 			return null;
 		}
+		final ItemStack itemStack = new ItemStack(item);
+		if (meta != -1) {
+			try {
+				itemStack.setItemDamage(meta);
+			} catch (final Exception exception) {
+				WarpDrive.logger.error(String.format("Failed to get mod item for %s@%d",
+				                                     registryName, meta));
+				exception.printStackTrace();
+				return null;
+			}
+		}
+		return itemStack;
 	}
 	
 	public static Object getOreOrItemStack(final String registryName1, final int meta1,
@@ -552,12 +554,14 @@ public class WarpDriveConfig {
 	
 	public static ItemStack getOreDictionaryEntry(final String ore) {
 		if (!OreDictionary.doesOreNameExist(ore)) {
-			WarpDrive.logger.info(String.format("Failed to get ore named %s", ore));
+			WarpDrive.logger.info(String.format("Skipping missing ore named %s",
+			                                    ore));
 			return new ItemStack(Blocks.FIRE);
 		}
 		final List<ItemStack> itemStacks = OreDictionary.getOres(ore);
 		if (itemStacks.isEmpty()) {
-			WarpDrive.logger.info(String.format("Failed to get item from empty ore dictionary %s", ore));
+			WarpDrive.logger.error(String.format("Failed to get item from empty ore dictionary %s",
+			                                     ore));
 			return new ItemStack(Blocks.FIRE);
 		}
 		return itemStacks.get(0);

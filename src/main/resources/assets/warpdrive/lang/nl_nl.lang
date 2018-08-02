@@ -18,28 +18,37 @@ itemGroup.warpdrive.hull=WarpDrive (hull)
 itemGroup.warpdrive.main=WarpDrive (main)
 
 item.warpdrive.component.malformed.name=Verkeerd item
-item.warpdrive.component.emerald_crystal.name=Smaragd afgestemd kristal
-item.warpdrive.component.ender_crystal.name=Einde afgestemd kristal
-item.warpdrive.component.diamond_crystal.name=Diamant afgestemd kristal
-item.warpdrive.component.diffraction_grating.name=Diffractierooster
-item.warpdrive.component.reactor_core.name=Reactor Kern
-item.warpdrive.component.computer_interface.name=Computer Interface
-item.warpdrive.component.power_interface.name=Stroom Interface
-item.warpdrive.component.capacitive_crystal.name=Capacitief Kristal
-item.warpdrive.component.air_canister_empty.name=Lege zuurstoffles
-item.warpdrive.component.air_canister_empty.tooltip=§bRechts-klik op de zuurstofgenerator§7 om me te hervullen
-item.warpdrive.component.lens.name=Lens
-item.warpdrive.component.zoom.name=Zoom
-item.warpdrive.component.glass_tank.name=Tank van Glas
-item.warpdrive.component.flat_screen.name=Flat Screen
 item.warpdrive.component.memory_crystal.name=Geheugen Kristal
-item.warpdrive.component.motor.name=Motor
+item.warpdrive.component.capacitive_crystal.name=Capacitief Kristal
+item.warpdrive.component.diamond_crystal.name=Diamant afgestemd kristal
+item.warpdrive.component.emerald_crystal.name=Smaragd afgestemd kristal
+
+item.warpdrive.component.ender_coil.name=Einde afgestemd kristal
+item.warpdrive.component.diamond_coil.name=Spoelkristal
+item.warpdrive.component.computer_interface.name=Computer Interface
+
 item.warpdrive.component.bone_charcoal.name=Botkool
 item.warpdrive.component.activated_carbon.name=Geactiveerde Koolstof
-item.warpdrive.component.laser_medium_empty.name=Lege Deeltjesversneller
-item.warpdrive.component.coil_crystal.name=Spoelkristal
-item.warpdrive.component.electromagnetic_projector.name=Electromagnetische Projector
+item.warpdrive.component.air_canister_empty.name=Lege zuurstoffles
+item.warpdrive.component.air_canister_empty.tooltip=§bRechts-klik op de zuurstofgenerator§7 om me te hervullen
+
+item.warpdrive.component.flat_screen.name=Flat Screen
+item.warpdrive.component.holographic_projector.name=Holographic projector
+
+item.warpdrive.component.glass_tank.name=Tank van Glas
+item.warpdrive.component.motor.name=Motor
+item.warpdrive.component.pump.name=Pump
+
+item.warpdrive.component.lens.name=Lens
+item.warpdrive.component.zoom.name=Zoom
+item.warpdrive.component.diffraction_grating.name=Diffractierooster
+
+item.warpdrive.component.power_interface.name=Stroom Interface
 item.warpdrive.component.superconductor.name=Superconductor
+
+item.warpdrive.component.laser_medium_empty.name=Lege Deeltjesversneller
+item.warpdrive.component.electromagnetic_projector.name=Electromagnetische Projector
+item.warpdrive.component.reactor_core.name=Reactor Kern
 
 item.warpdrive.armor.helmet.name=Warp Helm
 item.warpdrive.armor.chestplate.name=Warp Borstplaat

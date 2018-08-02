@@ -6,28 +6,46 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumComponentType implements IStringSerializable {
-	
-	EMERALD_CRYSTAL            ("emerald_crystal"),
-	ENDER_CRYSTAL              ("ender_crystal"),
-	DIAMOND_CRYSTAL            ("diamond_crystal"),
-	DIFFRACTION_GRATING        ("diffraction_grating"),
-	REACTOR_CORE               ("reactor_core"),
-	COMPUTER_INTERFACE         ("computer_interface"),
-	POWER_INTERFACE            ("power_interface"),
-	CAPACITIVE_CRYSTAL         ("capacitive_crystal"),
-	AIR_CANISTER               ("air_canister_empty"),
-	LENS                       ("lens"),
-	ZOOM                       ("zoom"),
-	GLASS_TANK                 ("glass_tank"),
-	FLAT_SCREEN                ("flat_screen"),
+	// processing
 	MEMORY_CRYSTAL             ("memory_crystal"),
-	MOTOR                      ("motor"),
+	CAPACITIVE_CRYSTAL         ("capacitive_crystal"),
+	DIAMOND_CRYSTAL            ("diamond_crystal"),
+	EMERALD_CRYSTAL            ("emerald_crystal"),
+	
+	// networking
+	ENDER_COIL                 ("ender_coil"),
+	DIAMOND_COIL               ("diamond_coil"),
+	COMPUTER_INTERFACE         ("computer_interface"),
+	
+	// breathing
 	BONE_CHARCOAL              ("bone_charcoal"),
 	ACTIVATED_CARBON           ("activated_carbon"),
+	AIR_CANISTER               ("air_canister_empty"),
+	
+	// human
+	// (redstone)
+	FLAT_SCREEN                ("flat_screen"),
+	HOLOGRAPHIC_PROJECTOR      ("holographic_projector"),
+	
+	// mechanical
+	GLASS_TANK                 ("glass_tank"),
+	MOTOR                      ("motor"),
+	PUMP                       ("pump"),
+	
+	// optical
+	LENS                       ("lens"),
+	ZOOM                       ("zoom"),
+	DIFFRACTION_GRATING        ("diffraction_grating"),
+	
+	// energy
+	POWER_INTERFACE            ("power_interface"),
+	SUPERCONDUCTOR             ("superconductor"),
+	
+	// crafting components
 	LASER_MEDIUM_EMPTY         ("laser_medium_empty"),
-	COIL_CRYSTAL               ("coil_crystal"),
 	ELECTROMAGNETIC_PROJECTOR  ("electromagnetic_projector"),
-	SUPERCONDUCTOR             ("superconductor");
+	REACTOR_CORE               ("reactor_core"),
+	;
 	
 	private final String name;
 	

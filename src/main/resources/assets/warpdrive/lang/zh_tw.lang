@@ -18,28 +18,37 @@ itemGroup.warpdrive.hull=WarpDrive (hull)
 itemGroup.warpdrive.main=WarpDrive (main)
 
 item.warpdrive.component.malformed.name=不良道具[WD]
-item.warpdrive.component.emerald_crystal.name=翡翠調諧水晶
-item.warpdrive.component.ender_crystal.name=終界調諧水晶
-item.warpdrive.component.diamond_crystal.name=鑽石調諧水晶
-item.warpdrive.component.diffraction_grating.name=散射光柵
-item.warpdrive.component.reactor_core.name=反應核心
-item.warpdrive.component.computer_interface.name=電腦接入界面
-item.warpdrive.component.power_interface.name=電力接口
-item.warpdrive.component.capacitive_crystal.name=電容結晶
-item.warpdrive.component.air_canister_empty.name=虛空罐
-item.warpdrive.component.air_canister_empty.tooltip=§b右鍵單擊空氣發生器§7 填充虛空罐
-item.warpdrive.component.lens.name=透鏡
-item.warpdrive.component.zoom.name=放大
-item.warpdrive.component.glass_tank.name=玻璃罐子
-item.warpdrive.component.flat_screen.name=平面屏幕
 item.warpdrive.component.memory_crystal.name=記憶水晶
-item.warpdrive.component.motor.name=發動機
+item.warpdrive.component.capacitive_crystal.name=電容結晶
+item.warpdrive.component.diamond_crystal.name=鑽石調諧水晶
+item.warpdrive.component.emerald_crystal.name=翡翠調諧水晶
+
+item.warpdrive.component.ender_coil.name=終界調諧水晶
+item.warpdrive.component.diamond_coil.name=回紋水晶
+item.warpdrive.component.computer_interface.name=電腦接入界面
+
 item.warpdrive.component.bone_charcoal.name=骨灰
 item.warpdrive.component.activated_carbon.name=活性炭
-item.warpdrive.component.laser_medium_empty.name=激光觸媒 (空)
-item.warpdrive.component.coil_crystal.name=回紋水晶
-item.warpdrive.component.electromagnetic_projector.name=電磁投射器
+item.warpdrive.component.air_canister_empty.name=虛空罐
+item.warpdrive.component.air_canister_empty.tooltip=§b右鍵單擊空氣發生器§7 填充虛空罐
+
+item.warpdrive.component.flat_screen.name=平面屏幕
+item.warpdrive.component.holographic_projector.name=Holographic projector
+
+item.warpdrive.component.glass_tank.name=玻璃罐子
+item.warpdrive.component.motor.name=發動機
+item.warpdrive.component.pump.name=Pump
+
+item.warpdrive.component.lens.name=透鏡
+item.warpdrive.component.zoom.name=放大
+item.warpdrive.component.diffraction_grating.name=散射光柵
+
+item.warpdrive.component.power_interface.name=電力接口
 item.warpdrive.component.superconductor.name=超導材料
+
+item.warpdrive.component.laser_medium_empty.name=激光觸媒 (空)
+item.warpdrive.component.electromagnetic_projector.name=電磁投射器
+item.warpdrive.component.reactor_core.name=反應核心
 
 item.warpdrive.armor.helmet.name=躍遷保護盔
 item.warpdrive.armor.chestplate.name=Warp Chestplate

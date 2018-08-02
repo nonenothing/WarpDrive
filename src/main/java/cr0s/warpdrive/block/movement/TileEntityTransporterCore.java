@@ -129,7 +129,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergyConsumer 
 		});
 		CC_scripts = Collections.singletonList("startup");
 		
-		setUpgradeMaxCount(EnumComponentType.ENDER_CRYSTAL, WarpDriveConfig.TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY);
+		setUpgradeMaxCount(EnumComponentType.ENDER_COIL, WarpDriveConfig.TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY);
 		setUpgradeMaxCount(EnumComponentType.CAPACITIVE_CRYSTAL, WarpDriveConfig.TRANSPORTER_ENERGY_STORED_UPGRADE_MAX_QUANTITY);
 		setUpgradeMaxCount(EnumComponentType.EMERALD_CRYSTAL, WarpDriveConfig.TRANSPORTER_LOCKING_UPGRADE_MAX_QUANTITY);
 	}
@@ -995,7 +995,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergyConsumer 
 							// remember scanners coordinates
 							vScanners = ((TileEntityTransporterCore) tileEntity).vLocalScanners;
 							// remember upgrades
-							sumRangeUpgrades += ((TileEntityTransporterCore) tileEntity).getUpgradeCount(EnumComponentType.ENDER_CRYSTAL);
+							sumRangeUpgrades += ((TileEntityTransporterCore) tileEntity).getUpgradeCount(EnumComponentType.ENDER_COIL);
 							sumFocusUpgrades += ((TileEntityTransporterCore) tileEntity).getUpgradeCount(EnumComponentType.EMERALD_CRYSTAL);
 						}
 					}
