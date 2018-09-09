@@ -107,4 +107,34 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	public IBlockState withMirror(@Nonnull final IBlockState blockState, final Mirror mirrorIn) {
 		return blockState.withRotation(mirrorIn.toRotation(blockState.getValue(BlockProperties.FACING)));
 	}
+	
+	@Override
+	public boolean canPlaceBlockOnSide(@Nonnull final World world, @Nonnull final BlockPos blockPos, final EnumFacing enumFacing) {
+		// (do not call ancestor)
+		
+		final IBlockState blockState = world.getBlockState(blockPos.offset(enumFacing.getOpposite()));
+		return blockState.isSideSolid(world, blockPos, enumFacing);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void neighborChanged(final IBlockState blockState, final World world, final BlockPos blockPos, final Block block, final BlockPos blockPosFrom) {
+		// check if we are still attached
+		if (canPlaceBlockOnSide(world, blockPos, blockState.getValue(BlockProperties.FACING))) {
+			return;
+		}
+		
+		// find a new attachment
+		for (final EnumFacing enumFacing : EnumFacing.values()) {
+			if (canPlaceBlockOnSide(world, blockPos, enumFacing)) {
+				// new attachment found => apply
+				world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
+				return;
+			}
+		}
+		
+		// can't find an attachment => drop
+		dropBlockAsItem(world, blockPos, blockState, 0);
+		world.setBlockToAir(blockPos);
+	}
 }
