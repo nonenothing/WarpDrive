@@ -838,16 +838,17 @@ public class WarpDrive {
 		if (registryName == null) {
 			final String path;
 			final ItemStack itemStackOutput = recipe.getRecipeOutput();
+			assert itemStackOutput.getItem().getRegistryName() != null;
 			if (itemStackOutput.isEmpty()) {
 				path = recipe.toString();
 			} else if (itemStackOutput.getCount() == 1) {
 				path = String.format("%s@%d%s",
-				                     itemStackOutput.getItem().getRegistryName(),
+				                     itemStackOutput.getItem().getRegistryName().getPath(),
 				                     itemStackOutput.getItemDamage(),
 				                     suffix );
 			} else {
 				path = String.format("%s@%dx%d%s",
-				                     itemStackOutput.getItem().getRegistryName(),
+				                     itemStackOutput.getItem().getRegistryName().getPath(),
 				                     itemStackOutput.getItemDamage(),
 				                     itemStackOutput.getCount(),
 				                     suffix );
