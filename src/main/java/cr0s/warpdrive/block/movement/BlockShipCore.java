@@ -2,7 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumTier;
@@ -12,7 +12,6 @@ import cr0s.warpdrive.item.ItemComponent;
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.block.state.IBlockState;
@@ -28,38 +27,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class BlockShipCore extends BlockAbstractContainer {
+public class BlockShipCore extends BlockAbstractRotatingContainer {
 	
 	public BlockShipCore(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
 		setTranslationKey("warpdrive.movement.ship_core." + enumTier.getName());
-		
-		setDefaultState(getDefaultState()
-				                .withProperty(BlockProperties.ACTIVE, false)
-				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
-		               );
-	}
-	
-	@Nonnull
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, BlockProperties.ACTIVE, BlockProperties.FACING);
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nonnull
-	@Override
-	public IBlockState getStateFromMeta(final int metadata) {
-		return getDefaultState()
-				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
-				       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
-	}
-	
-	@Override
-	public int getMetaFromState(final IBlockState blockState) {
-		return (blockState.getValue(BlockProperties.ACTIVE) ? 0x8 : 0x0)
-		     | (blockState.getValue(BlockProperties.FACING).getIndex());
+		ignoreFacingOnPlacement = true;
 	}
 	
 	@Nonnull
@@ -68,12 +42,14 @@ public class BlockShipCore extends BlockAbstractContainer {
 		return new TileEntityShipCore();
 	}
 	
+	@Nonnull
 	@Override
-	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
-		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
-		final EnumFacing enumFacing = Commons.getHorizontalDirectionFromEntity(entityLiving).getOpposite();
-		world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
+	public IBlockState getStateForPlacement(@Nonnull final World world, @Nonnull final BlockPos blockPos, @Nonnull final EnumFacing facing,
+	                                        final float hitX, final float hitY, final float hitZ, final int metadata,
+	                                        @Nonnull final EntityLivingBase entityLivingBase, final EnumHand enumHand) {
+		final IBlockState blockState = super.getStateForPlacement(world, blockPos, facing, hitX, hitY, hitZ, metadata, entityLivingBase, enumHand);
+		final EnumFacing enumFacing = Commons.getHorizontalDirectionFromEntity(entityLivingBase).getOpposite();
+		return blockState.withProperty(BlockProperties.FACING, enumFacing);
 	}
 	
 	@Override

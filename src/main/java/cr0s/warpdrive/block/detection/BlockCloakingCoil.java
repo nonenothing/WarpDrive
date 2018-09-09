@@ -35,7 +35,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		setDefaultState(getDefaultState()
 				                .withProperty(BlockProperties.ACTIVE, false)
 				                .withProperty(OUTER, false)
-				                .withProperty(BlockProperties.FACING, EnumFacing.UP)
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
 		               );
 	}
 	
@@ -50,7 +50,8 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		// 15 = not used
-		// 8-14 = active
+		// 9-14 = active, outer facing
+		// 8 = active, inner
 		// 7 = not used
 		// 1-6 = outer facing
 		// 0 = inner
@@ -59,7 +60,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		return getDefaultState()
 				.withProperty(BlockProperties.ACTIVE, isActive)
 				.withProperty(OUTER, isOuter)
-				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.byIndex((metadata & 0x7) - 1) : EnumFacing.UP);
+				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.byIndex((metadata & 0x7) - 1) : EnumFacing.DOWN);
 	}
 	
 	@SuppressWarnings("deprecation")

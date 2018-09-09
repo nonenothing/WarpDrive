@@ -1,9 +1,8 @@
 package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
@@ -12,19 +11,17 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockSiren extends BlockAbstractContainer {
+public class BlockSiren extends BlockAbstractRotatingContainer {
 	
 	private final boolean isIndustrial;
 	
@@ -33,32 +30,6 @@ public class BlockSiren extends BlockAbstractContainer {
 		
 		this.isIndustrial = isIndustrial;
 		setTranslationKey("warpdrive.detection.siren_" + (isIndustrial ? "industrial" : "military") + "." + enumTier.getName());
-		
-		setDefaultState(getDefaultState()
-				                .withProperty(BlockProperties.ACTIVE, false)
-				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
-		               );
-	}
-	
-	@Nonnull
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, BlockProperties.ACTIVE, BlockProperties.FACING);
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nonnull
-	@Override
-	public IBlockState getStateFromMeta(final int metadata) {
-		return getDefaultState()
-				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
-				       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
-	}
-	
-	@Override
-	public int getMetaFromState(final IBlockState blockState) {
-		return (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0)
-		       + blockState.getValue(BlockProperties.FACING).getIndex();
 	}
 	
 	@Nonnull

@@ -15,14 +15,16 @@ public abstract class BlockAbstractRotatingContainer extends BlockAbstractContai
 	protected BlockAbstractRotatingContainer(final String registryName, final EnumTier enumTier, final Material material) {
 		super(registryName, enumTier, material);
 		
-		setDefaultState(blockState.getBaseState()
-		                .withProperty(BlockProperties.FACING, EnumFacing.NORTH));
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false)
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
+		               );
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, BlockProperties.FACING);
+		return new BlockStateContainer(this, BlockProperties.ACTIVE, BlockProperties.FACING);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -30,11 +32,13 @@ public abstract class BlockAbstractRotatingContainer extends BlockAbstractContai
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
+				       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
-		return blockState.getValue(BlockProperties.FACING).getIndex();
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 0x8 : 0x0)
+		     | (blockState.getValue(BlockProperties.FACING).getIndex());
 	}
 }

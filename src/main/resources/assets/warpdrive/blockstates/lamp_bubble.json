@@ -7,6 +7,14 @@
 	"variants": {
 		"normal": [{}],
 		"inventory": [{}],
+		"active": {
+			"false": {
+				
+			},
+			"true": {
+				
+			}
+		},
 		"facing": {
 			"down" : { "x": 180 },
 			"up"   : { },

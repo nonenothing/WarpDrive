@@ -186,8 +186,8 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@Override
 	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
-		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
+	                            final EntityLivingBase entityLivingBase, final ItemStack itemStack) {
+		super.onBlockPlacedBy(world, blockPos, blockState, entityLivingBase, itemStack);
 		final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) world.getTileEntity(blockPos);
 		if (!itemStack.hasTagCompound() && tileEntityForceFieldProjector != null) {
 			tileEntityForceFieldProjector.isDoubleSided = (itemStack.getItemDamage() == 1);

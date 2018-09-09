@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,6 +32,7 @@ import net.minecraft.world.World;
 public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	
 	protected final EnumTier enumTier;
+	protected boolean ignoreFacingOnPlacement = false;
 	
 	protected BlockAbstractBase(final String registryName, final EnumTier enumTier, final Material material) {
 		super(material);
@@ -72,15 +74,23 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		/**/
 	}
 	
+	@Nonnull
 	@Override
-	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
-		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
-		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
+	public IBlockState getStateForPlacement(@Nonnull final World world, @Nonnull final BlockPos blockPos, @Nonnull final EnumFacing facing,
+	                                        final float hitX, final float hitY, final float hitZ, final int metadata,
+	                                        @Nonnull final EntityLivingBase entityLivingBase, final EnumHand enumHand) {
+		final IBlockState blockState = super.getStateForPlacement(world, blockPos, facing, hitX, hitY, hitZ, metadata, entityLivingBase, enumHand);
+		final boolean isRotating = !ignoreFacingOnPlacement
+		                        && blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
-			final EnumFacing enumFacing = Commons.getFacingFromEntity(entityLiving);
-			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
+			if (blockState.isFullBlock()) {
+				final EnumFacing enumFacing = Commons.getFacingFromEntity(entityLivingBase);
+				return blockState.withProperty(BlockProperties.FACING, enumFacing);
+			} else {
+				return blockState.withProperty(BlockProperties.FACING, facing);
+			}
 		}
+		return blockState;
 	}
 	
 	@Override

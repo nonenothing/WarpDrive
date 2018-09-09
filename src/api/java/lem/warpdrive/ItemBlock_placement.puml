@@ -1,0 +1,114 @@
+@startuml
+actor "Player" as player
+participant PlayerControllerMP #cyan
+participant EntityPlayer #cyan
+participant ItemStack #cyan
+participant ItemBlock #cyan
+participant World #cyan
+participant BlockOld #cyan
+participant BlockNew #cyan
+'participant WarpDrive
+
+player -> PlayerControllerMP: processRightClickBlock()
+activate PlayerControllerMP
+...
+
+PlayerControllerMP -[#blue]> ItemStack: onItemUse()
+activate ItemStack
+    alt !world.isRemote
+        ItemStack -[#blue]> ItemStack: ForgeHooks.onPlaceItemIntoWorld()
+        PlayerControllerMP <-[#blue]- ItemStack
+    end
+
+	ItemStack -[#blue]> ItemBlock: onItemUse()
+	activate ItemBlock
+		ItemBlock -[#blue]> World: getBlockState(pos)
+		activate World
+		ItemBlock <-[#blue]- World
+        deactivate World
+
+		alt !block.isReplaceable()
+		    ItemBlock -[#blue]> ItemBlock: pos.offset()
+		end
+
+		ItemBlock -[#blue]> EntityPlayer: getHeldItem()
+		activate EntityPlayer
+		ItemBlock <-[#blue]- EntityPlayer
+		deactivate EntityPlayer
+
+		ItemBlock -[#blue]> EntityPlayer: canPlayerEdit()
+		activate EntityPlayer
+			EntityPlayer -[#blue]> EntityPlayer: capabilities.allowEdit?
+			EntityPlayer -[#blue]> ItemStack: canPlaceOn()
+			activate ItemStack
+				note right: check ItemStack NBT "CanPlaceOn" as whitelist
+			EntityPlayer <-[#blue]- ItemStack
+			deactivate ItemStack
+
+			EntityPlayer -[#blue]> ItemStack: canEditBlocks()
+			activate ItemStack
+				ItemStack -[#blue]> ItemBlock: canItemEditBlocks()
+				activate ItemBlock
+				ItemStack <-[#blue]- ItemBlock
+				deactivate ItemBlock
+			EntityPlayer <-[#blue]- ItemStack
+			deactivate ItemStack
+		ItemBlock <-[#blue]- EntityPlayer
+		deactivate EntityPlayer
+
+		ItemBlock -[#blue]> World: mayPlace()
+		activate World
+			World -[#blue]> World: checkNoEntityCollision()
+			World -[#blue]> BlockOld: isReplaceable()
+			activate BlockOld
+			World <-[#blue]- BlockOld
+			deactivate BlockOld
+
+			World -[#blue]> BlockNew: canPlaceBlockOnSide()
+			activate BlockNew
+			World <-[#blue]- BlockNew
+			deactivate BlockNew
+		ItemBlock <-[#blue]- World
+		deactivate World
+
+		alt canPlayerEdit() && mayPlace()
+            ItemBlock -[#blue]> BlockNew: getStateForPlacement()
+            activate BlockNew
+                BlockNew -[#blue]> BlockNew: getStateFromMeta()
+            ItemBlock <-[#blue]- BlockNew
+            deactivate BlockNew
+
+            ItemBlock -[#blue]> ItemBlock: placeBlockAt()
+            activate ItemBlock
+                ItemBlock -[#blue]> World: setBlockState()
+                activate World
+                ItemBlock <-[#blue]- World
+                deactivate World
+
+                ItemBlock -[#blue]> ItemBlock: setTileEntityNBT()
+                activate ItemBlock
+                    note right: check ItemStack NBT "BlockEntityTag"
+                ItemBlock <-[#blue]- ItemBlock
+                deactivate ItemBlock
+
+                ItemBlock -[#blue]> BlockNew: onBlockPlacedBy()
+                activate BlockNew
+                ItemBlock <-[#blue]- BlockNew
+                deactivate BlockNew
+
+                ItemBlock -[#blue]> ItemBlock: CriteriaTriggers...trigger()
+            ItemBlock <-[#blue]- ItemBlock
+			deactivate ItemBlock
+        end
+
+	ItemStack <-[#blue]- ItemBlock
+	deactivate ItemBlock
+
+PlayerControllerMP <-[#blue]- ItemStack
+deactivate ItemStack
+...
+
+player <-[#blue]- PlayerControllerMP
+deactivate PlayerControllerMP
+
+@enduml

@@ -5,9 +5,9 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -16,8 +16,8 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraft.world.World;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -34,6 +34,7 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 		setSoundType(SoundType.METAL);
 		setTranslationKey(unlocalizedName);
 		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false)
 				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
 		               );
 		
@@ -43,9 +44,7 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new ExtendedBlockState(this,
-				new IProperty[] { BlockProperties.FACING },
-				new IUnlistedProperty[] {  });
+		return new BlockStateContainer(this, BlockProperties.ACTIVE, BlockProperties.FACING);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -53,12 +52,14 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
+				       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7));
 	}
 	
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
-		return blockState.getValue(BlockProperties.FACING).getIndex();
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 0x8 : 0x0)
+		     | (blockState.getValue(BlockProperties.FACING).getIndex());
 	}
 	
 	@SuppressWarnings("deprecation")

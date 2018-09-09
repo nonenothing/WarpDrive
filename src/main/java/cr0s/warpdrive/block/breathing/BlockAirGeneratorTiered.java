@@ -2,15 +2,13 @@ package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IAirContainerItem;
-import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,37 +21,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockAirGeneratorTiered extends BlockAbstractContainer {
+public class BlockAirGeneratorTiered extends BlockAbstractRotatingContainer {
 	
 	public BlockAirGeneratorTiered(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
 		setTranslationKey("warpdrive.breathing.air_generator." + enumTier.getName());
-		
-		setDefaultState(getDefaultState()
-				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
-				                .withProperty(BlockProperties.ACTIVE, false)
-		               );
-	}
-	
-	@Nonnull
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, BlockProperties.FACING, BlockProperties.ACTIVE);
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nonnull
-	@Override
-	public IBlockState getStateFromMeta(final int metadata) {
-		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, EnumFacing.byIndex(metadata & 0x7))
-		       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0);
-	}
-	
-	@Override
-	public int getMetaFromState(final IBlockState blockState) {
-		return blockState.getValue(BlockProperties.FACING).getIndex() + (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0);
 	}
 	
 	@Nonnull

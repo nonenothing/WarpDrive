@@ -51,6 +51,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	protected EnumTier enumTier;
 	protected boolean hasSubBlocks = false;
+	protected boolean ignoreFacingOnPlacement = false;
 	
 	protected BlockAbstractContainer(final String registryName, final EnumTier enumTier, final Material material) {
 		super(material);
@@ -93,15 +94,29 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
+	@Nonnull
+	@Override
+	public IBlockState getStateForPlacement(@Nonnull final World world, @Nonnull final BlockPos blockPos, @Nonnull final EnumFacing facing,
+	                                        final float hitX, final float hitY, final float hitZ, final int metadata,
+	                                        @Nonnull final EntityLivingBase entityLivingBase, final EnumHand enumHand) {
+		final IBlockState blockState = super.getStateForPlacement(world, blockPos, facing, hitX, hitY, hitZ, metadata, entityLivingBase, enumHand);
+		final boolean isRotating = !ignoreFacingOnPlacement
+		                        && blockState.getProperties().containsKey(BlockProperties.FACING);
+		if (isRotating) {
+			if (blockState.isFullBlock()) {
+				final EnumFacing enumFacing = Commons.getFacingFromEntity(entityLivingBase);
+				return blockState.withProperty(BlockProperties.FACING, enumFacing);
+			} else {
+				return blockState.withProperty(BlockProperties.FACING, facing);
+			}
+		}
+		return blockState;
+	}
+	
 	@Override
 	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
-		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
-		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
-		if (isRotating) {
-			final EnumFacing enumFacing = Commons.getFacingFromEntity(entityLiving);
-			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
-		}
+	                            final EntityLivingBase entityLivingBase, final ItemStack itemStack) {
+		super.onBlockPlacedBy(world, blockPos, blockState, entityLivingBase, itemStack);
 		
 		// set inherited properties
 		final TileEntity tileEntity = world.getTileEntity(blockPos);

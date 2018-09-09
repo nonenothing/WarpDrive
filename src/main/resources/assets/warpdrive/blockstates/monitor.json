@@ -16,6 +16,14 @@
 	"variants": {
 		"normal": [{}],
 		"inventory": [{}],
+		"active": {
+			"false": {
+				
+			},
+			"true": {
+				
+			}
+		},
 		"facing": {
 			"north": {},
 			"south": { "y": 180 },
