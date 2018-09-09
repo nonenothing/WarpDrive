@@ -127,6 +127,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			tagCompound.setInteger("y", blockPos.getY());
 			tagCompound.setInteger("z", blockPos.getZ());
 			tileEntity.readFromNBT(tagCompound);
+			tileEntity.markDirty();
 			world.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 		}
 	}
