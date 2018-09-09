@@ -10,7 +10,10 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -37,8 +40,6 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 				                .withProperty(BlockProperties.ACTIVE, false)
 				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
 		               );
-		
-		setLightLevel(14.0F / 15.0F);
 	}
 	
 	@Nonnull
@@ -85,6 +86,16 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Override
 	public boolean isFullCube(final IBlockState blockState) {
 		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public int getLightValue(final IBlockState blockState) {
+		if (blockState.getValue(BlockProperties.ACTIVE)) {
+			return 14;
+		} else {
+			return 0;
+		}
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -136,5 +147,34 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 		// can't find an attachment => drop
 		dropBlockAsItem(world, blockPos, blockState, 0);
 		world.setBlockToAir(blockPos);
+	}
+	
+	@Override
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
+		if (enumHand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		if (world.isRemote) {
+			return true;
+		}
+		
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
+		
+		// sneaking with empty hand to toggle lamp on/state
+		if ( itemStackHeld.isEmpty()
+		  && entityPlayer.isSneaking() ) {
+			final boolean isActivated = !blockState.getValue(BlockProperties.ACTIVE);
+			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.ACTIVE, isActivated));
+			// (visual feedback only, no message to player)
+			return true;
+			
+		}
+		
+		// (visual feedback only: no status reported on no sneaking and no item in hand)
+		
+		return false;
 	}
 }
