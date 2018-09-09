@@ -25,7 +25,7 @@ for key,side in pairs(sides) do
     radar = peripheral.wrap(side)
   end
 end
-if radar == nil or radar.interfaced() == nil then
+if radar == nil or radar.isInterfaced() == nil then
   showErrorAndExit("No radar detected")
 end
 

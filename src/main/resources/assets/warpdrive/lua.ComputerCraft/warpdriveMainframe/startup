@@ -468,7 +468,7 @@ function cloaking_page()
   if #cloakingcores == 0 then
     SetColorDisabled()
     Write("No cloaking core detected...")
-  elseif cloakingcore == nil or cloakingcore.interfaced() == nil then
+  elseif cloakingcore == nil or cloakingcore.isInterfaced() == nil then
     SetColorWarning()
     Write("Cloaking core " .. cloaking_currentKey .. " of " .. #cloakingcores .. " is invalid")
   else
@@ -602,7 +602,7 @@ function mining_page()
   if #mininglasers == 0 then
     SetColorDisabled()
     Write("No mining laser detected...")
-  elseif mininglaser == nil or mininglaser.interfaced() == nil then
+  elseif mininglaser == nil or mininglaser.isInterfaced() == nil then
     SetColorWarning()
     Write("Mining laser " .. mining_currentKey .. " of " .. #mininglasers .. " is invalid")
   else
@@ -761,7 +761,7 @@ core_movement = { 0, 0, 0 }
 core_rotationSteps = 0
 
 function core_boot()
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     return
   end
   
@@ -1226,7 +1226,7 @@ function reactor_page()
   ShowTitle(label .. " - Reactor status")
   
   SetCursorPos(1, 2)
-  if reactor == nil or reactor.interfaced() == nil then
+  if reactor == nil or reactor.isInterfaced() == nil then
     SetColorDisabled()
     Write("Reactor not detected")
   else
@@ -1388,7 +1388,7 @@ end
 local reactor_configPageLoaded = false
 function reactor_pulse(output)
   reactor_output = output
-  if reactor == nil or reactor.interfaced() == nil then
+  if reactor == nil or reactor.isInterfaced() == nil then
     os.reboot()
   end
   local instabilities = { reactor.instability() }
@@ -1451,7 +1451,7 @@ function reactor_config()
   ShowTitle(label .. " - Reactor configuration")
   
   SetCursorPos(1, 2)
-  if reactor == nil or reactor.interfaced() == nil then
+  if reactor == nil or reactor.isInterfaced() == nil then
     SetColorDisabled()
     Write("Reactor not detected")
   else
@@ -1592,7 +1592,7 @@ function radar_page()
   ShowTitle(label .. " - Radar map")
 
   SetCursorPos(1, 2)
-  if radar == nil or radar.interfaced() == nil then
+  if radar == nil or radar.isInterfaced() == nil then
     SetColorDisabled()
     Write("Radar not detected")
   else
@@ -1661,7 +1661,7 @@ function radar_page_config()
   ShowTitle(label .. " - Radar configuration")
   
   SetCursorPos(1, 2)
-  if radar == nil or radar.interfaced() == nil then
+  if radar == nil or radar.isInterfaced() == nil then
     SetColorDisabled()
     Write("No radar detected")
   else
@@ -1720,7 +1720,7 @@ end
 
 function radar_scan()
   local monitor = radar_getMonitor()
-  if radar == nil or radar.interfaced() == nil then
+  if radar == nil or radar.isInterfaced() == nil then
     draw_warning(monitor, "No radar")
     return false
   end
@@ -2008,7 +2008,7 @@ function connections_page()
     WriteLn(#monitors .. " Monitors detected")
   end
   
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     SetColorDisabled()
     WriteLn("No ship controller detected")
   else
@@ -2016,7 +2016,7 @@ function connections_page()
     WriteLn("Ship controller detected")
   end
   
-  if reactor == nil or reactor.interfaced() == nil then
+  if reactor == nil or reactor.isInterfaced() == nil then
     SetColorDisabled()
     WriteLn("No Enantiomorphic reactor detected")
   else
@@ -2057,7 +2057,7 @@ function connections_page()
     WriteLn(#cloakingcores .. " cloaking cores detected")
   end
   
-  if radar == nil or radar.interfaced() == nil then
+  if radar == nil or radar.isInterfaced() == nil then
     SetColorDisabled()
     WriteLn("No radar detected")
   else

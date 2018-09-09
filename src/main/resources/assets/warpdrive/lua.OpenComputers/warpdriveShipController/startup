@@ -33,14 +33,14 @@ function ship_read(parData)
 end
 
 function ship_name(parName)
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     return ''
   end
   return ship.shipName(parName)
 end
 
 function ship_boot()
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     return
   end
   
@@ -423,7 +423,7 @@ end
 
 function ship_page_controls()
   w.page_begin(w.data_getName() .. " - Ship controls")
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -534,7 +534,7 @@ end
 
 function ship_page_crew()
   w.page_begin(w.data_getName() .. " - Ship crew")
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -592,7 +592,7 @@ end
 
 function ship_page_navigation()
   w.page_begin(w.data_getName() .. " - Ship navigation")
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -660,7 +660,7 @@ function connections_page(isBooting)
   
   w.writeLn("")
   
-  if ship == nil or ship.interfaced() == nil then
+  if ship == nil or ship.isInterfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No ship controller detected")
   else

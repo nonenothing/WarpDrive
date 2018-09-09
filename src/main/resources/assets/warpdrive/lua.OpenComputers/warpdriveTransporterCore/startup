@@ -13,7 +13,7 @@ function transporter_read(parData)
 end
 
 function transporter_name(parName)
-  if transporter == nil or transporter.interfaced() == nil then
+  if transporter == nil or transporter.isInterfaced() == nil then
     return ''
   end
   return transporter.transporterName(parName)
@@ -58,7 +58,7 @@ function transporter_page()
   w.page_begin(w.data_getName() .. " - Transporter room controls")
   
   w.setCursorPos(1, 2)
-  if transporter == nil or transporter.interfaced() == nil then
+  if transporter == nil or transporter.isInterfaced() == nil then
     w.setColorDisabled()
     w.write("Transporter core not detected")
   else
@@ -224,7 +224,7 @@ end
 local transporter_configPageLoaded = false
 function transporter_pulse(actual)
   local lockStrength = actual
-  if transporter == nil or transporter.interfaced() == nil then
+  if transporter == nil or transporter.isInterfaced() == nil then
     w.reboot()
   end
   if w.page_getCallbackDisplay() == transporter_page and (not transporter_configPageLoaded) then
@@ -240,7 +240,7 @@ function transporter_config()
   w.page_begin(w.data_getName() .. " - Transporter room configuration")
   
   w.setCursorPos(1, 2)
-  if transporter == nil or transporter.interfaced() == nil then
+  if transporter == nil or transporter.isInterfaced() == nil then
     w.setColorDisabled()
     w.write("Transporter core not detected")
   else
@@ -387,7 +387,7 @@ function connections_page(isBooting)
   
   w.writeLn("")
   
-  if transporter == nil or transporter.interfaced() == nil then
+  if transporter == nil or transporter.isInterfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No Transporter core detected")
   else

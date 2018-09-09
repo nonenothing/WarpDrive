@@ -70,6 +70,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergyConsumer {
 		
 		peripheralName = "warpdriveCloakingCore";
 		addMethods(new String[] {
+				"isAssemblyValid"
 		});
 		CC_scripts = Arrays.asList("enable", "disable");
 		
