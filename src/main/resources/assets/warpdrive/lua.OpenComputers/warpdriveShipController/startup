@@ -278,23 +278,23 @@ function ship_page_setMovement(isTarget)
   ship_updateMovementStats()
 end
 
-function ship_page_setDistanceAxis(line, axis, positive, negative, userEntry, shipLength, maxJumpDistance, zero)
+function ship_page_setDistanceAxis(line, axis, positive, negative, userEntry, shipLength, maxJumpDistance, offset)
   local maximumDistance = math.floor(shipLength + maxJumpDistance)
   w.setCursorPos(1, line + 2)
   w.setColorHelp()
-  w.writeFullLine(" Enter between " .. math.floor( shipLength + 1) + zero .. " and " ..  maximumDistance + zero .. " to move " ..  positive .. ".")
-  w.writeFullLine(" Enter " .. zero .. " to keep position on this axis.")
-  w.writeFullLine(" Enter between " .. zero-maximumDistance .. " and " .. zero+math.floor(-shipLength - 1) .. " to move " ..  negative .. ".")
+  w.writeFullLine(" Enter between " .. math.floor( shipLength + 1) + offset .. " and " ..  maximumDistance + offset .. " to move " ..  positive .. ".")
+  w.writeFullLine(" Enter " .. offset .. " to keep position on this axis.")
+  w.writeFullLine(" Enter between " .. offset - maximumDistance .. " and " .. offset + math.floor(-shipLength - 1) .. " to move " ..  negative .. ".")
   
   repeat
     w.setCursorPos(1, line)
     w.setColorNormal()
     w.write(axis .. " movement: ")
-    userEntry = w.input_readInteger(userEntry+zero)
-    if userEntry ~= zero and (math.abs(userEntry-zero) <= shipLength or math.abs(userEntry-zero) > maximumDistance) then
+    userEntry = w.input_readInteger(userEntry + offset)
+    if userEntry ~= offset and (math.abs(userEntry - offset) <= shipLength or math.abs(userEntry - offset) > maximumDistance) then
       w.status_showWarning("Wrong distance. Try again.")
     end
-  until userEntry == zero or (math.abs(userEntry-zero) > shipLength and math.abs(userEntry-zero) <= maximumDistance)
+  until userEntry == offset or (math.abs(userEntry - offset) > shipLength and math.abs(userEntry - offset) <= maximumDistance)
   w.setCursorPos(1, line + 2)
   w.clearLine()
   w.setCursorPos(1, line + 3)
@@ -302,7 +302,7 @@ function ship_page_setDistanceAxis(line, axis, positive, negative, userEntry, sh
   w.setCursorPos(1, line + 4)
   w.clearLine()
   
-  return userEntry - zero
+  return userEntry - offset
 end
 
 function ship_page_setRotation()
@@ -475,7 +475,7 @@ function ship_page_controls()
   
   w.setCursorPos(1, 20)
   w.setColorControl()
-  w.writeFullLine(" set ship Name (N), dImensions (I), Movement (M), Target (T)")
+  w.writeFullLine(" set ship Name (N), dImensions (I), Movement (A/R)")
   if ship_isInHyper then
     w.writeFullLine(" Jump to move ship (M/J), exit Hyperspace (H)")
   else
@@ -484,12 +484,12 @@ function ship_page_controls()
 end
 
 function ship_key_controls(character, keycode)
-  if character == 'm' or character == 'M' then
+  if character == 'r' or character == 'R' then
     ship_page_setMovement(false)
     ship_page_setRotation()
     ship_warp()
     return true
-  elseif character == 't' or character == 'T' then
+  elseif character == 'a' or character == 'A' then
     ship_page_setMovement(true)
     ship_warp()
     return true
@@ -662,13 +662,13 @@ function ship_key_navigation(character, keycode)
   return false
 end
 
-function ship_page_off()
+function ship_page_offline()
     w.page_begin(w.data_getName() .. " - Sleeping")
     ship.command("OFFLINE")
     ship.enable(false)
-    w.writeLn("Now offline, press any key to wake up")
+    w.writeLn("Offline mode")
 end
-function ship_key_off(character, keycode)
+function ship_key_offline(character, keycode)
     ship.command("IDLE")
     ship.enable(true)
     w.sleep(0.2)
@@ -722,7 +722,7 @@ w.page_register('0', connections_page, nil)
 w.page_register('1', ship_page_controls, ship_key_controls)
 w.page_register('2', ship_page_crew, ship_key_crew)
 w.page_register('3', ship_page_navigation, ship_key_navigation)
-w.page_register('4', ship_page_off, ship_key_off)
+w.page_register('4', ship_page_offline, ship_key_offline)
 ship_register()
 
 w.boot()
