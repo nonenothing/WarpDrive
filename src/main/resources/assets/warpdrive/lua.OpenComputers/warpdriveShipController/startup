@@ -475,21 +475,21 @@ function ship_page_controls()
   
   w.setCursorPos(1, 20)
   w.setColorControl()
-  w.writeFullLine(" set ship Name (N), dImensions (I), Movement (A/R)")
+  w.writeFullLine(" set ship Name (N), dImensions (I), Movement (M/P)")
   if ship_isInHyper then
-    w.writeFullLine(" Jump to move ship (M/J), exit Hyperspace (H)")
+    w.writeFullLine(" Jump to move ship (J), exit Hyperspace (H)")
   else
-    w.writeFullLine(" Jump to move ship (M/J), enter Hyperspace (H)")
+    w.writeFullLine(" Jump to move ship (J), enter Hyperspace (H)")
   end
 end
 
 function ship_key_controls(character, keycode)
-  if character == 'r' or character == 'R' then
+  if character == 'm' or character == 'M' then
     ship_page_setMovement(false)
     ship_page_setRotation()
     ship_warp()
     return true
-  elseif character == 'a' or character == 'A' then
+  elseif character == 'p' or character == 'P' then
     ship_page_setMovement(true)
     ship_warp()
     return true
