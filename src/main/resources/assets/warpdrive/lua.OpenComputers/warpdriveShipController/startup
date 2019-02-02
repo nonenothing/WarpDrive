@@ -255,6 +255,7 @@ function ship_page_setMovement(isTarget)
   ship_writeMovement("Current movement is ")
   w.setCursorPos(1, 5)
   local lenfb = math.abs(ship_front + ship_back  + 1)
+  local lenud = math.abs(ship_up    + ship_down  + 1)
   local lenlr = math.abs(ship_left  + ship_right + 1)
   if (isTarget) then
    local dx, dy, dz = ship.getOrientation()
@@ -268,11 +269,11 @@ function ship_page_setMovement(isTarget)
     ship_movement[1] = dx*ship_page_setDistanceAxis(4, "X", "", "", ship_movement[1], lenfb, maxJumpDistance, ship_x)
     ship_movement[3] = dx*ship_page_setDistanceAxis(6, "Z"  , ""  , ""    , ship_movement[3], lenlr, maxJumpDistance, ship_z)
    end
-   ship_movement[2] = ship_page_setDistanceAxis(8, "Y"     , ""     , ""    , ship_movement[2], math.abs(ship_up    + ship_down  + 1), maxJumpDistance, ship_y)
+   ship_movement[2] = ship_page_setDistanceAxis(8, "Y"     , ""     , ""    , ship_movement[2], lenud, maxJumpDistance, ship_y)
   else  
    ship_movement[1] = ship_page_setDistanceAxis(4, "Forward/back", "Forward", "Backward", ship_movement[1], lenfb, maxJumpDistance,0)
-   ship_movement[2] = ship_page_setDistanceAxis(6, "Up/down"     , "Up"     , "Down"    , ship_movement[2], math.abs(ship_up    + ship_down  + 1), maxJumpDistance,0)
-   ship_movement[3] = ship_page_setDistanceAxis(8, "Right/left"  , "Right"  , "Left"    , ship_movement[3], lenrl, maxJumpDistance,0)
+   ship_movement[2] = ship_page_setDistanceAxis(6, "Up/down"     , "Up"     , "Down"    , ship_movement[2], lenud, maxJumpDistance,0)
+   ship_movement[3] = ship_page_setDistanceAxis(8, "Right/left"  , "Right"  , "Left"    , ship_movement[3], lenlr, maxJumpDistance,0)
   end
   ship_movement = { ship.movement(ship_movement[1], ship_movement[2], ship_movement[3]) }
   ship_updateMovementStats()
